@@ -132,7 +132,7 @@ describe('adapters/bfgminer', function () {
         bfgAdapter.on('statusUpdate', function (data) {
             expect(data).to.deep.equal({
                 miner: {
-                    status: 'disconnected',
+                    connected: false,
                     error: 'Error: Test Error'
                 }
             });

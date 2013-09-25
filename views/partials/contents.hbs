@@ -1,5 +1,5 @@
-<div class="panel panel-default">
-    <div class="panel-heading">
+<div class="panel {{#if miner.connected}}panel-success{{else}}panel-danger{{/if}}">
+    <div class="panel-heading {{#if miner.connected}}{{/if}}">
         <h2 class="panel-title">Miner 1</h2>
     </div>
     <div class="panel-body row">

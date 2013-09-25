@@ -7,7 +7,7 @@ var net = require('net'),
     BfgAdapter,
     defaults = {
         miner: {
-            status: 'disconnected'
+            connected: false
         }
     };
 
@@ -41,7 +41,7 @@ BfgAdapter.prototype.update = function () {
             self.socket.on('error', function (err) {
                 self.handleStatusUpdate(_.extend({}, defaults, {
                     miner: {
-                        status: 'disconnected',
+                        connected: false,
                         error: err.toString()
                     }
                 }));
