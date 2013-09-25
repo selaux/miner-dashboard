@@ -42,15 +42,15 @@ module.exports = function (grunt) {
             }
         },
 
-        jade: {
+        handlebars: {
             client: {
                 options: {
-                    client: true,
+                    partialsUseNamespace: true,
                     namespace: 'templates',
                 },
                 files: {
                     'public/javascripts/build/templates.js': [
-                        'views/contents.jade'
+                        'views/partials/contents.hbs'
                     ]
                 }
             }
@@ -58,7 +58,7 @@ module.exports = function (grunt) {
     });
 
     grunt.loadNpmTasks('grunt-contrib-jshint');
-    grunt.loadNpmTasks('grunt-contrib-jade');
+    grunt.loadNpmTasks('grunt-contrib-handlebars');
     grunt.loadNpmTasks('grunt-mocha-test');
 
     grunt.registerTask('test', ['jshint', 'mochaTest']);

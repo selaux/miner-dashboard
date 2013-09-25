@@ -1,6 +1,7 @@
 'use strict';
 
 var express = require('express'),
+    exphbs  = require('express3-handlebars'),
     routes = require('./routes'),
     http = require('http'),
     path = require('path'),
@@ -21,7 +22,11 @@ var app = express();
 app.configure(function(){
     app.set('port', process.env.PORT || 3000);
     app.set('views', __dirname + '/views');
-    app.set('view engine', 'jade');
+    app.engine('hbs', exphbs({
+        defaultLayout: 'main',
+        extname: '.hbs'
+    }));
+    app.set('view engine', 'hbs');
     app.set('adapter', adapter);
     app.use(express.favicon());
     app.use(express.logger('dev'));

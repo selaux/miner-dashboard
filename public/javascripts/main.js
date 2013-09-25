@@ -6,11 +6,11 @@
 
         // TODO: Use template and rerender
         socket.on('statusUpdate', function (data) {
-            document.getElementById('contents').innerHTML = window.templates['views/contents'](data);
+            document.getElementById('updated').innerHTML = window.templates['views/partials/contents.hbs'](data);
         });
 
         socket.on('disconnect', function () {
-            document.getElementById('contents').innerHTML = window.templates['views/contents']({
+            document.getElementById('updated').innerHTML = window.templates['views/partials/contents.hbs']({
                 miner: {
                     connected: false
                 }
