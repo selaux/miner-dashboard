@@ -24,7 +24,15 @@ var BfgAdapter = function BfgAdapter() {
 BfgAdapter.prototype = Object.create(EventEmitter.prototype);
 
 BfgAdapter.prototype.update = function () {
-    var self = this;
+    var self = this,
+        reportError = function (err) {
+            self.handleStatusUpdate(_.extend({}, defaults, {
+                miner: {
+                    connected: false,
+                    error: err.toString()
+                }
+            }));
+        };
 
     if (!this.socket) {
         self.socket = net.connect({
@@ -38,18 +46,14 @@ BfgAdapter.prototype.update = function () {
                 self.socket.removeAllListeners();
                 self.socket = null;
             });
-            self.socket.on('error', function (err) {
-                self.handleStatusUpdate(_.extend({}, defaults, {
-                    miner: {
-                        connected: false,
-                        error: err.toString()
-                    }
-                }));
-            });
             self.socket.write(JSON.stringify({
                 command: 'summary',
                 parameter: ''
             }));
+        });
+
+        self.socket.on('error', function (err) {
+            reportError(err);
         });
     }
 };
