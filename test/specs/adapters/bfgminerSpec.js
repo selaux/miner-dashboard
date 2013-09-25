@@ -65,6 +65,13 @@ var EventEmitter = require('events').EventEmitter,
 
     BfgAdapter = SandboxedModule.require('../../../adapters/bfgminer', {
         requires: {
+            '../config/config.json': {
+                bfgminer: {
+                    host: 'some.host',
+                    port: 1111,
+                    interval: 100
+                }
+            },
             'net': {
                 connect: function (options, callback) {
                     netEmitter.removeAllListeners();
@@ -73,7 +80,7 @@ var EventEmitter = require('events').EventEmitter,
                         setTimeout(function () {
                             netEmitter.emit('data', minerResponse);
                             netEmitter.emit('end');
-                        }, 100);
+                        }, 20);
                     });
                     setTimeout(callback, 10);
                     return netEmitter;
@@ -104,8 +111,6 @@ describe('adapters/bfgminer', function () {
         var numberOfUpdates = 0,
             bfgAdapter;
 
-        this.timeout(3000);
-
         bfgAdapter = new BfgAdapter();
         bfgAdapter.on('statusUpdate', function (data) {
             expect(data).to.deep.equal(expectedStatusUpdate);
@@ -123,7 +128,7 @@ describe('adapters/bfgminer', function () {
         bfgAdapter = new BfgAdapter();
         setTimeout(function () {
             netEmitter.emit('error', new Error('Test Error'));
-        }, 50);
+        }, 15);
         bfgAdapter.on('statusUpdate', function (data) {
             expect(data).to.deep.equal({
                 miner: {
@@ -138,8 +143,6 @@ describe('adapters/bfgminer', function () {
 
     it('should call registered middlewares to augment the data returned by the miner', function (done) {
         var bfgAdapter;
-
-        this.timeout(3000);
 
         bfgAdapter = new BfgAdapter();
 

@@ -9,11 +9,16 @@ var chai = require('chai'),
             symbol: 'otherSymbol'
         },
         {
-            symbol: 'mtgoxEUR'
+            symbol: 'wantedSymbol'
         }
     ],
     bitcoincharts = SandboxedModule.require('../../../../middleware/market/bitcoincharts', {
         requires: {
+            '../../config/config.json': {
+                bitcoincharts: {
+                    symbol: 'wantedSymbol'
+                }
+            },
             'request': function (options, callback) {
                 expect(options).to.deep.equal({
                     uri: 'http://api.bitcoincharts.com/v1/markets.json',
