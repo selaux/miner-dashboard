@@ -1,5 +1,5 @@
 {
-    "name": "application-name",
+    "name": "miner-dashboard",
     "version": "0.0.1",
     "private": true,
     "scripts": {
