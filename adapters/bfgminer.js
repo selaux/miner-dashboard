@@ -53,6 +53,7 @@ BfgAdapter.prototype.update = function () {
         });
 
         self.socket.on('error', function (err) {
+            self.socket = null;
             reportError(err);
         });
     }
