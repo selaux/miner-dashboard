@@ -1,0 +1,9 @@
+@import "bootstrap.min.css";
+@import "bootstrap-theme.css";
+body {
+  padding: 50px;
+  font: 14px "Lucida Grande", Helvetica, Arial, sans-serif;
+}
+a {
+  color: #00b7ff;
+}
