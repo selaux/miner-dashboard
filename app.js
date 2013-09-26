@@ -36,7 +36,7 @@ app.configure(function(){
     app.set('view engine', 'hbs');
     app.set('adapters', adapters);
     app.set('config', config);
-    app.use(express.favicon());
+    app.use(express.favicon('public/images/favicon.ico'));
     app.use(express.logger('dev'));
     app.use(express.bodyParser());
     app.use(express.methodOverride());
