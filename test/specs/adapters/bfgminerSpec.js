@@ -65,13 +65,6 @@ var EventEmitter = require('events').EventEmitter,
 
     BfgAdapter = SandboxedModule.require('../../../adapters/bfgminer', {
         requires: {
-            '../config/config.json': {
-                bfgminer: {
-                    host: 'some.host',
-                    port: 1111,
-                    interval: 100
-                }
-            },
             'net': {
                 connect: function (options, callback) {
                     netEmitter.removeAllListeners();
@@ -80,14 +73,22 @@ var EventEmitter = require('events').EventEmitter,
                         setTimeout(function () {
                             netEmitter.emit('data', minerResponse);
                             netEmitter.emit('end');
-                        }, 20);
+                        }, 50);
                     });
                     setTimeout(callback, 10);
                     return netEmitter;
                 }
             }
         }
-    });
+    }),
+
+    config = {
+        bfgminer: {
+            host: 'some.host',
+            port: 1111,
+            interval: 500
+        }
+    };
 
 netEmitter.write = function (data) {
     this.emit('stub:write', JSON.parse(data));
@@ -99,7 +100,7 @@ describe('adapters/bfgminer', function () {
     });
 
     it('should request the status from a miner on instantiation', function (done) {
-        var bfgAdapter = new BfgAdapter();
+        var bfgAdapter = new BfgAdapter(config);
         bfgAdapter.on('statusUpdate', function (data) {
             expect(data).to.deep.equal(expectedStatusUpdate);
             bfgAdapter.removeAllListeners();
@@ -111,7 +112,7 @@ describe('adapters/bfgminer', function () {
         var numberOfUpdates = 0,
             bfgAdapter;
 
-        bfgAdapter = new BfgAdapter();
+        bfgAdapter = new BfgAdapter(config);
         bfgAdapter.on('statusUpdate', function (data) {
             expect(data).to.deep.equal(expectedStatusUpdate);
             numberOfUpdates = numberOfUpdates + 1;
@@ -125,10 +126,10 @@ describe('adapters/bfgminer', function () {
     it('should trigger a status update with the miner status as disconnected when an error occurs on a status update', function (done) {
         var bfgAdapter;
 
-        bfgAdapter = new BfgAdapter();
+        bfgAdapter = new BfgAdapter(config);
         setTimeout(function () {
             netEmitter.emit('error', new Error('Test Error'));
-        }, 15);
+        }, 25);
         bfgAdapter.on('statusUpdate', function (data) {
             expect(data).to.deep.equal({
                 miner: {
@@ -144,7 +145,7 @@ describe('adapters/bfgminer', function () {
     it('should call registered middlewares to augment the data returned by the miner', function (done) {
         var bfgAdapter;
 
-        bfgAdapter = new BfgAdapter();
+        bfgAdapter = new BfgAdapter(config);
 
         bfgAdapter.use(function (data, callback) {
             data.testMiddleware = 'foobar';
@@ -155,6 +156,43 @@ describe('adapters/bfgminer', function () {
             expect(data.testMiddleware).to.equal('foobar');
             bfgAdapter.removeAllListeners();
             done();
+        });
+    });
+
+    it('should continue requesting the status after an error occured on a status update', function (done) {
+        var bfgAdapter,
+            statusUpdate = 0;
+
+        bfgAdapter = new BfgAdapter(config);
+        setTimeout(function () {
+            netEmitter.emit('error', new Error('Test Error 1'));
+        }, 1);
+        setTimeout(function () {
+            netEmitter.emit('error', new Error('Test Error 2'));
+        }, 25);
+        bfgAdapter.on('statusUpdate', function (data) {
+            statusUpdate = statusUpdate + 1;
+            if (statusUpdate === 1) {
+                expect(data).to.deep.equal({
+                    miner: {
+                        connected: false,
+                        error: 'Error: Test Error 1'
+                    }
+                });
+            }
+            if (statusUpdate === 2) {
+                expect(data).to.deep.equal({
+                    miner: {
+                        connected: false,
+                        error: 'Error: Test Error 2'
+                    }
+                });
+            }
+            if (statusUpdate === 3) {
+                expect(data).to.deep.equal(expectedStatusUpdate);
+                bfgAdapter.removeAllListeners();
+                done();
+            }
         });
     });
 

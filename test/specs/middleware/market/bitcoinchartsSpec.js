@@ -14,11 +14,6 @@ var chai = require('chai'),
     ],
     bitcoincharts = SandboxedModule.require('../../../../middleware/market/bitcoincharts', {
         requires: {
-            '../../config/config.json': {
-                bitcoincharts: {
-                    symbol: 'wantedSymbol'
-                }
-            },
             'request': function (options, callback) {
                 expect(options).to.deep.equal({
                     uri: 'http://api.bitcoincharts.com/v1/markets.json',
@@ -34,8 +29,13 @@ var chai = require('chai'),
 describe('middleware/market/bitcoincharts', function () {
 
     it('should get data from bitcoincharts correctly', function () {
-        var data = {};
-        bitcoincharts(data, function (err) {
+        var config = {
+                bitcoincharts: {
+                    symbol: 'wantedSymbol'
+                }
+            },
+            data = {};
+        bitcoincharts(config)(data, function (err) {
             expect(err).not.to.be.ok;
             expect(data.market).to.equal(bitcoinChartsAnswer[1]);
         });

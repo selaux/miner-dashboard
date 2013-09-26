@@ -3,7 +3,6 @@
 var net = require('net'),
     EventEmitter = require('events').EventEmitter,
     _ = require('lodash'),
-    config = require('../config/config.json'),
     BfgAdapter,
     defaults = {
         miner: {
@@ -11,13 +10,12 @@ var net = require('net'),
         }
     };
 
-// TODO: Does it work with cgminer as well (api seems similar)?
-
-var BfgAdapter = function BfgAdapter() {
+var BfgAdapter = function BfgAdapter(config) {
     var self = this;
+    self.config = config;
     self.middlewares = [];
     self.data = defaults;
-    self.interval = setInterval(function () { self.update(); }, config.bfgminer.interval);
+    self.interval = setInterval(function () { self.update(); }, self.config.bfgminer.interval);
     self.update();
 };
 
@@ -34,22 +32,24 @@ BfgAdapter.prototype.update = function () {
             }));
         };
 
-    if (!this.socket) {
+    if (!self.socket) {
         self.socket = net.connect({
-            host: config.bfgminer.host,
-            port: config.bfgminer.port
+            host: self.config.bfgminer.host,
+            port: self.config.bfgminer.port
         }, function () {
-            self.socket.on('data', function (data) {
-                self.handleResponse(data);
-            });
-            self.socket.on('end', function () {
-                self.socket.removeAllListeners();
-                self.socket = null;
-            });
-            self.socket.write(JSON.stringify({
-                command: 'summary',
-                parameter: ''
-            }));
+            if (self.socket) {
+                self.socket.on('data', function (data) {
+                    self.handleResponse(data);
+                });
+                self.socket.on('end', function () {
+                    self.socket.removeAllListeners();
+                    self.socket = null;
+                });
+                self.socket.write(JSON.stringify({
+                    command: 'summary',
+                    parameter: ''
+                }));
+            }
         });
 
         self.socket.on('error', function (err) {

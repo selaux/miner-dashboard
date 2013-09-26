@@ -1,26 +1,28 @@
 'use strict';
 
-var request = require('request'),
-    config = require('../../config/config.json'),
-    marketStats = {};
+var request = require('request');
 
-function updateMarketStats() {
-    request({
-        uri:  'http://api.bitcoincharts.com/v1/markets.json',
-        json: true
-    }, function (err, res) {
-        var market = res.body.filter(function (market) {
-            return market.symbol === config.bitcoincharts.symbol;
-        })[0];
+module.exports = function (config) {
+    var marketStats = {};
 
-        marketStats = market;
-    });
-}
+    function updateMarketStats() {
+        request({
+            uri:  'http://api.bitcoincharts.com/v1/markets.json',
+            json: true
+        }, function (err, res) {
+            var market = res.body.filter(function (market) {
+                return market.symbol === config.bitcoincharts.symbol;
+            })[0];
 
-updateMarketStats();
-setInterval(updateMarketStats, 60 * 60 * 1e3);
+            marketStats = market;
+        });
+    }
 
-module.exports = function (data, callback) {
-    data.market = marketStats;
-    callback(null);
+    updateMarketStats();
+    setInterval(updateMarketStats, 60 * 60 * 1e3);
+
+    return function (data, callback) {
+        data.market = marketStats;
+        callback(null);
+    };
 };

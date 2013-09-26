@@ -41,7 +41,7 @@ describe('middleware/technical/blockchainInfo', function () {
 
     it('should get data from blockchainInfo correctly', function () {
         var data = {};
-        blockchainInfo(data, function (err) {
+        blockchainInfo()(data, function (err) {
             expect(err).not.to.be.ok;
             expect(data.technical).to.deep.equal(_.extend({}, statsAnswer, {
                 btcPerBlock: btcPerBlockAnswer,

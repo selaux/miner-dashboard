@@ -22,7 +22,7 @@ describe('middleware/earnings/solo', function () {
                 }
             };
 
-        lone(data, function (err) {
+        lone()(data, function (err) {
             expect(err).not.to.be.ok;
             expect(data.earnings).to.deep.equal({
                 value: 8640,

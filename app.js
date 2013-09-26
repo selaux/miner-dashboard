@@ -6,13 +6,20 @@ var express = require('express'),
     http = require('http'),
     path = require('path'),
     config = require('./config/config.json'),
+    collectData = require('./utils/collectData'),
     server,
     io,
-    Adapter = require('./adapters/' + config.adapter),
-    adapter = new Adapter();
-    
-config.middlewares.forEach(function (mw) {
-    adapter.use(require('./middleware/' + mw));
+    adapters = [];
+
+config.miners.forEach(function (minerConfig) {
+    var Adapter = require('./adapters/' + minerConfig.adapter),
+        adapter = new Adapter(minerConfig);
+
+    minerConfig.middlewares.forEach(function (mw) {
+        adapter.use(require('./middleware/' + mw)(minerConfig));
+    });
+
+    adapters.push(adapter);
 });
 
 // TODO: Logging
@@ -27,7 +34,8 @@ app.configure(function(){
         extname: '.hbs'
     }));
     app.set('view engine', 'hbs');
-    app.set('adapter', adapter);
+    app.set('adapters', adapters);
+    app.set('config', config);
     app.use(express.favicon());
     app.use(express.logger('dev'));
     app.use(express.bodyParser());
@@ -45,8 +53,10 @@ routes(app);
 
 server = http.createServer(app).listen(app.get('port'), function(){
     io = require('socket.io').listen(server, { log: false });
-    adapter.on('statusUpdate', function (data) {
-        io.sockets.emit('statusUpdate', data);
+    adapters.forEach(function (adapter) {
+        adapter.on('statusUpdate', function () {
+            io.sockets.emit('statusUpdate', collectData(app));
+        });
     });
     console.log('Express and Websocket server listening on port ' + app.get('port'));
 });

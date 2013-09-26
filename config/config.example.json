@@ -1,17 +1,22 @@
 {
-    "title": "MrPink Mining Rig",
-    "adapter": "bfgminer",
-    "middlewares": [
-        "market/bitcoincharts",
-        "technical/blockchainInfo",
-        "earnings/solo"
-    ],
-    "bfgminer": {
-        "host": "127.0.0.1",
-        "port": 4333,
-        "interval": 1000
-    },
-    "bitcoincharts": {
-        "symbol": "mtgoxUSD"
-    }
+    "title": "My Mining Operations",
+    "miners": [
+        {
+            "name": "Some Device Name",
+            "adapter": "bfgminer",
+            "middlewares": [
+                "market/bitcoincharts",
+                "technical/blockchainInfo",
+                "earnings/solo"
+            ],
+            "bfgminer": {
+                "host": "127.0.0.1",
+                "port": 4028,
+                "interval": 2500
+            },
+            "bitcoincharts": {
+                "symbol": "mtgoxUSD"
+            }
+        }
+    ]
 }
