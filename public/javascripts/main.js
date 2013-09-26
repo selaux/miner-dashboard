@@ -2,7 +2,11 @@
     'use strict';
 
     function connect() {
-        var socket = io.connect('http://' + window.location.host);
+        var socket = io.connect('http://' + window.location.host, {
+            'reconnect': true,
+            'reconnection delay': 2500,
+            'max reconnection attempts': Infinity
+        });
 
         // TODO: Use template and rerender
         socket.on('statusUpdate', function (data) {
@@ -15,8 +19,6 @@
                     connected: false
                 }
             });
-
-            setInterval(connect, 5000);
         });
 
     }
