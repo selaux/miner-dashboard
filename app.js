@@ -30,8 +30,8 @@ app.configure(function(){
     app.set('port', process.env.PORT || 3000);
     app.set('views', __dirname + '/frontend/views');
     app.engine('hbs', exphbs({
-        layoutsDir: '/frontend/views/layouts/',
-        partialsDir: '/frontend/views/partials/',
+        layoutsDir: 'frontend/views/layouts/',
+        partialsDir: 'frontend/views/partials/',
         defaultLayout: 'main',
         extname: '.hbs'
     }));
