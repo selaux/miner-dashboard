@@ -4,7 +4,7 @@
     "private": true,
     "scripts": {
         "start": "npm install --production && node_modules/.bin/grunt handlebars && node app",
-        "startWin": "npm install --production && node_modules\.bin\grunt handlebars && node app",
+        "startWin": "npm install --production && node_modules\\.bin\\grunt handlebars && node app",
         "test": "node_modules/.bin/grunt test"
     },
     "dependencies": {
