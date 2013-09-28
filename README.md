@@ -25,14 +25,8 @@ vim config/config.json
 
 Step 3: Start the application
 
-If yo're on Linux / Mac
 ```
 npm start
-```
-
-If yo're on Windows:
-```
-npm startWin
 ```
 
 Step 4: Visit url
