@@ -12,7 +12,7 @@ var chai = require('chai'),
             symbol: 'wantedSymbol'
         }
     ],
-    bitcoincharts = SandboxedModule.require('../../../../middleware/market/bitcoincharts', {
+    bitcoincharts = SandboxedModule.require('../../../../lib/market/bitcoincharts', {
         requires: {
             'request': function (options, callback) {
                 expect(options).to.deep.equal({

@@ -2,21 +2,21 @@
 
 var express = require('express'),
     exphbs  = require('express3-handlebars'),
-    routes = require('./routes'),
+    routes = require('./frontend/routes'),
     http = require('http'),
     path = require('path'),
     config = require('./config/config.json'),
-    collectData = require('./utils/collectData'),
+    collectData = require('./lib/utils/collectData'),
     server,
     io,
     adapters = [];
 
 config.miners.forEach(function (minerConfig) {
-    var Adapter = require('./adapters/' + minerConfig.adapter),
+    var Adapter = require('./lib/adapters/' + minerConfig.adapter),
         adapter = new Adapter(minerConfig);
 
     minerConfig.middlewares.forEach(function (mw) {
-        adapter.use(require('./middleware/' + mw)(minerConfig));
+        adapter.use(require('./lib/' + mw)(minerConfig));
     });
 
     adapters.push(adapter);
@@ -28,8 +28,10 @@ var app = express();
 
 app.configure(function(){
     app.set('port', process.env.PORT || 3000);
-    app.set('views', __dirname + '/views');
+    app.set('views', __dirname + '/frontend/views');
     app.engine('hbs', exphbs({
+        layoutsDir: 'frontend/views/layouts/',
+        partialsDir: 'frontend/views/partials/',
         defaultLayout: 'main',
         extname: '.hbs'
     }));
@@ -42,7 +44,7 @@ app.configure(function(){
     app.use(express.methodOverride());
     app.use(app.router);
     app.use(require('stylus').middleware(__dirname + '/public'));
-    app.use(express.static(path.join(__dirname, 'public')));
+    app.use(express.static(path.join(__dirname, '/frontend/public')));
 });
 
 app.configure('development', function(){

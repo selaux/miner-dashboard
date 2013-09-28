@@ -3,8 +3,8 @@
 var chai = require('chai'),
     expect = chai.expect,
 
-    cgminer = require('../../../adapters/cgminer'),
-    bfgminer = require('../../../adapters/bfgminer');
+    cgminer = require('../../../../lib/adapters/cgminer'),
+    bfgminer = require('../../../../lib/adapters/bfgminer');
 
 describe('adapters/cgminer', function () {
 

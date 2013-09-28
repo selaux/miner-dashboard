@@ -10,7 +10,7 @@ var _ = require('lodash'),
     },
     btcPerBlockAnswer = 25,
     probabilityAnswer = 0.01,
-    blockchainInfo = SandboxedModule.require('../../../../middleware/technical/blockchainInfo', {
+    blockchainInfo = SandboxedModule.require('../../../../lib/technical/blockchainInfo', {
         requires: {
             'request': function (options, callback) {
                 var response;

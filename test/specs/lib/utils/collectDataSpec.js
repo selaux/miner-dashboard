@@ -4,7 +4,7 @@ var chai = require('chai'),
     expect = chai.expect,
     sinon = require('sinon'),
 
-    collectData = require('../../../utils/collectData');
+    collectData = require('../../../../lib/utils/collectData');
 
 describe('utils/collectData', function () {
 

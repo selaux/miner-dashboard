@@ -63,7 +63,7 @@ var EventEmitter = require('events').EventEmitter,
         }
     },
 
-    BfgAdapter = SandboxedModule.require('../../../adapters/bfgminer', {
+    BfgAdapter = SandboxedModule.require('../../../../lib/adapters/bfgminer', {
         requires: {
             'net': {
                 connect: function (options, callback) {

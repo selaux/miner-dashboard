@@ -3,7 +3,7 @@
 var chai = require('chai'),
     expect = chai.expect,
 
-    lone = require('../../../../middleware/earnings/solo');
+    lone = require('../../../../lib/earnings/solo');
 
 describe('middleware/earnings/solo', function () {
 

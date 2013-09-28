@@ -1,6 +1,6 @@
 'use strict';
 
-var collectData = require('../utils/collectData');
+var collectData = require('../../lib/utils/collectData');
 
 module.exports = function (app) {
     app.get('/', exports.index = function(req, res) {
