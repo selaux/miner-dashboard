@@ -30,15 +30,15 @@ app.configure(function(){
     app.set('port', process.env.PORT || 3000);
     app.set('views', __dirname + '/frontend/views');
     app.engine('hbs', exphbs({
-        layoutsDir: 'frontend/views/layouts/',
-        partialsDir: 'frontend/views/partials/',
+        layoutsDir: '/frontend/views/layouts/',
+        partialsDir: '/frontend/views/partials/',
         defaultLayout: 'main',
         extname: '.hbs'
     }));
     app.set('view engine', 'hbs');
     app.set('adapters', adapters);
     app.set('config', config);
-    app.use(express.favicon('public/images/favicon.ico'));
+    app.use(express.favicon('frontend/public/images/favicon.ico'));
     app.use(express.logger('dev'));
     app.use(express.bodyParser());
     app.use(express.methodOverride());

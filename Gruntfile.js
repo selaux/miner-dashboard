@@ -49,8 +49,8 @@ module.exports = function (grunt) {
                     namespace: 'templates',
                 },
                 files: {
-                    'public/javascripts/build/templates.js': [
-                        'views/partials/contents.hbs'
+                    'frontend/public/javascripts/build/templates.js': [
+                        'frontend/views/partials/contents.hbs'
                     ]
                 }
             }

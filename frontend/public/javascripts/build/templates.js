@@ -1,6 +1,6 @@
 this["templates"] = this["templates"] || {};
 
-this["templates"]["views/partials/contents.hbs"] = Handlebars.template(function (Handlebars,depth0,helpers,partials,data) {
+this["templates"]["frontend/views/partials/contents.hbs"] = Handlebars.template(function (Handlebars,depth0,helpers,partials,data) {
   this.compilerInfo = [4,'>= 1.0.0'];
 helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
   var stack1, functionType="function", escapeExpression=this.escapeExpression, self=this;
