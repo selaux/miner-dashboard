@@ -10,7 +10,7 @@ var _ = require('lodash'),
     },
     btcPerBlockAnswer = 25,
     probabilityAnswer = 0.01,
-    blockchainInfo = SandboxedModule.require('../../../../lib/technical/blockchainInfo', {
+    BlockchainInfo = SandboxedModule.require('../../../../../lib/modules/technical/blockchainInfo', {
         requires: {
             'request': function (options, callback) {
                 var response;
@@ -30,23 +30,27 @@ var _ = require('lodash'),
                     throw new Error('Unmatched uri: ' + options.uri);
                 }
 
-                callback(null, {
-                    body: response
-                });
+                setTimeout(function () {
+                    callback(null, {
+                        body: response
+                    });
+                }, 20);
             }
         }
     });
 
-describe('middleware/technical/blockchainInfo', function () {
+describe('modules/technical/blockchainInfo', function () {
 
-    it('should get data from blockchainInfo correctly', function () {
-        var data = {};
-        blockchainInfo()(data, function (err) {
-            expect(err).not.to.be.ok;
-            expect(data.technical).to.deep.equal(_.extend({}, statsAnswer, {
+    it('should get data from blockchainInfo correctly', function (done) {
+        var app = {},
+            blockchainInfo = new BlockchainInfo(app);
+
+        blockchainInfo.on('update:data', function (data) {
+            expect(data).to.deep.equal(_.extend({}, statsAnswer, {
                 btcPerBlock: btcPerBlockAnswer,
                 probability: probabilityAnswer
             }));
+            done();
         });
     });
 
