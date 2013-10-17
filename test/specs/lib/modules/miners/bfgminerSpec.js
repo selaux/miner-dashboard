@@ -43,23 +43,21 @@ var EventEmitter = require('events').EventEmitter,
         ]
     }) + '\x00',
     expectedStatusUpdate = {
-        miner: {
-            connected: true,
-            description: 'test miner 0.1',
-            avgHashrate: 12.000,
-            hardwareErrors: 10,
-            shares: {
-                accepted: 0,
-                rejected: 14,
-                best: 1,
-                stale: 16,
-                discarded: 5
-            },
-            difficulty: {
-                accepted: 2.0,
-                rejected: 3.0,
-                stale: 4.0,
-            }
+        connected: true,
+        description: 'test miner 0.1',
+        avgHashrate: 12.000,
+        hardwareErrors: 10,
+        shares: {
+            accepted: 0,
+            rejected: 14,
+            best: 1,
+            stale: 16,
+            discarded: 5
+        },
+        difficulty: {
+            accepted: 2.0,
+            rejected: 3.0,
+            stale: 4.0,
         }
     },
 
@@ -133,10 +131,8 @@ describe('modules/miners/bfgminer', function () {
 
         bfgAdapter.on('update:data', function (data) {
             expect(data).to.deep.equal({
-                miner: {
-                    connected: false,
-                    error: 'Error: Test Error'
-                }
+                connected: false,
+                error: 'Error: Test Error'
             });
             bfgAdapter.removeAllListeners();
             done();
@@ -159,18 +155,14 @@ describe('modules/miners/bfgminer', function () {
             statusUpdate = statusUpdate + 1;
             if (statusUpdate === 1) {
                 expect(data).to.deep.equal({
-                    miner: {
-                        connected: false,
-                        error: 'Error: Test Error 1'
-                    }
+                    connected: false,
+                    error: 'Error: Test Error 1'
                 });
             }
             if (statusUpdate === 2) {
                 expect(data).to.deep.equal({
-                    miner: {
-                        connected: false,
-                        error: 'Error: Test Error 2'
-                    }
+                    connected: false,
+                    error: 'Error: Test Error 2'
                 });
             }
             if (statusUpdate === 3) {
