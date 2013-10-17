@@ -1,12 +1,18 @@
 'use strict';
 
-var chai = require('chai'),
+var fs = require('fs'),
+    path = require('path'),
+
+    chai = require('chai'),
     expect = chai.expect,
     _ = require('lodash'),
 
     sinon = require('sinon'),
     sinonChai = require('sinon-chai'),
 
+    Handlebars = require('handlebars'),
+    noDataTemplate = Handlebars.compile(fs.readFileSync(path.join(__dirname, '/../../../templates/noData.hbs')).toString()),
+    jsonTemplate = Handlebars.compile(fs.readFileSync(path.join(__dirname, '/../../../templates/json.hbs')).toString()),
     Module = require('../../../lib/Module');
 
 chai.use(sinonChai);
@@ -32,15 +38,49 @@ describe('Module', function () {
 
             Module.prototype.defaults = { some: 'defaults' };
             Module.prototype.initialize = sinon.spy();
+            Module.prototype.title = 'some title';
 
             module = new Module(app, config);
 
             expect(module.app).to.equal(app);
             expect(module.config).to.deep.equal({ other: 'config', some: 'defaults' });
             expect(module.initialize).to.have.been.calledOnce;
+            expect(module.view).to.deep.equal(noDataTemplate({
+                id: module.id,
+                title: module.title
+            }));
 
             Module.prototype.defaults = oldDefaults;
             Module.prototype.initialize = oldInitialize;
+            delete Module.prototype.title;
+        });
+    });
+
+    describe('renderViewWithoutData', function () {
+        it('should render the default no-data view', function () {
+            var module = new Module();
+
+            module.id = 'foo';
+            module.title = 'bar';
+            expect(module.renderViewWithoutData()).to.deep.equal(noDataTemplate({
+                id: module.id,
+                title: module.title
+            }));
+        });
+    });
+
+    describe('renderView', function () {
+        it('should render a json representation of the data by default', function () {
+            var module = new Module();
+
+            module.id = 'foo';
+            module.title = 'bar';
+            module.data = { some: 'json', data: 'of', the: 'module' },
+            expect(module.renderView()).to.deep.equal(jsonTemplate({
+                id: module.id,
+                title: module.title,
+                json: JSON.stringify(module.data)
+            }));
         });
     });
 
@@ -60,15 +100,14 @@ describe('Module', function () {
 
     describe('updateView', function () {
         it('should retrigger the event on the instance', function (done) {
-            var module = new Module(),
-                newView = [ { some: 'view' } ];
+            var module = new Module();
 
             module.on('update:view', function (view) {
-                expect(view).to.deep.equal(newView);
+                expect(view).to.be.ok;
                 done();
             });
 
-            module.updateView(newView);
+            module.updateView();
         });
     });
 });

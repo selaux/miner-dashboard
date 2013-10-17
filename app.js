@@ -4,6 +4,7 @@ var _ = require('lodash'),
     config = require('./config/config.js'),
     webinterface = require('./frontend/webinterface'),
     webinterfaceDefaults = {
+        id: '__webinterface__',
         module: webinterface,
         port: 3000
     },

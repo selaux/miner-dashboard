@@ -15,19 +15,23 @@ describe('App', function () {
 
     describe('constructor', function () {
 
-        it('should add a static title view when a title is configured', function () {
+        it('should set a static title if one is configured', function () {
             var app = new App({ title: 'Some Title' });
 
-            expect(app.staticViews.before).to.deep.equal([
-                {
-                    type: 'h1',
-                    value: 'Some Title'
-                }
-            ]);
+            expect(app.title).to.deep.equal('Some Title');
+        });
+
+        it('should set a default title if one is configured', function () {
+            var app = new App({});
+
+            expect(app.title).to.deep.equal('Miner-Dashboard');
         });
 
         it('should initialize the modules inside the modules array', function () {
-            var module = new EventEmitter(),
+            var module = new EventEmitter({
+                    wildcard: true,
+                    delimiter: '::'
+                }),
                 constructorStub = sinon.stub().returns(module),
                 moduleConfig = {
                     id: 'someid',
@@ -47,7 +51,10 @@ describe('App', function () {
             var constructorStub = function (app, config) {
                     expect(app).to.be.ok;
                     expect(config.id).to.be.ok;
-                    return new EventEmitter();
+                    return new EventEmitter({
+                        wildcard: true,
+                        delimiter: '::'
+                    });
                 },
                 moduleConfig = {
                     module: constructorStub
@@ -60,7 +67,10 @@ describe('App', function () {
         });
 
         it('should setup a listener the update:data event', function (done) {
-            var module = new EventEmitter(),
+            var module = new EventEmitter({
+                    wildcard: true,
+                    delimiter: '::'
+                }),
                 constructorStub = sinon.stub().returns(module),
                 moduleConfig = {
                     id: 'someid',
@@ -83,7 +93,10 @@ describe('App', function () {
         });
 
         it('should setup a listener the update:view event', function (done) {
-            var module = new EventEmitter(),
+            var module = new EventEmitter({
+                    wildcard: true,
+                    delimiter: '::'
+                }),
                 constructorStub = sinon.stub().returns(module),
                 moduleConfig = {
                     id: 'someid',
@@ -93,18 +106,34 @@ describe('App', function () {
                 app = new App({
                     modules: [moduleConfig]
                 }),
-                newView = [
-                    { some: 'view' }
-                ];
+                newView = 'Some new data';
 
             app.on('update:view:someid', function (data) {
                 expect(data).to.deep.equal(newView);
                 done();
             });
             
-            module.emit('update:view', newView);
+            module.view = newView;
+            module.emit('update:view');
         });
 
+    });
+
+    describe('getViews', function () {
+        it('should return the views of all modules', function () {
+            var app = new App({});
+
+            app.modules = [
+                { view: 'Some rendered <html>' },
+                { view: 'Other rendered html' },
+                { id: '__webinterface__' }
+            ];
+
+            expect(app.getViews()).to.deep.equal([
+                'Some rendered <html>',
+                'Other rendered html'
+            ]);
+        });
     });
 
     describe('updateData', function () {

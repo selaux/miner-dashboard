@@ -8,16 +8,20 @@
             'max reconnection attempts': Infinity
         });
 
-        socket.on('statusUpdate', function (data) {
-            document.getElementById('updated').innerHTML = window.templates['views/partials/contents.hbs'](data);
+        socket.on('update:view', function (id, data) {
+            var div = document.createElement('div'),
+                element = document.getElementById(id);
+            div.innerHTML = data;
+
+            element.parentNode.replaceChild(div.firstChild, element);
+        });
+
+        socket.on('connect', function () {
+            document.getElementById('backend-connection').innerHTML = '';
         });
 
         socket.on('disconnect', function () {
-            document.getElementById('updated').innerHTML = window.templates['views/partials/contents.hbs']({
-                miner: {
-                    connected: false
-                }
-            });
+            document.getElementById('backend-connection').innerHTML = 'Backend Disconnected';
         });
     }
 

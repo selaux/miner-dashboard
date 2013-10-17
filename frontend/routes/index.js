@@ -1,10 +1,13 @@
 'use strict';
 
-var collectData = require('../../lib/utils/collectData');
+module.exports = function (webinterface) {
+    webinterface.get('/', function(req, res) {
+        var app = webinterface.get('app');
 
-module.exports = function (app) {
-    app.get('/', exports.index = function(req, res) {
-        res.render('index', collectData(app));
+        res.render('index', {
+            title: app.title,
+            allViews: app.getViews().join('')
+        });
     });
 };
 

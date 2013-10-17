@@ -92,7 +92,7 @@ netEmitter.write = function (data) {
     this.emit('stub:write', JSON.parse(data));
 };
 
-describe('modules//bfgminer', function () {
+describe('modules/miners/bfgminer', function () {
     afterEach(function () {
         netEmitter.removeAllListeners();
     });

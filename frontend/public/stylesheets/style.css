@@ -7,3 +7,6 @@ body {
 a {
   color: #00b7ff;
 }
+#modules .panel .panel-body {
+  word-break: break-all;
+}

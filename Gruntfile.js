@@ -19,7 +19,6 @@ module.exports = function (grunt) {
                 files: {
                     src: [
                         'frontend/public/**/*.js',
-                        '!frontend/public/javascripts/build/**/*.js',
                         '!frontend/public/javascripts/vendor/**/*.js'
                     ]
                 },
@@ -40,21 +39,8 @@ module.exports = function (grunt) {
                     'test/specs/**/*.js'
                 ]
             }
-        },
-
-        handlebars: {
-            client: {
-                options: {
-                    partialsUseNamespace: true,
-                    namespace: 'templates',
-                },
-                files: {
-                    'frontend/public/javascripts/build/templates.js': [
-                        'frontend/views/partials/contents.hbs'
-                    ]
-                }
-            }
         }
+
     });
 
     grunt.loadNpmTasks('grunt-contrib-jshint');

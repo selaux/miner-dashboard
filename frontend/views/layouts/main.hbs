@@ -1,22 +1,20 @@
 <!DOCTYPE html>
     <head>
         <meta charset="utf-8">
-        <title>{{config.title}} - Miner-Dashboard</title>
+        <title>{{title}} - Miner-Dashboard</title>
         <meta name="description" content="">
         <meta name="viewport" content="width=device-width, initial-scale=1">
 
         <link rel="stylesheet" href="/stylesheets/style.css">
     </head>
     <body>
-        <h1>{{config.title}}</h1>
+        <h1>{{title}}</h1>
 
         <div id="contents">
             {{{body}}}
         </div>
 
         <script src="/javascripts/vendor/socket.io.min.js"></script>
-        <script src="/javascripts/vendor/handlebars.runtime.js"></script>
-        <script src="/javascripts/build/templates.js"></script>
         <script src="/javascripts/main.js"></script>
     </body>
 </html>

@@ -2,45 +2,64 @@
 
 var express = require('express'),
     exphbs  = require('express3-handlebars'),
-    routes = require('./frontend/routes'),
+    routes = require('./routes'),
     http = require('http'),
     path = require('path'),
-    server,
-    io;
+
+    Module = require('../lib/Module');
 
 // TODO: Logging
-module.exports = function (app, config) {
-    var webinterface = express();
+module.exports = Module.extend({
 
-    webinterface.configure(function(){
-        webinterface.set('port', config.port);
-        webinterface.set('views', __dirname + '/frontend/views');
-        webinterface.engine('hbs', exphbs({
-            layoutsDir: 'frontend/views/layouts/',
-            partialsDir: 'frontend/views/partials/',
-            defaultLayout: 'main',
-            extname: '.hbs'
-        }));
-        webinterface.set('view engine', 'hbs');
-        webinterface.set('config', config);
-        webinterface.use(express.favicon('frontend/public/images/favicon.ico'));
-        webinterface.use(express.logger('dev'));
-        webinterface.use(express.bodyParser());
-        webinterface.use(express.methodOverride());
-        webinterface.use(webinterface.router);
+    defaults: {
+        port: 3000
+    },
 
-        webinterface.use(require('stylus').middleware(__dirname + '/public'));
-        webinterface.use(express.static(path.join(__dirname, '/public')));
-    });
+    initialize: function () {
+        var self = this,
+            webinterface = express();
 
-    webinterface.configure('development', function(){
-        webinterface.use(express.errorHandler());
-    });
+        webinterface.configure(function () {
+            webinterface.set('port', self.config.port);
 
-    routes(webinterface);
+            webinterface.set('views', path.join(__dirname, '/views'));
+            webinterface.engine('hbs', exphbs({
+                layoutsDir: path.join(__dirname, '/views/layouts/'),
+                partialsDir: path.join(__dirname, '/views/partials/'),
+                defaultLayout: 'main',
+                extname: '.hbs'
+            }));
+            webinterface.set('view engine', 'hbs');
 
-    server = http.createServer(webinterface).listen(webinterface.get('port'), function(){
-        io = require('socket.io').listen(server, { log: false });
-        console.log('Express and Websocket server listening on port ' + webinterface.get('port'));
-    });
-};
+            webinterface.set('config', self.config);
+            webinterface.set('app', self.app);
+
+            webinterface.use(express.favicon(path.join(__dirname, '/public/images/favicon.ico')));
+            webinterface.use(express.logger('dev'));
+            webinterface.use(express.bodyParser());
+            webinterface.use(express.methodOverride());
+            webinterface.use(webinterface.router);
+
+            webinterface.use(require('stylus').middleware(path.join(__dirname, '/public')));
+            webinterface.use(express.static(path.join(__dirname, '/public')));
+        });
+
+        webinterface.configure('development', function(){
+            webinterface.use(express.errorHandler());
+        });
+
+        routes(webinterface);
+
+        self.server = http.createServer(webinterface).listen(webinterface.get('port'), function(){
+            self.io = require('socket.io').listen(self.server, { log: false });
+            console.log('Express and Websocket server listening on port ' + webinterface.get('port'));
+
+            self.app.modules.forEach(function (module) {
+                module.on('update:view', function (view) {
+                    self.io.sockets.emit('update:view', module.id, view);
+                });
+            });
+        });
+    }
+
+});
