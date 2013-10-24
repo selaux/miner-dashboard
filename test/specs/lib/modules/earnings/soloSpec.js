@@ -44,6 +44,26 @@ describe('modules/earnings/solo', function () {
         app.emit('update:data:minerId', { avgHashrate: 1e-6 });
     });
 
+    it('should calculate earnings when miner is not connected', function (done) {
+        var setup = setUp(),
+            app = setup.app,
+            solo = setup.module;
+
+        solo.marketData = { ask: 100, currency: 'NMC' };
+        solo.technicalData = { btcPerBlock: 10, probability: 0.0001 };
+
+        solo.on('update:data', function (data) {
+            expect(data).to.deep.equal({
+                value: 0,
+                currency: 'NMC',
+                interval: 'Day'
+            });
+            done();
+        });
+
+        app.emit('update:data:minerId', { connected: false });
+    });
+
     it('should calculate earnings when market prices are updated', function (done) {
         var setup = setUp(),
             app = setup.app,
