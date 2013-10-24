@@ -45,4 +45,14 @@ describe('modules/market/bitcoincharts', function () {
         });
     });
 
+    it('should set the title correctly', function () {
+        var app = {},
+            config = {
+                symbol: 'wantedSymbol'
+            },
+            bitcoincharts = new Bitcoincharts(app, config);
+
+        expect(bitcoincharts.title).to.equal('Market @ Bitcoin Charts: wantedSymbol');
+    });
+
 });

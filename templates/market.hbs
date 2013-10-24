@@ -1,4 +1,4 @@
-<div class="earnings" id="{{ id }}">
+<div class="market" id="{{ id }}">
     <div class="panel panel-success">
         <div class="panel-heading">
             <div class="row">
@@ -7,8 +7,12 @@
         </div>
         <div class="panel-body">
             <dl class="dl-horizontal">
-                <dt class="big-label">Earnings:</dt>
-                <dd class="big">{{value}} {{currency}}/{{interval}}</dd>
+                <dt class="big-label">Latest Trade:</dt>
+                <dd class="big">{{close}} {{currency}}</dd>
+                <dt>Best Bid:</dt>
+                <dd>{{bid}} {{currency}}</dd>
+                <dt>Best Ask:</dt>
+                <dd>{{ask}} {{currency}}</dd>
             </dl>
         </div> 
     </div>
