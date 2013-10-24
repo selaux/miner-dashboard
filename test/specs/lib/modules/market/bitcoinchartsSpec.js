@@ -6,10 +6,16 @@ var chai = require('chai'),
 
     bitcoinChartsAnswer = [
         {
-            symbol: 'otherSymbol'
+            symbol: 'otherSymbol',
+            ask: 14,
+            bid: 13,
+            close: 12
         },
         {
-            symbol: 'wantedSymbol'
+            symbol: 'wantedSymbol',
+            ask: 14,
+            bid: 13,
+            close: 12
         }
     ],
     Bitcoincharts = SandboxedModule.require('../../../../../lib/modules/markets/bitcoincharts', {
@@ -39,7 +45,10 @@ describe('modules/market/bitcoincharts', function () {
 
         bitcoincharts.on('update:data', function (data) {
             expect(data).to.deep.equal({
-                symbol: 'wantedSymbol'
+                symbol: 'wantedSymbol',
+                ask: 14,
+                bid: 13,
+                close: 12
             });
             done();
         });
@@ -52,7 +61,7 @@ describe('modules/market/bitcoincharts', function () {
             },
             bitcoincharts = new Bitcoincharts(app, config);
 
-        expect(bitcoincharts.title).to.equal('Market @ Bitcoin Charts: wantedSymbol');
+        expect(bitcoincharts.title).to.equal('wantedSymbol Market @ Bitcoin Charts');
     });
 
 });
