@@ -54,4 +54,11 @@ describe('modules/technical/blockchainInfo', function () {
         });
     });
 
+    it('should have the title set correctly', function () {
+        var app = {},
+            blockchainInfo = new BlockchainInfo(app);
+
+        expect(blockchainInfo.title).to.equal('Blockchain.info');
+    });
+
 });
