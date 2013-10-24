@@ -173,4 +173,18 @@ describe('modules/miners/bfgminer', function () {
         });
     });
 
+    it('should use the id as a title when no title is set', function () {
+        var app = {},
+            bfgAdapter = new BfgAdapter(app, { id: 'someId' });
+
+        expect(bfgAdapter.title).to.equal('someId');
+    });
+
+    it('should use the id as a title when no title is set', function () {
+        var app = {},
+            bfgAdapter = new BfgAdapter(app, { title: 'Some Title' });
+
+        expect(bfgAdapter.title).to.equal('Some Title');
+    });
+
 });

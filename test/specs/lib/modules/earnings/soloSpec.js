@@ -104,4 +104,24 @@ describe('modules/earnings/solo', function () {
         app.emit('update:data:technicalId', { btcPerBlock: 10, probability: 0.0001 });
     });
 
+    it('should set the title to "Earnings" when no title is set in config', function () {
+        var app = {
+                on: function () {}
+            },
+            solo = new Solo(app, {});
+
+        expect(solo.title).to.equal('Earnings');
+    });
+
+    it('should set the title to config.title when it is set', function () {
+        var app = {
+                on: function () {}
+            },
+            solo = new Solo(app, {
+                title: 'Some Title'
+            });
+
+        expect(solo.title).to.equal('Some Title');
+    });
+
 });
