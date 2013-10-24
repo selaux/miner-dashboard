@@ -7,6 +7,7 @@ var EventEmitter = require('events').EventEmitter,
     sinon = require('sinon'),
     sinonChai = require('sinon-chai'),
 
+    Module = require('../../../lib/Module'),
     App = require('../../../lib/App');
 
 chai.use(sinonChai);
@@ -47,23 +48,16 @@ describe('App', function () {
             expect(constructorStub).to.have.been.calledWith(app, moduleConfig);
         });
 
-        it('should set an uuid as moduleId for the modules that dont have an id', function () {
-            var constructorStub = function (app, config) {
-                    expect(app).to.be.ok;
-                    expect(config.id).to.be.ok;
-                    return new EventEmitter({
-                        wildcard: true,
-                        delimiter: '::'
-                    });
-                },
-                moduleConfig = {
-                    module: constructorStub
+        it('should set a reproducable hash as moduleId for the modules that dont have an id', function () {
+            var moduleConfig = {
+                    module: function (app, config) { return new Module(app, config); }
                 },
                 app = new App({
                     modules: [moduleConfig]
                 });
 
             expect(app).to.be.ok;
+            expect(app.modules[0].id).to.equal('72c8061bc4e6ff90df26bdc3003327ed60e02d7d');
         });
 
         it('should setup a listener the update:data event', function (done) {
