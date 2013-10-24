@@ -21,7 +21,7 @@
         });
 
         socket.on('disconnect', function () {
-            document.getElementById('backend-connection').innerHTML = 'Backend Disconnected';
+            document.getElementById('backend-connection').innerHTML = '<div class="alert alert-danger row"><strong>Error:</strong> Backend Disconnected</div>';
         });
     }
 
