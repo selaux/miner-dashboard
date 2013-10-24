@@ -13,11 +13,11 @@ dt {
 #modules .panel .panel-body {
   word-break: break-all;
 }
-#modules .miner .hashrate-label {
+#modules .big-label {
   vertical-align: bottom;
   line-height: 30px;
 }
-#modules .miner .hashrate {
+#modules .big {
   margin-bottom: 10px;
   font-size: 30px;
   line-height: 30px;
