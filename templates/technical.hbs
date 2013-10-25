@@ -1,37 +1,27 @@
-<div class="technical" id="{{ id }}">
-    <div class="panel panel-success">
-        <div class="panel-heading">
-            <div class="row">
-                <h2 class="panel-title col-xs-6">{{ title }}</h2>
-            </div>
-        </div>
+<section class="technical panel panel-success" id="{{ id }}">
+        <header class="panel-heading">
+            <h2 class="panel-title">{{ title }}</h2>
+        </header>
         <div class="panel-body row">
-            <div class="col-xs-12 col-md-4">
-                <dl class="dl-horizontal">
-                    <dt>Total Hashrate:</dt>
-                    <dd>{{hash_rate}} GH/s</dd>
-                    <dt>Difficulty:</dt>
-                    <dd>{{difficulty}}</dd>
-                </dl>
-            </div>
-            <div class="col-xs-12 col-md-4">
-                <dl class="dl-horizontal">
-                    <dt>Blocks Mined:</dt>
-                    <dd>{{n_blocks_mined}}</dd>
-                    <dt>Time between Blocks:</dt>
-                    <dd>{{minutes_between_blocks}} Minutes</dd>
-                </dl>
-            </div>
-            <div class="col-xs-12 col-md-4">
-                <dl class="dl-horizontal">
-                    <dt>Number of Transactions:</dt>
-                    <dd>{{n_tx}}</dd>
-                    <dt>Total Output Volume:</dt>
-                    <dd>{{total_btc_sent}} BTC</dd>
-                    <dt>Estimated Transaction Volume:</dt>
-                    <dd>{{estimated_btc_sent}} BTC</dd>
-                </dl>
-            </div>
+            <dl class="dl-horizontal col-xs-12 col-md-4">
+                <dt>Total Hashrate:</dt>
+                <dd>{{hash_rate}} GH/s</dd>
+                <dt>Difficulty:</dt>
+                <dd>{{difficulty}}</dd>
+            </dl>
+            <dl class="dl-horizontal col-xs-12 col-md-4">
+                <dt>Blocks Mined:</dt>
+                <dd>{{n_blocks_mined}}</dd>
+                <dt>Time between Blocks:</dt>
+                <dd>{{minutes_between_blocks}} Minutes</dd>
+            </dl>
+            <dl class="dl-horizontal col-xs-12 col-md-4">
+                <dt>Number of Transactions:</dt>
+                <dd>{{n_tx}}</dd>
+                <dt>Total Output Volume:</dt>
+                <dd>{{total_btc_sent}} BTC</dd>
+                <dt>Estimated Transaction Volume:</dt>
+                <dd>{{estimated_btc_sent}} BTC</dd>
+            </dl>
         </div> 
-    </div>
-</div>
+</section>

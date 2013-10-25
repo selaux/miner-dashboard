@@ -1,58 +1,50 @@
-<div class="miner" id="{{ id }}">
-    <div class="panel {{#if connected}}panel-success{{else}}panel-danger{{/if}}">
-        <div class="panel-heading">
-            <div class="row">
-                <h2 class="panel-title col-xs-6">{{ title }}</h2>
-                <div class="col-xs-6"><span class="pull-right">{{#if connected}}Connected{{else}}Disconnected{{/if}}</span></div>
-            </div>
+<section class="miner panel {{#if connected}}panel-success{{else}}panel-danger{{/if}}" id="{{ id }}">
+    <header class="panel-heading">
+        <div class="row">
+            <h2 class="panel-title col-xs-6">{{ title }}</h2>
+            <div class="col-xs-6"><span class="pull-right">{{#if connected}}Connected{{else}}Disconnected{{/if}}</span></div>
         </div>
-        {{#if connected}}
-            <div class="panel-body row">
-                <div class="col-xs-12 col-md-4">
-                    <dl class="dl-horizontal">
-                        <dt class="big-label">Hashrate:</dt>
-                        <dd class="big">{{avgHashrate}} MH/s</dd>
-                        <dt></dt>
-                        <dd></dd>
-                        <dt>Hardware Errors:</dt>
-                        <dd>{{ hardwareErrors }}</dd>
-                        <dt>Hardware Error Rate:</dt>
-                        <dd>{{ hardwareErrorRate }}%</dd>
-                        <dt>Software:</dt>
-                        <dd>{{description}}</dd>
-                    </dl>
-                </div>
-                <div class="col-xs-12 col-md-4">
-                    <dl class="dl-horizontal">
-                        <dt>Accepted Shares:</dt>
-                        <dd>{{ shares.accepted }}</dd>
-                        <dt>Rejected Shares:</dt>
-                        <dd>{{ shares.rejected }}</dd>
-                        <dt>Stale Shares:</dt>
-                        <dd>{{ shares.stale }}</dd>
-                        <dt>Discarded Shares:</dt>
-                        <dd>{{ shares.discarded }}</dd>
-                        <dt>Difficulty Accepted:</dt>
-                        <dd>{{ difficulty.accepted }}</dd>
-                        <dt>Difficulty Rejected:</dt>
-                        <dd>{{ difficulty.rejected }}</dd>
-                        <dt>Difficulty Stale:</dt>
-                        <dd>{{ difficulty.stale }}</dd>
-                    </dl>
-                </div>
-                <div class="col-xs-12 col-md-4">
-                    <dl class="dl-horizontal">
-                        {{#each devices}}
-                            <dt>Device {{id}}: {{description}}</dt>
-                            {{#if connected}}
-                                <dd class="text-success">{{avgHashrate}} MH/s @ {{hardwareErrorRate}}% HW Errors</dd>
-                            {{else}}
-                                <dd class="text-danger">Disconnected</dd>
-                            {{/if}}
-                        {{/each}} 
-                    </dl>
-                </div>
-            </div>
-        {{/if}}   
-    </div>
-</div>
+    </header>
+    {{#if connected}}
+        <div class="panel-body row">
+            <dl class="dl-horizontal col-xs-12 col-md-4">
+                <dt class="big-label">Hashrate:</dt>
+                <dd class="big">{{avgHashrate}} MH/s</dd>
+                <dt></dt>
+                <dd></dd>
+                <dt>Hardware Errors:</dt>
+                <dd>{{ hardwareErrors }}</dd>
+                <dt>Hardware Error Rate:</dt>
+                <dd>{{ hardwareErrorRate }}%</dd>
+                <dt>Software:</dt>
+                <dd>{{description}}</dd>
+            </dl>
+            <dl class="dl-horizontal col-xs-12 col-md-4">
+                <dt>Accepted Shares:</dt>
+                <dd>{{ shares.accepted }}</dd>
+                <dt>Rejected Shares:</dt>
+                <dd>{{ shares.rejected }}</dd>
+                <dt>Stale Shares:</dt>
+                <dd>{{ shares.stale }}</dd>
+                <dt>Discarded Shares:</dt>
+                <dd>{{ shares.discarded }}</dd>
+                <dt>Difficulty Accepted:</dt>
+                <dd>{{ difficulty.accepted }}</dd>
+                <dt>Difficulty Rejected:</dt>
+                <dd>{{ difficulty.rejected }}</dd>
+                <dt>Difficulty Stale:</dt>
+                <dd>{{ difficulty.stale }}</dd>
+            </dl>
+            <dl class="dl-horizontal col-xs-12 col-md-4">
+                {{#each devices}}
+                    <dt>Device {{id}}: {{description}}</dt>
+                    {{#if connected}}
+                        <dd class="text-success">{{avgHashrate}} MH/s @ {{hardwareErrorRate}}% HW Errors</dd>
+                    {{else}}
+                        <dd class="text-danger">Disconnected</dd>
+                    {{/if}}
+                {{/each}} 
+            </dl>
+        </div>
+    {{/if}}   
+</section>
