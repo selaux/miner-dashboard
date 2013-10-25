@@ -14,7 +14,9 @@
                         <dt></dt>
                         <dd></dd>
                         <dt>Hardware Errors:</dt>
-                        <dd>{{ hardwareErrors }} ({{ hardwareErrorRate }}%)</dd>
+                        <dd>{{ hardwareErrors }}</dd>
+                        <dt>Hardware Error Rate:</dt>
+                        <dd>{{ hardwareErrorRate }}%</dd>
                         <dt>Software:</dt>
                         <dd>{{description}}</dd>
                     </dl>
@@ -29,16 +31,24 @@
                         <dd>{{ shares.stale }}</dd>
                         <dt>Discarded Shares:</dt>
                         <dd>{{ shares.discarded }}</dd>
-                    </dl>
-                </div>
-                <div class="col-xs-12 col-md-4">
-                    <dl class="dl-horizontal">
                         <dt>Difficulty Accepted:</dt>
                         <dd>{{ difficulty.accepted }}</dd>
                         <dt>Difficulty Rejected:</dt>
                         <dd>{{ difficulty.rejected }}</dd>
                         <dt>Difficulty Stale:</dt>
                         <dd>{{ difficulty.stale }}</dd>
+                    </dl>
+                </div>
+                <div class="col-xs-12 col-md-4">
+                    <dl class="dl-horizontal">
+                        {{#each devices}}
+                            <dt>Device {{id}}: {{description}}</dt>
+                            {{#if connected}}
+                                <dd class="text-success">{{avgHashrate}} MH/s @ {{hardwareErrorRate}}% HW Errors</dd>
+                            {{else}}
+                                <dd class="text-danger">Disconnected</dd>
+                            {{/if}}
+                        {{/each}} 
                     </dl>
                 </div>
             </div>

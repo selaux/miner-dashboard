@@ -5,8 +5,7 @@ var EventEmitter = require('events').EventEmitter,
     expect = chai.expect,
     SandboxedModule = require('sandboxed-module'),
 
-    netEmitter = new EventEmitter(),
-    minerResponse = JSON.stringify({
+    summaryResponse = JSON.stringify({
         STATUS: [
             {
                 Code: 1,
@@ -42,6 +41,26 @@ var EventEmitter = require('events').EventEmitter,
             }
         ]
     }) + '\x00',
+    devicesResponse = JSON.stringify({
+        DEVS: [
+            {
+                'Status': 'Alive',
+                'ID': 0,
+                'Name': 'One Mining Device',
+                'Hardware Errors': 1,
+                'Accepted': 2,
+                'MHS 300s': 3
+            },
+            {
+                'Status': 'Other Status',
+                'ID': 1,
+                'Name': 'Different Mining Device',
+                'Hardware Errors': 4,
+                'Accepted': 16,
+                'MHS 300s': 9
+            }
+        ]
+    }) + '\x00',
     expectedStatusUpdate = {
         connected: true,
         description: 'test miner 0.1',
@@ -59,24 +78,54 @@ var EventEmitter = require('events').EventEmitter,
             accepted: 2.0,
             rejected: 3.0,
             stale: 4.0,
-        }
+        },
+        devices: [
+            {
+                connected: true,
+                id: 0,
+                description: 'One Mining Device',
+                hardwareErrors: 1,
+                hardwareErrorRate: 0.5,
+                avgHashrate: 3
+            },
+            {
+                connected: false,
+                id: 1,
+                description: 'Different Mining Device',
+                hardwareErrors: 4,
+                hardwareErrorRate: 0.25,
+                avgHashrate: 9
+            }
+        ]
+    },
+
+    commandToData = {
+        summary: summaryResponse,
+        devs: devicesResponse
+    },
+
+    netEmitter,
+    netConnect = function (options, callback) {
+        var emitter = new EventEmitter();
+        
+        netEmitter = emitter;
+
+        emitter.write = function (written) {
+            written = JSON.parse(written);
+            setTimeout(function () {
+                emitter.emit('data', commandToData[written.command]);
+                emitter.emit('end');
+            }, 50);
+        };
+        setTimeout(callback, 10);
+
+        return emitter;
     },
 
     BfgAdapter = SandboxedModule.require('../../../../../lib/modules/miners/bfgminer', {
         requires: {
             'net': {
-                connect: function (options, callback) {
-                    netEmitter.removeAllListeners();
-                    netEmitter.on('stub:write', function (data) {
-                        expect(data.command).to.equal('summary');
-                        setTimeout(function () {
-                            netEmitter.emit('data', minerResponse);
-                            netEmitter.emit('end');
-                        }, 50);
-                    });
-                    setTimeout(callback, 10);
-                    return netEmitter;
-                }
+                connect: netConnect
             }
         }
     }),
@@ -87,11 +136,8 @@ var EventEmitter = require('events').EventEmitter,
         interval: 500
     };
 
-netEmitter.write = function (data) {
-    this.emit('stub:write', JSON.parse(data));
-};
-
 describe('modules/miners/bfgminer', function () {
+
     afterEach(function () {
         netEmitter.removeAllListeners();
     });
@@ -140,7 +186,7 @@ describe('modules/miners/bfgminer', function () {
         });
     });
 
-    it('should continue requesting the status after an error occured on a status update', function (done) {
+    it('should continue requesting the status after an error occured on connection', function (done) {
         var app = {},
             bfgAdapter = new BfgAdapter(app, config),
             statusUpdate = 0;
@@ -148,8 +194,30 @@ describe('modules/miners/bfgminer', function () {
         setTimeout(function () {
             netEmitter.emit('error', new Error('Test Error 1'));
         }, 1);
+
+        bfgAdapter.on('update:data', function (data) {
+            statusUpdate = statusUpdate + 1;
+            if (statusUpdate === 1) {
+                expect(data).to.deep.equal({
+                    connected: false,
+                    error: 'Error: Test Error 1'
+                });
+            }
+            if (statusUpdate === 2) {
+                expect(data).to.deep.equal(expectedStatusUpdate);
+                bfgAdapter.removeAllListeners();
+                done();
+            }
+        });
+    });
+
+    it('should continue requesting the status after an error occured on a status update', function (done) {
+        var app = {},
+            bfgAdapter = new BfgAdapter(app, config),
+            statusUpdate = 0;
+
         setTimeout(function () {
-            netEmitter.emit('error', new Error('Test Error 2'));
+            netEmitter.emit('error', new Error('Test Error 1'));
         }, 25);
 
         bfgAdapter.on('update:data', function (data) {
@@ -161,12 +229,6 @@ describe('modules/miners/bfgminer', function () {
                 });
             }
             if (statusUpdate === 2) {
-                expect(data).to.deep.equal({
-                    connected: false,
-                    error: 'Error: Test Error 2'
-                });
-            }
-            if (statusUpdate === 3) {
                 expect(data).to.deep.equal(expectedStatusUpdate);
                 bfgAdapter.removeAllListeners();
                 done();
