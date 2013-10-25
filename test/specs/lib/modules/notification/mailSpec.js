@@ -19,7 +19,7 @@ describe('modules/notification/mail', function () {
     beforeEach(function () {
         app = new EventEmitter();
         app.modules = [];
-        app.title: 'Some Title';
+        app.title = 'Some Title';
         nodemailerStub.createTransport = function () {};
     });
 
