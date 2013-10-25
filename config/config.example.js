@@ -15,15 +15,11 @@ module.exports = {
         {
             id: 'miner1',
             module: 'miners/bfgminer',
-            name: 'Some Device Name',
-            host: '127.0.0.1',
-            port: 4028,
-            interval: 2500
+            name: 'Some Device Name'
         },
         {
             id: 'market1',
-            module: 'markets/bitcoincharts',
-            symbol: 'mtgoxUSD'
+            module: 'markets/bitcoincharts'
         },
         {
             id: 'technical1',
