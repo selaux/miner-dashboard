@@ -21,7 +21,8 @@
         "grunt": "0.4.1",
         "grunt-cli": "0.1.9",
         "handlebars": "1.0.12",
-        "nodemailer": "0.5.3"
+        "nodemailer": "0.5.3",
+        "moment": "2.4.0"
     },
     "devDependencies": {
         "grunt-contrib-jshint": "0.6.3",

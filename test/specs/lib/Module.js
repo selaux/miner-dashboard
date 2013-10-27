@@ -6,6 +6,7 @@ var fs = require('fs'),
     chai = require('chai'),
     expect = chai.expect,
     _ = require('lodash'),
+    moment = require('moment'),
 
     sinon = require('sinon'),
     sinonChai = require('sinon-chai'),
@@ -79,6 +80,7 @@ describe('Module', function () {
             expect(module.renderView()).to.deep.equal(jsonTemplate({
                 id: module.id,
                 title: module.title,
+                lastUpdated: moment().format('YYYY-MM-DD, hh:mm:ss'),
                 json: JSON.stringify(module.data)
             }));
         });
