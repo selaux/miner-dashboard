@@ -7,7 +7,7 @@ module.exports = {
     },
     modules: [
         {
-            module: 'earnings/solo',
+            module: 'revenue/solo',
             miner: 'miner1',
             market: 'market1',
             technical: 'technical1'

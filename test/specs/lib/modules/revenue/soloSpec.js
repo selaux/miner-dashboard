@@ -5,9 +5,9 @@ var EventEmitter = require('events').EventEmitter,
     chai = require('chai'),
     expect = chai.expect,
 
-    Solo = require('../../../../../lib/modules/earnings/solo');
+    Solo = require('../../../../../lib/modules/revenue/solo');
 
-describe('modules/earnings/solo', function () {
+describe('modules/revenue/solo', function () {
 
     function setUp () {
         var app = new EventEmitter(),
@@ -24,7 +24,7 @@ describe('modules/earnings/solo', function () {
         };
     }
 
-    it('should calculate earnings when any miner hashrate is updated', function (done) {
+    it('should calculate revenue when any miner hashrate is updated', function (done) {
         var app = new EventEmitter(),
             config = {
                 miner: [ 'minerId1', 'minerId2' ],
@@ -51,7 +51,7 @@ describe('modules/earnings/solo', function () {
         app.emit('update:data:minerId2', { avgHashrate: 0.5 * 1e-6 });
     });
 
-    it('should calculate earnings when miner is not connected', function (done) {
+    it('should calculate revenue when miner is not connected', function (done) {
         var setup = setUp(),
             app = setup.app,
             solo = setup.module;
@@ -71,7 +71,7 @@ describe('modules/earnings/solo', function () {
         app.emit('update:data:minerId', { connected: false });
     });
 
-    it('should calculate earnings when market prices are updated', function (done) {
+    it('should calculate revenue when market prices are updated', function (done) {
         var setup = setUp(),
             app = setup.app,
             solo = setup.module;
@@ -91,7 +91,7 @@ describe('modules/earnings/solo', function () {
         app.emit('update:data:marketId', { ask: 100, currency: 'NMC' });
     });
 
-    it('should calculate earnings when technical info', function (done) {
+    it('should calculate revenue when technical info is updated', function (done) {
         var setup = setUp(),
             app = setup.app,
             solo = setup.module;
@@ -111,13 +111,13 @@ describe('modules/earnings/solo', function () {
         app.emit('update:data:technicalId', { btcPerBlock: 10, probability: 0.0001 });
     });
 
-    it('should set the title to "Earnings" when no title is set in config', function () {
+    it('should set the title to "Revenue" when no title is set in config', function () {
         var app = {
                 on: function () {}
             },
             solo = new Solo(app, {});
 
-        expect(solo.title).to.equal('Earnings');
+        expect(solo.title).to.equal('Revenue');
     });
 
     it('should set the title to config.title when it is set', function () {
