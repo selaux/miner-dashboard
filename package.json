@@ -1,7 +1,21 @@
 {
     "name": "miner-dashboard",
-    "version": "0.0.1",
+    "version": "0.1.0",
+    "author": "selaux <github@stefanlau.com>",
+    "description": "Show the current status of your bitcoin miner in a browser.",
+    "keywords": [
+        "bitcoin",
+        "pool",
+        "miner",
+        "mining",
+        "dashboard",
+        "monitoring"
+    ],
     "private": true,
+    "repository": {
+        "type": "git",
+        "url": "git://github.com/selaux/miner-dashboard.git"
+    },
     "scripts": {
         "start": "npm install --production && node app",
         "test": "node_modules/.bin/grunt test"
@@ -31,5 +45,9 @@
         "sinon": "1.7.3",
         "sinon-chai": "2.4.0",
         "sandboxed-module": "0.2.2"
+    },
+    "license": "MIT",
+    "engines": {
+        "node": ">=0.8"
     }
 }
