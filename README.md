@@ -33,7 +33,7 @@ cd miner-dashboard
 mv config/config.example.js config/config.js
 ```
 
-Step 3: Adapt `config/config.js` to match your mining setup
+Step 3: Adapt `config/config.js` to match your mining setup. The [Module List](https://github.com/selaux/miner-dashboard#modules) to shows available modules and how they are set up.
 
 Step 4: Start the application
 
