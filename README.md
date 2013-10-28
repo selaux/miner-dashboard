@@ -30,10 +30,10 @@ Step 2: Copy example configuration
 
 ```
 cd miner-dashboard
-mv config/config.example.json config/config.json
+mv config/config.example.js config/config.js
 ```
 
-Step 3: Adapt `config/config.json` to match your mining setup
+Step 3: Adapt `config/config.js` to match your mining setup
 
 Step 4: Start the application
 
