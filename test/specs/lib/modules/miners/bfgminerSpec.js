@@ -111,11 +111,19 @@ var EventEmitter = require('events').EventEmitter,
         netEmitter = emitter;
 
         emitter.write = function (written) {
+            var packet1,
+                packet2;
             written = JSON.parse(written);
+
+            packet1 = commandToData[written.command].slice(0,5);
+            packet2 = commandToData[written.command].slice(5);
             setTimeout(function () {
-                emitter.emit('data', commandToData[written.command]);
-                emitter.emit('end');
-            }, 50);
+                emitter.emit('data', packet1);
+                setTimeout(function () {
+                    emitter.emit('data', packet2);
+                    emitter.emit('end');
+                }, 5);
+            }, 45);
         };
         setTimeout(callback, 10);
 
