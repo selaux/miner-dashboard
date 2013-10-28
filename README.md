@@ -76,6 +76,12 @@ Note: Each module can have an unique id assigned in the configuration object, so
 
 If you want to support this project, donate to `1BPpoibyxd765qnPyfn4XtG18cTsRJfw1d`
 
+## Changelog
+
+#### 0.1.1
+- fixes #1: crash when log interval of cg/bfgminer is set to something else then 5min
+- fixes #2: crash when cg/bfgminer does not send full payload in a single packet
+
 ## License
 
 (The MIT License)

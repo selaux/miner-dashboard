@@ -1,6 +1,6 @@
 {
     "name": "miner-dashboard",
-    "version": "0.1.0",
+    "version": "0.1.1",
     "author": "selaux <github@stefanlau.com>",
     "description": "Show the current status of your bitcoin miner in a browser.",
     "keywords": [
