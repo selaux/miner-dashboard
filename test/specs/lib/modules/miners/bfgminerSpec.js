@@ -49,7 +49,7 @@ var EventEmitter = require('events').EventEmitter,
                 'Name': 'One Mining Device',
                 'Hardware Errors': 1,
                 'Accepted': 2,
-                'MHS 300s': 3
+                'MHS 100s': 3
             },
             {
                 'Status': 'Other Status',
