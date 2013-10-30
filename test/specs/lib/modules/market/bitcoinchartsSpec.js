@@ -27,6 +27,7 @@ var chai = require('chai'),
                 });
                 setTimeout(function () {
                     callback(null, {
+                        statusCode: 200,
                         body: bitcoinChartsAnswer
                     });
                 }, 20);
@@ -60,6 +61,24 @@ describe('modules/market/bitcoincharts', function () {
                     'request': function (options, callback) {
                         setTimeout(function () {
                             callback(new Error('Test Error'));
+                        }, 20);
+                    }
+                }
+            }),
+            bitcoincharts = new Bitcoincharts({}, {});
+
+        setTimeout(function () {
+            expect(bitcoincharts.data).not.to.be.ok;
+            done();
+        }, 50);
+    });
+
+    it('it should handle non 200 status codes', function (done) {
+        var Bitcoincharts = SandboxedModule.require('../../../../../lib/modules/markets/bitcoincharts', {
+                requires: {
+                    'request': function (options, callback) {
+                        setTimeout(function () {
+                            callback(null, { statusCode: 500 });
                         }, 20);
                     }
                 }
