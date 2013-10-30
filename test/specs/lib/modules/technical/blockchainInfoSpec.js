@@ -9,7 +9,7 @@ var _ = require('lodash'),
     statsAnswer = {
         some: 'stats'
     },
-    btcPerBlockAnswer = 25,
+    btcPerBlockAnswer = 2500000000,
     probabilityAnswer = 0.01,
     BlockchainInfo = SandboxedModule.require('../../../../../lib/modules/technical/blockchainInfo', {
         requires: {
@@ -35,15 +35,15 @@ describe('modules/technical/blockchainInfo', function () {
 
     beforeEach(function () {
         responses = {
-            'http://blockchain.info/de/stats?format=json': {
+            'http://blockchain.info/stats?format=json': {
                 statusCode: 200,
                 body: statsAnswer
             },
-            'http://blockchain.info/de/q/bcperblock': {
+            'http://blockchain.info/q/bcperblock': {
                 statusCode: 200,
                 body: btcPerBlockAnswer
             },
-            'http://blockchain.info/de/q/probability': {
+            'http://blockchain.info/q/probability': {
                 statusCode: 200,
                 body: probabilityAnswer
             }
@@ -56,8 +56,8 @@ describe('modules/technical/blockchainInfo', function () {
 
         blockchainInfo.on('update:data', function (data) {
             expect(data).to.deep.equal(_.extend({}, statsAnswer, {
-                btcPerBlock: btcPerBlockAnswer,
-                probability: probabilityAnswer
+                btcPerBlock: 25,
+                probability: 0.01
             }));
             done();
         });
@@ -67,7 +67,7 @@ describe('modules/technical/blockchainInfo', function () {
         var app = {},
             blockchainInfo;
 
-        responses['http://blockchain.info/de/stats?format=json'] = null;
+        responses['http://blockchain.info/stats?format=json'] = null;
 
         blockchainInfo = new BlockchainInfo(app);
 
@@ -81,7 +81,7 @@ describe('modules/technical/blockchainInfo', function () {
         var app = {},
             blockchainInfo;
 
-        responses['http://blockchain.info/de/q/bcperblock'] = null;
+        responses['http://blockchain.info/q/bcperblock'] = null;
 
         blockchainInfo = new BlockchainInfo(app);
 
@@ -95,7 +95,7 @@ describe('modules/technical/blockchainInfo', function () {
         var app = {},
             blockchainInfo;
 
-        responses['http://blockchain.info/de/q/probability'] = null;
+        responses['http://blockchain.info/q/probability'] = null;
 
         blockchainInfo = new BlockchainInfo(app);
 
@@ -109,7 +109,7 @@ describe('modules/technical/blockchainInfo', function () {
         var app = {},
             blockchainInfo;
 
-        responses['http://blockchain.info/de/stats?format=json'] = {
+        responses['http://blockchain.info/stats?format=json'] = {
             statusCode: 500,
             body: 'Internal Server Error'
         };
@@ -126,7 +126,7 @@ describe('modules/technical/blockchainInfo', function () {
         var app = {},
             blockchainInfo;
 
-        responses['http://blockchain.info/de/q/bcperblock'] = {
+        responses['http://blockchain.info/q/bcperblock'] = {
             statusCode: 500,
             body: 'Internal Server Error'
         };
@@ -143,7 +143,7 @@ describe('modules/technical/blockchainInfo', function () {
         var app = {},
             blockchainInfo;
 
-        responses['http://blockchain.info/de/q/probability'] = {
+        responses['http://blockchain.info/q/probability'] = {
             statusCode: 500,
             body: 'Internal Server Error'
         };
