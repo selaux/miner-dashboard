@@ -38,7 +38,7 @@ describe('modules/technical/blockchainInfo', function () {
     beforeEach(function () {
         responses = {
             'http://blockchain.info/de/stats?format=json': statsAnswer,
-            'http://blockexplorer.com/q/bcperblock': btcPerBlockAnswer,
+            'http://blockchain.info/de/q/bcperblock': btcPerBlockAnswer,
             'http://blockchain.info/de/q/probability': probabilityAnswer
         };
     });
@@ -74,7 +74,7 @@ describe('modules/technical/blockchainInfo', function () {
         var app = {},
             blockchainInfo;
 
-        responses['http://blockexplorer.com/q/bcperblock'] = null;
+        responses['http://blockchain.info/de/q/bcperblock'] = null;
 
         blockchainInfo = new BlockchainInfo(app);
 
