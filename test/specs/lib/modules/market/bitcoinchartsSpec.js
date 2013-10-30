@@ -54,6 +54,24 @@ describe('modules/market/bitcoincharts', function () {
         });
     });
 
+    it('it should handle errors that occur during the request', function (done) {
+        var Bitcoincharts = SandboxedModule.require('../../../../../lib/modules/markets/bitcoincharts', {
+                requires: {
+                    'request': function (options, callback) {
+                        setTimeout(function () {
+                            callback(new Error('Test Error'));
+                        }, 20);
+                    }
+                }
+            }),
+            bitcoincharts = new Bitcoincharts({}, {});
+
+        setTimeout(function () {
+            expect(bitcoincharts.data).not.to.be.ok;
+            done();
+        }, 50);
+    });
+
     it('should set the title correctly', function () {
         var app = {},
             config = {
