@@ -78,6 +78,9 @@ If you want to support this project, donate to `1BPpoibyxd765qnPyfn4XtG18cTsRJfw
 
 ## Changelog
 
+#### 0.1.2
+- improves stability when public apis are not available or return erronous responses
+
 #### 0.1.1
 - fixes #1: crash when log interval of cg/bfgminer is set to something else then 5min
 - fixes #2: crash when cg/bfgminer does not send full payload in a single packet
