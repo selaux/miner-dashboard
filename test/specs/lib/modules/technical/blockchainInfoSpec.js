@@ -59,66 +59,39 @@ describe('modules/technical/blockchainInfo', function () {
         });
     });
 
-    it('should not throw an error if the stats request fails with an error', function (done) {
-        var app = {},
-            blockchainInfo;
+    [
+        'http://blockchain.info/stats?format=json',
+        'http://blockchain.info/q/bcperblock'
+    ].forEach(function (url) {
+        it('should not throw an error if the request to ' + url + 'fails with an error', function (done) {
+            var blockchainInfo;
 
-        responses['http://blockchain.info/stats?format=json'] = null;
+            responses[url] = null;
 
-        blockchainInfo = new BlockchainInfo(app);
+            blockchainInfo = new BlockchainInfo({});
 
-        setTimeout(function () {
-            expect(blockchainInfo.data).not.to.be.ok;
-            done();
-        }, 50);
-    });
+            setTimeout(function () {
+                expect(blockchainInfo.data).not.to.be.ok;
+                done();
+            }, 50);
+        });
 
-    it('should not throw an error if the bcperblock request fails with an error', function (done) {
-        var app = {},
-            blockchainInfo;
+        it('should not throw an error if the request to ' + url + 'returns a non 200 http status code and no data', function (done) {
+            var blockchainInfo;
 
-        responses['http://blockchain.info/q/bcperblock'] = null;
+            responses['http://blockchain.info/stats?format=json'] = {
+                statusCode: 500,
+                body: 'Internal Server Error'
+            };
 
-        blockchainInfo = new BlockchainInfo(app);
+            blockchainInfo = new BlockchainInfo({});
 
-        setTimeout(function () {
-            expect(blockchainInfo.data).not.to.be.ok;
-            done();
-        }, 50);
-    });
+            setTimeout(function () {
+                expect(blockchainInfo.data).not.to.be.ok;
+                done();
+            }, 50);
+        });
 
-    it('should not throw an error if the stats request fails with a non 200 status code', function (done) {
-        var app = {},
-            blockchainInfo;
-
-        responses['http://blockchain.info/stats?format=json'] = {
-            statusCode: 500,
-            body: 'Internal Server Error'
-        };
-
-        blockchainInfo = new BlockchainInfo(app);
-
-        setTimeout(function () {
-            expect(blockchainInfo.data).not.to.be.ok;
-            done();
-        }, 50);
-    });
-
-    it('should not throw an error if the bcperblock request fails with a non 200 status code', function (done) {
-        var app = {},
-            blockchainInfo;
-
-        responses['http://blockchain.info/q/bcperblock'] = {
-            statusCode: 500,
-            body: 'Internal Server Error'
-        };
-
-        blockchainInfo = new BlockchainInfo(app);
-
-        setTimeout(function () {
-            expect(blockchainInfo.data).not.to.be.ok;
-            done();
-        }, 50);
     });
 
     it('should have the title set correctly', function () {
