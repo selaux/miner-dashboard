@@ -7,10 +7,10 @@ var _ = require('lodash'),
 
     responses,
     statsAnswer = {
-        some: 'stats'
+        some: 'stats',
+        difficulty: 100 * (1 / 4295032833)
     },
     btcPerBlockAnswer = 2500000000,
-    probabilityAnswer = 0.01,
     BlockchainInfo = SandboxedModule.require('../../../../../lib/modules/technical/blockchainInfo', {
         requires: {
             'request': function (options, callback) {
@@ -42,10 +42,6 @@ describe('modules/technical/blockchainInfo', function () {
             'http://blockchain.info/q/bcperblock': {
                 statusCode: 200,
                 body: btcPerBlockAnswer
-            },
-            'http://blockchain.info/q/probability': {
-                statusCode: 200,
-                body: probabilityAnswer
             }
         };
     });
@@ -91,20 +87,6 @@ describe('modules/technical/blockchainInfo', function () {
         }, 50);
     });
 
-    it('should not throw an error if the probability request fails with an error', function (done) {
-        var app = {},
-            blockchainInfo;
-
-        responses['http://blockchain.info/q/probability'] = null;
-
-        blockchainInfo = new BlockchainInfo(app);
-
-        setTimeout(function () {
-            expect(blockchainInfo.data).not.to.be.ok;
-            done();
-        }, 50);
-    });
-
     it('should not throw an error if the stats request fails with a non 200 status code', function (done) {
         var app = {},
             blockchainInfo;
@@ -127,23 +109,6 @@ describe('modules/technical/blockchainInfo', function () {
             blockchainInfo;
 
         responses['http://blockchain.info/q/bcperblock'] = {
-            statusCode: 500,
-            body: 'Internal Server Error'
-        };
-
-        blockchainInfo = new BlockchainInfo(app);
-
-        setTimeout(function () {
-            expect(blockchainInfo.data).not.to.be.ok;
-            done();
-        }, 50);
-    });
-
-    it('should not throw an error if the probability request fails with a non 200 status code', function (done) {
-        var app = {},
-            blockchainInfo;
-
-        responses['http://blockchain.info/q/probability'] = {
             statusCode: 500,
             body: 'Internal Server Error'
         };
