@@ -5,7 +5,7 @@ var _ = require('lodash'),
     expect = chai.expect,
     SandboxedModule = require('sandboxed-module'),
 
-    responses,
+    responses = {},
     statsAnswer = {
         some: 'stats',
         difficulty: 100 * (1 / 4295032833)
@@ -13,36 +13,20 @@ var _ = require('lodash'),
     btcPerBlockAnswer = 2500000000,
     BlockchainInfo = SandboxedModule.require('../../../../../lib/modules/technical/blockchainInfo', {
         requires: {
-            'request': function (options, callback) {
-                var response = responses[options.uri],
-                    triggerResponse = function (err, response) {
-                        setTimeout(function () {
-                            callback(err, response);
-                        }, 20);
-                    };
-
-                expect(options.json).to.be.true;
-                if (response) {
-                    triggerResponse(null, response);
-                } else {
-                    triggerResponse(new Error('Test Error'));
-                }
-            }
+            request: require('../../../../utils/requestStub')(responses)
         }
     });
 
 describe('modules/technical/blockchainInfo', function () {
 
     beforeEach(function () {
-        responses = {
-            'http://blockchain.info/stats?format=json': {
-                statusCode: 200,
-                body: statsAnswer
-            },
-            'http://blockchain.info/q/bcperblock': {
-                statusCode: 200,
-                body: btcPerBlockAnswer
-            }
+        responses['http://blockchain.info/stats?format=json'] = {
+            statusCode: 200,
+            body: statsAnswer
+        };
+        responses['http://blockchain.info/q/bcperblock'] = {
+            statusCode: 200,
+            body: btcPerBlockAnswer
         };
     });
 
@@ -79,7 +63,7 @@ describe('modules/technical/blockchainInfo', function () {
         it('should not throw an error if the request to ' + url + 'returns a non 200 http status code and no data', function (done) {
             var blockchainInfo;
 
-            responses['http://blockchain.info/stats?format=json'] = {
+            responses[url] = {
                 statusCode: 500,
                 body: 'Internal Server Error'
             };
