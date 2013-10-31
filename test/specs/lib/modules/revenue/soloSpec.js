@@ -80,6 +80,26 @@ describe('modules/revenue/solo', function () {
         this.app.emit('update:data:marketId', { ask: 100, currency: 'NMC' });
     });
 
+    it('should calculate revenue when no market is specified', function (done) {
+        var solo = new Solo(this.app, {
+            miner: 'minerId',
+            technical: 'technicalId'
+        });
+
+        solo.technicalData = { btcPerBlock: 10, probability: 0.0001 };
+
+        solo.on('update:data', function (data) {
+            expect(data).to.deep.equal({
+                value: 86.4,
+                currency: 'BTC',
+                interval: 'Day'
+            });
+            done();
+        });
+
+        this.app.emit('update:data:minerId', { avgHashrate: 1e-6 });
+    });
+
     it('should calculate revenue when technical info is updated', function (done) {
         var solo = new Solo(this.app, defaultConfig);
 
