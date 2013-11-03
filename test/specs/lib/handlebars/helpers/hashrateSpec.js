@@ -10,6 +10,7 @@ describe('handlebars/helpers/hashrate', function () {
     [
         { input: undefined, expected: '' },
         { input: 'a string', expected: 'a string' },
+        { input: 0, expected: '0.00 MH/s' },
         { input: 100, expected: '100.00 MH/s' },
         { input: 1024, expected: '1024.00 MH/s' },
         { input: 1933.30e3, expected: '1933.30 GH/s' },
