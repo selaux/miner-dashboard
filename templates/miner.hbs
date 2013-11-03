@@ -9,7 +9,7 @@
         <div class="panel-body row">
             <dl class="dl-horizontal col-xs-12 col-md-4">
                 <dt class="big-label">Hashrate:</dt>
-                <dd class="big">{{avgHashrate}} MH/s</dd>
+                <dd class="big">{{hashrate avgHashrate}}</dd>
                 <dt></dt>
                 <dd></dd>
                 <dt>Hardware Errors:</dt>
@@ -39,7 +39,7 @@
                 {{#each devices}}
                     <dt>Device {{id}}: {{description}}</dt>
                     {{#if connected}}
-                        <dd class="text-success">{{avgHashrate}} MH/s @ {{hardwareErrorRate}}% HW Errors</dd>
+                        <dd class="text-success">{{hashrate avgHashrate}} @ {{hardwareErrorRate}}% HW Errors</dd>
                     {{else}}
                         <dd class="text-danger">Disconnected</dd>
                     {{/if}}
