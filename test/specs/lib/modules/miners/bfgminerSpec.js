@@ -66,7 +66,7 @@ var EventEmitter = require('events').EventEmitter,
         description: 'test miner 0.1',
         avgHashrate: 12.000,
         hardwareErrors: 10,
-        hardwareErrorRate: 0.5,
+        hardwareErrorRate: 50,
         shares: {
             accepted: 20,
             rejected: 14,
@@ -85,7 +85,7 @@ var EventEmitter = require('events').EventEmitter,
                 id: 0,
                 description: 'One Mining Device',
                 hardwareErrors: 1,
-                hardwareErrorRate: 0.5,
+                hardwareErrorRate: 50,
                 avgHashrate: 3
             },
             {
@@ -93,7 +93,7 @@ var EventEmitter = require('events').EventEmitter,
                 id: 1,
                 description: 'Different Mining Device',
                 hardwareErrors: 4,
-                hardwareErrorRate: 0.25,
+                hardwareErrorRate: 25,
                 avgHashrate: 9
             }
         ]
