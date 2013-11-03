@@ -7,21 +7,21 @@
                 <dt>Total Hashrate:</dt>
                 <dd>{{hashrate hash_rate}}</dd>
                 <dt>Difficulty:</dt>
-                <dd>{{difficulty}}</dd>
+                <dd>{{number difficulty precision="2"}}</dd>
             </dl>
             <dl class="dl-horizontal col-xs-12 col-md-4">
                 <dt>Blocks Mined:</dt>
-                <dd>{{n_blocks_mined}}</dd>
+                <dd>{{number n_blocks_mined}}</dd>
                 <dt>Time between Blocks:</dt>
-                <dd>{{minutes_between_blocks}} Minutes</dd>
+                <dd>{{number minutes_between_blocks precision="2"}} Minutes</dd>
             </dl>
             <dl class="dl-horizontal col-xs-12 col-md-4">
                 <dt>Number of Transactions:</dt>
-                <dd>{{n_tx}}</dd>
+                <dd>{{number n_tx}}</dd>
                 <dt>Total Output Volume:</dt>
-                <dd>{{total_btc_sent}} BTC</dd>
+                <dd>{{number total_btc_sent}} BTC</dd>
                 <dt>Estimated Transaction Volume:</dt>
-                <dd>{{estimated_btc_sent}} BTC</dd>
+                <dd>{{number estimated_btc_sent precision="2"}} BTC</dd>
             </dl>
         </div>
         <footer class="text-muted">Updated: {{lastUpdated}}</footer> 
