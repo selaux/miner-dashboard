@@ -244,6 +244,34 @@ describe('modules/miners/bfgminer', function () {
         });
     });
 
+    it('should continue requesting the status after the miner returned invalid json', function (done) {
+        var app = {},
+            commandToDataSummaryBefore = commandToData.summary,
+            bfgAdapter,
+            statusUpdate = 0;
+
+        commandToData.summary = 'Invalid JSON';
+
+        bfgAdapter = new BfgAdapter(app, config);
+
+        setTimeout(function () {
+            commandToData.summary = commandToDataSummaryBefore;
+        }, 100);
+
+        bfgAdapter.on('update:data', function (data) {
+            statusUpdate = statusUpdate + 1;
+            if (statusUpdate === 1) {
+                expect(data.connected).not.to.be.ok;
+                expect(data.error).to.be.ok;
+            }
+            if (statusUpdate === 2) {
+                expect(data).to.deep.equal(expectedStatusUpdate);
+                bfgAdapter.removeAllListeners();
+                done();
+            }
+        });
+    });
+
     it('should use the id as a title when no title is set', function () {
         var app = {},
             bfgAdapter = new BfgAdapter(app, { id: 'someId' });
