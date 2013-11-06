@@ -53,8 +53,8 @@
                             <dd class="text-{{#if alive}}success{{else}}danger{{/if}}">{{#if alive}}Yes{{else}}No{{/if}}</dd>
                             <dt>Priority:</dt>
                             <dd>{{priority}}</dd>
-                            <dt>Last Share Time:</dt>
-                            <dd>{{#if lastShareTime}}{{lastShareTime}}{{else}}Never{{/if}}</dd>
+                            <dt>Last Share Submitted:</dt>
+                            <dd>{{#if lastShareTime}}{{time lastShareTime}}{{else}}Never{{/if}}</dd>
                         </dl>
                     {{/each}}
                 </div>
