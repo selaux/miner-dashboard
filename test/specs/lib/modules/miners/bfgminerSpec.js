@@ -61,6 +61,24 @@ var EventEmitter = require('events').EventEmitter,
             }
         ]
     }) + '\x00',
+    poolsResponse = JSON.stringify({
+        POOLS: [
+            {
+                'Status': 'Alive',
+                'POOL': 0,
+                'Priority': 0,
+                'URL': 'http://some.url:3030',
+                'Last Share Time': 1383752634
+            },
+            {
+                'Status': 'Sick',
+                'POOL': 1,
+                'Priority': 1,
+                'URL': 'http://other.url:3030',
+                'Last Share Time': 0
+            }
+        ]
+    }) + '\x00',
     expectedStatusUpdate = {
         connected: true,
         description: 'test miner 0.1',
@@ -96,12 +114,29 @@ var EventEmitter = require('events').EventEmitter,
                 hardwareErrorRate: 25,
                 avgHashrate: 9
             }
+        ],
+        pools: [
+            {
+                alive: true,
+                id: 0,
+                priority: 0,
+                url: 'http://some.url:3030',
+                lastShareTime: new Date(1383752634000)
+            },
+            {
+                alive: false,
+                id: 1,
+                priority: 1,
+                url: 'http://other.url:3030',
+                lastShareTime: undefined
+            }
         ]
     },
 
     commandToData = {
         summary: summaryResponse,
-        devs: devicesResponse
+        devs: devicesResponse,
+        pools: poolsResponse
     },
 
     netEmitter,
