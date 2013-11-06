@@ -47,6 +47,8 @@
                         <dl class="dl-horizontal col-xs-12 col-md-4">
                             <dt>Pool {{id}}:</dt>
                             <dd>{{url}}</dd>
+                            <dt>Active:</dt>
+                            <dd class="text-{{#if active}}success{{else}}danger{{/if}}">{{#if active}}Yes{{else}}No{{/if}}</dd>
                             <dt>Alive:</dt>
                             <dd class="text-{{#if alive}}success{{else}}danger{{/if}}">{{#if alive}}Yes{{else}}No{{/if}}</dd>
                             <dt>Priority:</dt>

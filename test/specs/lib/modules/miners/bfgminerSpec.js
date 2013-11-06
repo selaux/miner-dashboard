@@ -121,6 +121,7 @@ var EventEmitter = require('events').EventEmitter,
                 id: 0,
                 priority: 0,
                 url: 'http://some.url:3030',
+                active: true,
                 lastShareTime: new Date(1383752634000)
             },
             {
@@ -128,6 +129,7 @@ var EventEmitter = require('events').EventEmitter,
                 id: 1,
                 priority: 1,
                 url: 'http://other.url:3030',
+                active: false,
                 lastShareTime: undefined
             }
         ]
