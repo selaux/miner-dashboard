@@ -7,8 +7,8 @@
     </header>
     {{#if connected}}
         <div class="panel-body">
+            <h4>Overview</h4>
             <div class="row">
-                <h4>Overview</h4>
                 <dl class="dl-horizontal col-xs-12 col-md-4">
                     <dt class="big-label">Hashrate:</dt>
                     <dd class="big">{{hashrate avgHashrate}}</dd>
@@ -41,27 +41,33 @@
                 </dl>
             </div>
             {{#if pools}}
-                <div class="row pools">
-                    <h4>Pools</h4>
+                <h4>Pools</h4>
+                <div class="pools table-responsive">
+                    <table class="table table-bordered">
+                        <tr>
+                            <th></th>
+                            <th>Priority</th>
+                            <th>Url</th>
+                            <th>Alive</th>
+                            <th>Active</th>
+                            <th>Last Share Submitted</th>
+                        </tr>
                     {{#each pools}}
-                        <dl class="dl-horizontal col-xs-12 col-md-4">
-                            <dt>Pool {{id}}:</dt>
-                            <dd>{{url}}</dd>
-                            <dt>Active:</dt>
-                            <dd class="text-{{#if active}}success{{else}}danger{{/if}}">{{#if active}}Yes{{else}}No{{/if}}</dd>
-                            <dt>Alive:</dt>
-                            <dd class="text-{{#if alive}}success{{else}}danger{{/if}}">{{#if alive}}Yes{{else}}No{{/if}}</dd>
-                            <dt>Priority:</dt>
-                            <dd>{{priority}}</dd>
-                            <dt>Last Share Submitted:</dt>
-                            <dd>{{#if lastShareTime}}{{time lastShareTime}}{{else}}Never{{/if}}</dd>
-                        </dl>
+                        <tr>
+                            <td class="{{#if alive}}success{{else}}danger{{/if}}">Pool {{id}}</td>
+                            <td>{{priority}}</td>
+                            <td>{{url}}</td>
+                            <td>{{#if alive}}Yes{{else}}No{{/if}}</td>
+                            <td>{{#if active}}Yes{{else}}No{{/if}}</td>
+                            <td>{{#if lastShareTime}}{{time lastShareTime}}{{else}}Never{{/if}}</td>
+                        </tr>
                     {{/each}}
+                    </table>
                 </div>
             {{/if}}
             {{#if devices}}
+                <h4>Devices</h4>
                 <div class="row devices">
-                    <h4>Devices</h4>
                     {{#each devices}}
                         <div class="col-xs-12 col-md-4">
                             <table class="table table-bordered">
