@@ -9,6 +9,8 @@ describe('handlebars/helpers/number', function () {
 
     [
         { number: undefined, expected: '' },
+        { number: NaN, expected: '' },
+        { number: {}, expected: '' },
         { number: 'a string', expected: 'a string' },
         { number: 0, expected: '0' },
         { number: 10, expected: '10' },
