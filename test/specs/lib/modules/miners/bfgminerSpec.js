@@ -309,6 +309,41 @@ describe('modules/miners/bfgminer', function () {
         });
     });
 
+    describe('handleSummaryResponse', function () {
+
+        it('should handle a response not containing the DEVS property', function () {
+            var app = {},
+                bfgAdapter = new BfgAdapter(app, config);
+
+            expect(bfgAdapter.handleSummaryResponse({})).to.deep.equal({
+                connected: false
+            });
+        });
+
+    });
+
+    describe('handleDevicesResponse', function () {
+
+        it('should handle a response not containing the DEVS property', function () {
+            var app = {},
+                bfgAdapter = new BfgAdapter(app, config);
+
+            expect(bfgAdapter.handleDevicesResponse({})).to.deep.equal([]);
+        });
+
+    });
+
+    describe('handlePoolsResponse', function () {
+
+        it('should handle a response not containing the POOLS property', function () {
+            var app = {},
+                bfgAdapter = new BfgAdapter(app, config);
+
+            expect(bfgAdapter.handlePoolsResponse({})).to.deep.equal([]);
+        });
+
+    });
+
     it('should use the id as a title when no title is set', function () {
         var app = {},
             bfgAdapter = new BfgAdapter(app, { id: 'someId' });
