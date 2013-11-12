@@ -12,6 +12,8 @@ describe('handlebars/helpers/hashrate', function () {
         { input: NaN, expected: '' },
         { input: {}, expected: '' },
         { input: 'a string', expected: 'a string' },
+        { input: Infinity, expected: '∞ MH/s' },
+        { input: -Infinity, expected: '∞ MH/s' },
         { input: 0, expected: '0.00 MH/s' },
         { input: 100, expected: '100.00 MH/s' },
         { input: 1024, expected: '1024.00 MH/s' },

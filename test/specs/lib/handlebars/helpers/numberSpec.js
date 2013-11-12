@@ -12,6 +12,8 @@ describe('handlebars/helpers/number', function () {
         { number: NaN, expected: '' },
         { number: {}, expected: '' },
         { number: 'a string', expected: 'a string' },
+        { number: Infinity, expected: '∞' },
+        { number: -Infinity, expected: '-∞' },
         { number: 0, expected: '0' },
         { number: 10, expected: '10' },
         { number: 10.31, expected: '10.31' },
