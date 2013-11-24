@@ -72,9 +72,9 @@ Note: Each module can have an unique id assigned in the configuration object, so
 
 - [blockchain.info](https://github.com/selaux/miner-dashboard/wiki/bitcoincharts.com)
 
-## Donations
+## Support this project
 
-If you want to support this project, donate to `1BPpoibyxd765qnPyfn4XtG18cTsRJfw1d`
+If you want to support this project, either donate to `1BPpoibyxd765qnPyfn4XtG18cTsRJfw1d` or join my [triplemining.com minipool](http://selaux.triplemining.com) 
 
 ## Changelog
 
