@@ -78,6 +78,14 @@ If you want to support this project, either donate to `1BPpoibyxd765qnPyfn4XtG18
 
 ## Changelog
 
+#### 0.2.0
+- a bunch of stability enhancements
+- pools are displayed for each miner
+- devices have better style (especially when having a lot of them)
+- hardware error percentage is taken from miner response if included
+- better number / hashrate / date formatting
+- triplemining.com revenue module
+
 #### 0.1.2
 - improves stability when public apis are not available or return erronous responses
 
