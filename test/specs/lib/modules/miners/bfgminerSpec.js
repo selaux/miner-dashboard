@@ -288,12 +288,8 @@ describe('modules/miners/bfgminer', function () {
                         'Work Utility': 19
                     }
                 ]
-            };
-
-
-        it('should handle a correct response', function () {
-            var bfgAdapter = new BfgAdapter({}, config);
-            expect(bfgAdapter.handleSummaryResponse(summaryResponse)).to.deep.equal({
+            },
+            parsedResponse = {
                 connected: true,
                 description: 'test miner 0.1',
                 avgHashrate: 12.000,
@@ -311,7 +307,20 @@ describe('modules/miners/bfgminer', function () {
                     rejected: 3.0,
                     stale: 4.0
                 }
-            });
+            };
+
+        it('should handle a correct response', function () {
+            var bfgAdapter = new BfgAdapter({}, config);
+            expect(bfgAdapter.handleSummaryResponse(summaryResponse)).to.deep.equal(parsedResponse);
+        });
+
+        it('should handle a correct response with a Device Hardware% property', function () {
+            var summary = _.extend({}, summaryResponse.SUMMARY[0], { 'Device Hardware%': 58 }),
+                response = _.extend({}, summaryResponse, { SUMMARY: [ summary ] }),
+                bfgAdapter = new BfgAdapter({}, config);
+            expect(bfgAdapter.handleSummaryResponse(response)).to.deep.equal(_.extend({}, parsedResponse, {
+                hardwareErrorRate: 58
+            }));
         });
 
         it('should handle a response not containing the SUMMARY property', function () {
@@ -325,29 +334,26 @@ describe('modules/miners/bfgminer', function () {
 
     describe('handleDevsResponse', function () {
         var devicesResponse = {
-            DEVS: [
-                {
-                    'Status': 'Alive',
-                    'ID': 0,
-                    'Name': 'One Mining Device',
-                    'Hardware Errors': 1,
-                    'Accepted': 2,
-                    'MHS 100s': 3
-                },
-                {
-                    'Status': 'Other Status',
-                    'ID': 1,
-                    'Name': 'Different Mining Device',
-                    'Hardware Errors': 4,
-                    'Accepted': 16,
-                    'MHS 300s': 9
-                }
-            ]
-        };
-
-        it('should handle a correct response', function () {
-            var bfgAdapter = new BfgAdapter({}, config);
-            expect(bfgAdapter.handleDevsResponse(devicesResponse)).to.deep.equal([
+                DEVS: [
+                    {
+                        'Status': 'Alive',
+                        'ID': 0,
+                        'Name': 'One Mining Device',
+                        'Hardware Errors': 1,
+                        'Accepted': 2,
+                        'MHS 100s': 3
+                    },
+                    {
+                        'Status': 'Other Status',
+                        'ID': 1,
+                        'Name': 'Different Mining Device',
+                        'Hardware Errors': 4,
+                        'Accepted': 16,
+                        'MHS 300s': 9
+                    }
+                ]
+            },
+            parsedResponse = [
                 {
                     connected: true,
                     id: 0,
@@ -364,7 +370,26 @@ describe('modules/miners/bfgminer', function () {
                     hardwareErrorRate: 25,
                     avgHashrate: 9
                 }
-            ]);
+            ];
+
+        it('should handle a correct response', function () {
+            var bfgAdapter = new BfgAdapter({}, config);
+            expect(bfgAdapter.handleDevsResponse(devicesResponse)).to.deep.equal(parsedResponse);
+        });
+
+        it('should handle a correct response with a Device Hardware% property', function () {
+            var response = {
+                    DEVS: devicesResponse.DEVS.map(function (dev, it) {
+                        return _.extend({
+                            'Device Hardware%': it
+                        }, dev);
+                    })
+                },
+                bfgAdapter = new BfgAdapter({}, config);
+
+            expect(bfgAdapter.handleDevsResponse(response)).to.deep.equal(parsedResponse.map(function (dev, it) {
+                return _.extend({}, dev, { hardwareErrorRate: it });
+            }));
         });
 
         it('should handle a response not containing the DEVS property', function () {
