@@ -3,318 +3,319 @@
 var EventEmitter = require('events').EventEmitter,
     chai = require('chai'),
     expect = chai.expect,
+    sinon = require('sinon'),
+    sinonChai = require('sinon-chai'),
+    _ = require('lodash'),
     SandboxedModule = require('sandboxed-module'),
 
-    summaryResponse = JSON.stringify({
-        STATUS: [
-            {
-                Code: 1,
-                Description: 'test miner 0.1',
-                Msg: 'Summary',
-                STATUS: 'S',
-                When: 1380114541
-            }
-        ],
-        SUMMARY: [
-            {
-                'Accepted': 20,
-                'Alogrithm': 'fastauto',
-                'Best Share': 1,
-                'Difficulty Accepted': 2.0,
-                'Difficulty Rejected': 3.0,
-                'Difficulty Stale': 4.0,
-                'Discarded': 5,
-                'Elapsed': 6,
-                'Found Blocks': 7,
-                'Get Failures': 8,
-                'Getworks': 9,
-                'Hardware Errors': 10,
-                'Local Work': 11,
-                'MHS av': 12.000,
-                'Network Blocks': 13,
-                'Rejected': 14,
-                'Remote Failures': 15,
-                'Stale': 16,
-                'Total MH': 17,
-                'Utility': 18,
-                'Work Utility': 19
-            }
-        ]
-    }) + '\x00',
-    devicesResponse = JSON.stringify({
-        DEVS: [
-            {
-                'Status': 'Alive',
-                'ID': 0,
-                'Name': 'One Mining Device',
-                'Hardware Errors': 1,
-                'Accepted': 2,
-                'MHS 100s': 3
-            },
-            {
-                'Status': 'Other Status',
-                'ID': 1,
-                'Name': 'Different Mining Device',
-                'Hardware Errors': 4,
-                'Accepted': 16,
-                'MHS 300s': 9
-            }
-        ]
-    }) + '\x00',
-    poolsResponse = JSON.stringify({
-        POOLS: [
-            {
-                'Status': 'Alive',
-                'POOL': 0,
-                'Priority': 0,
-                'URL': 'http://some.url:3030',
-                'Last Share Time': 1383752634
-            },
-            {
-                'Status': 'Sick',
-                'POOL': 1,
-                'Priority': 1,
-                'URL': 'http://other.url:3030',
-                'Last Share Time': 0
-            }
-        ]
-    }) + '\x00',
-    expectedStatusUpdate = {
-        connected: true,
-        description: 'test miner 0.1',
-        avgHashrate: 12.000,
-        hardwareErrors: 10,
-        hardwareErrorRate: 50,
-        shares: {
-            accepted: 20,
-            rejected: 14,
-            best: 1,
-            stale: 16,
-            discarded: 5
-        },
-        difficulty: {
-            accepted: 2.0,
-            rejected: 3.0,
-            stale: 4.0,
-        },
-        devices: [
-            {
-                connected: true,
-                id: 0,
-                description: 'One Mining Device',
-                hardwareErrors: 1,
-                hardwareErrorRate: 50,
-                avgHashrate: 3
-            },
-            {
-                connected: false,
-                id: 1,
-                description: 'Different Mining Device',
-                hardwareErrors: 4,
-                hardwareErrorRate: 25,
-                avgHashrate: 9
-            }
-        ],
-        pools: [
-            {
-                alive: true,
-                id: 0,
-                priority: 0,
-                url: 'http://some.url:3030',
-                active: true,
-                lastShareTime: new Date(1383752634000)
-            },
-            {
-                alive: false,
-                id: 1,
-                priority: 1,
-                url: 'http://other.url:3030',
-                active: false,
-                lastShareTime: undefined
-            }
-        ]
-    },
-
-    commandToData = {
-        summary: summaryResponse,
-        devs: devicesResponse,
-        pools: poolsResponse
-    },
-
-    netEmitter,
-    netConnect = function (options, callback) {
-        var emitter = new EventEmitter();
-        
-        netEmitter = emitter;
-
-        emitter.write = function (written) {
-            var packet1,
-                packet2;
-            written = JSON.parse(written);
-
-            packet1 = commandToData[written.command].slice(0,5);
-            packet2 = commandToData[written.command].slice(5);
-            setTimeout(function () {
-                emitter.emit('data', packet1);
-                setTimeout(function () {
-                    emitter.emit('data', packet2);
-                    emitter.emit('end');
-                }, 5);
-            }, 45);
-        };
-        setTimeout(callback, 10);
-
-        return emitter;
-    },
-
-    BfgAdapter = SandboxedModule.require('../../../../../lib/modules/miners/bfgminer', {
-        requires: {
-            'net': {
-                connect: netConnect
-            }
-        }
-    }),
+    BfgAdapter = require('../../../../../lib/modules/miners/bfgminer'),
 
     config = {
         host: 'some.host',
-        port: 1111,
-        interval: 500
+        port: 1111
     };
+
+chai.use(sinonChai);
 
 describe('modules/miners/bfgminer', function () {
 
-    afterEach(function () {
-        netEmitter.removeAllListeners();
-    });
+    describe('initialize', function () {
+        var fakeTimer;
 
-    it('should request the status from a miner on instantiation', function (done) {
-        var app = {},
-            bfgAdapter = new BfgAdapter(app, config);
+        beforeEach(function () {
+            sinon.stub(BfgAdapter.prototype, 'update');
+            fakeTimer = sinon.useFakeTimers('setInterval');
+        });
 
-        bfgAdapter.on('update:data', function (data) {
-            expect(data).to.deep.equal(expectedStatusUpdate);
-            bfgAdapter.removeAllListeners();
-            done();
+        afterEach(function () {
+            BfgAdapter.prototype.update.restore();
+            fakeTimer.restore();
+        });
+
+        it('should request the status from a miner on instantiation', function () {
+            var bfgAdapter = new BfgAdapter({}, config);
+            expect(bfgAdapter.update).to.have.been.calledOnce;
+        });
+
+        it('should request the status from a miner once every second per default', function () {
+            var bfgAdapter = new BfgAdapter({}, config);
+            fakeTimer.tick(1010);
+            expect(bfgAdapter.update).to.have.been.calledTwice;
+            fakeTimer.tick(1010);
+            expect(bfgAdapter.update).to.have.been.calledThrice;
+        });
+
+        it('should request the status from a miner with the specified interval', function () {
+            var bfgAdapter = new BfgAdapter({}, {
+                    host: 'abc',
+                    port: 1,
+                    interval: 250
+                });
+            fakeTimer.tick(260);
+            expect(bfgAdapter.update).to.have.been.calledTwice;
+            fakeTimer.tick(260);
+            expect(bfgAdapter.update).to.have.been.calledThrice;
+        });
+
+        it('should use the id as a title when no title is set', function () {
+            var bfgAdapter = new BfgAdapter({}, { id: 'someId' });
+            expect(bfgAdapter.title).to.equal('someId');
+        });
+
+        it('should use the config title property as title when it is set', function () {
+            var bfgAdapter = new BfgAdapter({}, { title: 'Some Title' });
+            expect(bfgAdapter.title).to.equal('Some Title');
         });
     });
 
-    it('should request the status from a miner once every second', function (done) {
-        var app = {},
-            numberOfUpdates = 0,
-            bfgAdapter = new BfgAdapter(app, config);
+    describe('update', function () {
+        var commands = [
+                'summary',
+                'devs',
+                'pools'
+            ],
+            responseData = {
+                summary: 'summary data',
+                devs: 'device data',
+                pools: 'pool data'
+            },
+            parsedData = {
+                summary: { summary: 'data' },
+                devs: [ { device: 'data' } ],
+                pools: [ { pool: 'data' } ]
+            },
+            bfgAdapterStub;
 
-        bfgAdapter.on('update:data', function (data) {
-            expect(data).to.deep.equal(expectedStatusUpdate);
-            numberOfUpdates = numberOfUpdates + 1;
-            if (numberOfUpdates === 3) {
-                bfgAdapter.removeAllListeners();
+        function capitalizeFirstLetter(string) {
+            return string.charAt(0).toUpperCase() + string.slice(1);
+        }
+
+        beforeEach(function () {
+            bfgAdapterStub = {
+                sendCommand: sinon.stub(),
+                handleSummaryResponse: sinon.stub(),
+                handleDevsResponse: sinon.stub(),
+                handlePoolsResponse: sinon.stub()
+            };
+        });
+
+        it('should call the sendCommand method and use the data it returns', function (done) {
+            bfgAdapterStub.updateData = function (data) {
+                commands.forEach(function (command) {
+                    expect(bfgAdapterStub['handle' + capitalizeFirstLetter(command) + 'Response']).to.have.been.calledOnce;
+                });
+
+                expect(bfgAdapterStub.sendCommand).to.have.been.calledThrice;
+
+                expect(data).to.deep.equal(_.extend({}, parsedData.summary, {
+                    devices: parsedData.devs,
+                    pools: parsedData.pools
+                }));
                 done();
-            }
-        });
-    });
+            };
 
-    it('should trigger a status update with the miner status as disconnected when an error occurs on a status update', function (done) {
-        var app = {},
-            bfgAdapter = new BfgAdapter(app, config);
-
-        setTimeout(function () {
-            netEmitter.emit('error', new Error('Test Error'));
-        }, 25);
-
-        bfgAdapter.on('update:data', function (data) {
-            expect(data).to.deep.equal({
-                connected: false,
-                error: 'Error: Test Error'
+            commands.forEach(function (command) {
+                bfgAdapterStub.sendCommand.withArgs(command).yieldsAsync(null, responseData[command]);
+                bfgAdapterStub['handle' + capitalizeFirstLetter(command) + 'Response'].returns(parsedData[command]);
             });
-            bfgAdapter.removeAllListeners();
-            done();
+
+            BfgAdapter.prototype.update.call(bfgAdapterStub);
         });
-    });
 
-    it('should continue requesting the status after an error occured on connection', function (done) {
-        var app = {},
-            bfgAdapter = new BfgAdapter(app, config),
-            statusUpdate = 0;
+        commands.forEach(function (command) {
+            it('should trigger a status update with the miner status as disconnected when an error occurs with the ' + command + ' command', function (done) {
+                var otherCommands = _.without(commands, command);
 
-        setTimeout(function () {
-            netEmitter.emit('error', new Error('Test Error 1'));
-        }, 1);
+                bfgAdapterStub.updateData = function (data) {
+                    expect(bfgAdapterStub['handle' + capitalizeFirstLetter(command) + 'Response']).not.to.have.beenCalled;
+                    expect(bfgAdapterStub.sendCommand).to.have.been.calledThrice;
 
-        bfgAdapter.on('update:data', function (data) {
-            statusUpdate = statusUpdate + 1;
-            if (statusUpdate === 1) {
-                expect(data).to.deep.equal({
-                    connected: false,
-                    error: 'Error: Test Error 1'
+                    expect(data).to.deep.equal({
+                        connected: false,
+                        error: 'Error: Test Error'
+                    });
+                    done();
+                };
+
+                bfgAdapterStub.sendCommand.withArgs(command).yieldsAsync(new Error('Test Error'));
+                otherCommands.forEach(function (otherCommand) {
+                    bfgAdapterStub.sendCommand.withArgs(otherCommand).yieldsAsync(null, responseData[otherCommand]);
+                    bfgAdapterStub['handle' + capitalizeFirstLetter(otherCommand) + 'Response'].returns(parsedData[otherCommand]);
                 });
-            }
-            if (statusUpdate === 2) {
-                expect(data).to.deep.equal(expectedStatusUpdate);
-                bfgAdapter.removeAllListeners();
-                done();
-            }
+
+                BfgAdapter.prototype.update.call(bfgAdapterStub);
+            });
         });
     });
 
-    it('should continue requesting the status after an error occured on a status update', function (done) {
-        var app = {},
-            bfgAdapter = new BfgAdapter(app, config),
-            statusUpdate = 0;
+    describe('sendCommand', function () {
+        var config = { host: 'some host', port: 1234 },
+            response = { some: 'response' },
+            netEmitter,
+            responseString = JSON.stringify(response) + '\x00',
+            netModuleStub = {},
+            netConnect = function (responseData, throwErrorOnConnection, throwErrorOnTransmission) {
+                return function (options, callback) {
+                    netEmitter = new EventEmitter();
 
-        setTimeout(function () {
-            netEmitter.emit('error', new Error('Test Error 1'));
-        }, 25);
+                    netEmitter.options = options;
 
-        bfgAdapter.on('update:data', function (data) {
-            statusUpdate = statusUpdate + 1;
-            if (statusUpdate === 1) {
-                expect(data).to.deep.equal({
-                    connected: false,
-                    error: 'Error: Test Error 1'
+                    netEmitter.write = function (written) {
+                        var packet1,
+                            packet2;
+
+                        netEmitter.written = JSON.parse(written);
+
+                        packet1 = responseData.slice(0,5);
+                        packet2 = responseData.slice(5);
+                        setTimeout(function () {
+                            netEmitter.emit('data', packet1);
+                            if (throwErrorOnTransmission) {
+                                netEmitter.emit('error', new Error('Error on transmission'));
+                            } else {
+                                setTimeout(function () {
+                                    netEmitter.emit('data', packet2);
+                                    netEmitter.emit('end');
+                                }, 20);
+                            }
+                        }, 20);
+                    };
+                    if (throwErrorOnConnection) {
+                        setTimeout(function () {
+                            netEmitter.emit('error', new Error('Error on connection'));
+                        }, 10);
+                    } else {
+                        setTimeout(callback, 20);
+                    }
+
+                    return netEmitter;
+                };
+            },
+
+            BfgAdapter = SandboxedModule.require('../../../../../lib/modules/miners/bfgminer', {
+                requires: {
+                    'net': netModuleStub
+                }
+            });
+
+        it('should callback with the returned data', function (done) {
+            netModuleStub.connect = netConnect(responseString);
+
+            BfgAdapter.prototype.sendCommand.call({
+                config: config
+            }, 'some command', 'some parameters', function (err, data) {
+                expect(err).not.to.be.ok;
+                expect(netEmitter.options).to.deep.equal(config);
+                expect(netEmitter.written).to.deep.equal({
+                    command: 'some command',
+                    parameter: 'some parameters'
                 });
-            }
-            if (statusUpdate === 2) {
-                expect(data).to.deep.equal(expectedStatusUpdate);
-                bfgAdapter.removeAllListeners();
+                expect(data).to.deep.equal(response);
                 done();
-            }
+            });
         });
-    });
 
-    it('should continue requesting the status after the miner returned invalid json', function (done) {
-        var app = {},
-            commandToDataSummaryBefore = commandToData.summary,
-            bfgAdapter,
-            statusUpdate = 0;
+        it('should callback with an error when the miner returns invalid json', function (done) {
+            netModuleStub.connect = netConnect('Invalid JSON');
 
-        commandToData.summary = 'Invalid JSON';
-
-        bfgAdapter = new BfgAdapter(app, config);
-
-        setTimeout(function () {
-            commandToData.summary = commandToDataSummaryBefore;
-        }, 100);
-
-        bfgAdapter.on('update:data', function (data) {
-            statusUpdate = statusUpdate + 1;
-            if (statusUpdate === 1) {
-                expect(data.connected).not.to.be.ok;
-                expect(data.error).to.be.ok;
-            }
-            if (statusUpdate === 2) {
-                expect(data).to.deep.equal(expectedStatusUpdate);
-                bfgAdapter.removeAllListeners();
+            BfgAdapter.prototype.sendCommand.call({
+                config: config
+            }, 'some command', 'some parameters', function (err) {
+                expect(err).to.be.ok;
+                expect(err.message).to.equal('Unexpected token I');
                 done();
-            }
+            });
+        });
+
+        it('should callback with an error when an error occurs on connection', function (done) {
+            netModuleStub.connect = netConnect(responseString, true);
+
+            BfgAdapter.prototype.sendCommand.call({
+                config: config
+            }, 'some command', 'some parameters', function (err) {
+                expect(err).to.be.ok;
+                expect(err.message).to.equal('Error on connection');
+                done();
+            });
+        });
+
+        it('should callback with an error when an error occurs on transmission', function (done) {
+            netModuleStub.connect = netConnect(responseString, false, true);
+
+            BfgAdapter.prototype.sendCommand.call({
+                config: config
+            }, 'some command', 'some parameters', function (err) {
+                expect(err).to.be.ok;
+                expect(err.message).to.equal('Error on transmission');
+                done();
+            });
         });
     });
 
     describe('handleSummaryResponse', function () {
+        var summaryResponse = {
+                STATUS: [
+                    {
+                        Code: 1,
+                        Description: 'test miner 0.1',
+                        Msg: 'Summary',
+                        STATUS: 'S',
+                        When: 1380114541
+                    }
+                ],
+                SUMMARY: [
+                    {
+                        'Accepted': 20,
+                        'Alogrithm': 'fastauto',
+                        'Best Share': 1,
+                        'Difficulty Accepted': 2.0,
+                        'Difficulty Rejected': 3.0,
+                        'Difficulty Stale': 4.0,
+                        'Discarded': 5,
+                        'Elapsed': 6,
+                        'Found Blocks': 7,
+                        'Get Failures': 8,
+                        'Getworks': 9,
+                        'Hardware Errors': 10,
+                        'Local Work': 11,
+                        'MHS av': 12.000,
+                        'Network Blocks': 13,
+                        'Rejected': 14,
+                        'Remote Failures': 15,
+                        'Stale': 16,
+                        'Total MH': 17,
+                        'Utility': 18,
+                        'Work Utility': 19
+                    }
+                ]
+            };
 
-        it('should handle a response not containing the DEVS property', function () {
-            var app = {},
-                bfgAdapter = new BfgAdapter(app, config);
 
+        it('should handle a correct response', function () {
+            var bfgAdapter = new BfgAdapter({}, config);
+            expect(bfgAdapter.handleSummaryResponse(summaryResponse)).to.deep.equal({
+                connected: true,
+                description: 'test miner 0.1',
+                avgHashrate: 12.000,
+                hardwareErrors: 10,
+                hardwareErrorRate: 50,
+                shares: {
+                    accepted: 20,
+                    rejected: 14,
+                    best: 1,
+                    stale: 16,
+                    discarded: 5
+                },
+                difficulty: {
+                    accepted: 2.0,
+                    rejected: 3.0,
+                    stale: 4.0
+                }
+            });
+        });
+
+        it('should handle a response not containing the SUMMARY property', function () {
+            var bfgAdapter = new BfgAdapter({}, config);
             expect(bfgAdapter.handleSummaryResponse({})).to.deep.equal({
                 connected: false
             });
@@ -322,40 +323,104 @@ describe('modules/miners/bfgminer', function () {
 
     });
 
-    describe('handleDevicesResponse', function () {
+    describe('handleDevsResponse', function () {
+        var devicesResponse = {
+            DEVS: [
+                {
+                    'Status': 'Alive',
+                    'ID': 0,
+                    'Name': 'One Mining Device',
+                    'Hardware Errors': 1,
+                    'Accepted': 2,
+                    'MHS 100s': 3
+                },
+                {
+                    'Status': 'Other Status',
+                    'ID': 1,
+                    'Name': 'Different Mining Device',
+                    'Hardware Errors': 4,
+                    'Accepted': 16,
+                    'MHS 300s': 9
+                }
+            ]
+        };
+
+        it('should handle a correct response', function () {
+            var bfgAdapter = new BfgAdapter({}, config);
+            expect(bfgAdapter.handleDevsResponse(devicesResponse)).to.deep.equal([
+                {
+                    connected: true,
+                    id: 0,
+                    description: 'One Mining Device',
+                    hardwareErrors: 1,
+                    hardwareErrorRate: 50,
+                    avgHashrate: 3
+                },
+                {
+                    connected: false,
+                    id: 1,
+                    description: 'Different Mining Device',
+                    hardwareErrors: 4,
+                    hardwareErrorRate: 25,
+                    avgHashrate: 9
+                }
+            ]);
+        });
 
         it('should handle a response not containing the DEVS property', function () {
-            var app = {},
-                bfgAdapter = new BfgAdapter(app, config);
-
-            expect(bfgAdapter.handleDevicesResponse({})).to.deep.equal([]);
+            var bfgAdapter = new BfgAdapter({}, config);
+            expect(bfgAdapter.handleDevsResponse({})).to.deep.equal([]);
         });
 
     });
 
     describe('handlePoolsResponse', function () {
+        var poolsResponse = {
+            POOLS: [
+                {
+                    'Status': 'Alive',
+                    'POOL': 0,
+                    'Priority': 0,
+                    'URL': 'http://some.url:3030',
+                    'Last Share Time': 1383752634
+                },
+                {
+                    'Status': 'Sick',
+                    'POOL': 1,
+                    'Priority': 1,
+                    'URL': 'http://other.url:3030',
+                    'Last Share Time': 0
+                }
+            ]
+        };
+
+        it('should handle a correct response', function () {
+            var bfgAdapter = new BfgAdapter({}, config);
+            expect(bfgAdapter.handlePoolsResponse(poolsResponse)).to.deep.equal([
+                {
+                    alive: true,
+                    id: 0,
+                    priority: 0,
+                    url: 'http://some.url:3030',
+                    active: true,
+                    lastShareTime: new Date(1383752634000)
+                },
+                {
+                    alive: false,
+                    id: 1,
+                    priority: 1,
+                    url: 'http://other.url:3030',
+                    active: false,
+                    lastShareTime: undefined
+                }
+            ]);
+        });
 
         it('should handle a response not containing the POOLS property', function () {
-            var app = {},
-                bfgAdapter = new BfgAdapter(app, config);
-
+            var bfgAdapter = new BfgAdapter({}, config);
             expect(bfgAdapter.handlePoolsResponse({})).to.deep.equal([]);
         });
 
-    });
-
-    it('should use the id as a title when no title is set', function () {
-        var app = {},
-            bfgAdapter = new BfgAdapter(app, { id: 'someId' });
-
-        expect(bfgAdapter.title).to.equal('someId');
-    });
-
-    it('should use the id as a title when no title is set', function () {
-        var app = {},
-            bfgAdapter = new BfgAdapter(app, { title: 'Some Title' });
-
-        expect(bfgAdapter.title).to.equal('Some Title');
     });
 
 });
