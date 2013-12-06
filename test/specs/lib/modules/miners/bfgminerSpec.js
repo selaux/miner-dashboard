@@ -266,7 +266,6 @@ describe('modules/miners/bfgminer', function () {
                 SUMMARY: [
                     {
                         'Accepted': 20,
-                        'Alogrithm': 'fastauto',
                         'Best Share': 1,
                         'Difficulty Accepted': 2.0,
                         'Difficulty Rejected': 3.0,
@@ -291,6 +290,7 @@ describe('modules/miners/bfgminer', function () {
             },
             parsedResponse = {
                 connected: true,
+                elapsed: 6,
                 description: 'test miner 0.1',
                 avgHashrate: 12.000,
                 hardwareErrors: 10,
