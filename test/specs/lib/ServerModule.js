@@ -7,6 +7,8 @@ var chai = require('chai'),
     sinon = require('sinon'),
     sinonChai = require('sinon-chai'),
 
+    SandboxedModule = require('sandboxed-module'),
+
     Module = require('../../../lib/ServerModule');
 
 chai.use(sinonChai);
@@ -128,6 +130,30 @@ describe('ServerModule', function () {
             });
 
             module.updateView();
+        });
+    });
+
+    describe('getCompiledTemplate', function () {
+        var compiledTemplate = function () {},
+            requires = {
+                fs: {
+                    readFileSync: sinon.stub().returns('template string')
+                },
+                './handlebars/handlebars': {
+                    compile: sinon.stub().returns(compiledTemplate)
+                }
+            },
+            Module = SandboxedModule.require('../../../lib/ServerModule', {
+                requires: requires
+            });
+
+        it('should compile the template residing on the disk', function () {
+            var result = Module.prototype.getCompiledTemplate('templateName');
+
+            expect(requires.fs.readFileSync).to.have.been.calledOnce;
+            expect(requires['./handlebars/handlebars'].compile).to.have.been.calledOnce;
+            expect(requires['./handlebars/handlebars'].compile).to.have.been.calledWith('template string');
+            expect(result).to.equal(compiledTemplate);
         });
     });
 });
