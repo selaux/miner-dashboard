@@ -13,7 +13,7 @@ Node.js based app to show the current status of your miner in a browser.
 
 #### Screenshot
 
-[![Miner Dashboard](http://i.imgur.com/rWJEx5M.png)](http://i.imgur.com/wyCnNi0.png)
+[![Miner Dashboard](http://i.imgur.com/ldgQ33v.png)](http://i.imgur.com/ldgQ33v.png)
 
 
 ## Installation
