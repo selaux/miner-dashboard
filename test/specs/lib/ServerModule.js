@@ -17,10 +17,10 @@ var fs = require('fs'),
 
 chai.use(sinonChai);
 
-describe('Module', function () {
+describe('ServerModule', function () {
 
     describe('extend', function () {
-        it('should return a constructor that extends the Module', function () {
+        it('should return a constructor that extends the ServerModule', function () {
             var extendedModule = Module.extend({ some: 'new property' });
 
             expect(_.omit(extendedModule.prototype, 'some', 'constructor')).to.deep.equal(Module.prototype);

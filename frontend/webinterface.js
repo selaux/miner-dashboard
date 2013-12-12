@@ -6,7 +6,7 @@ var express = require('express'),
     http = require('http'),
     path = require('path'),
 
-    Module = require('../lib/Module');
+    Module = require('../lib/ServerModule');
 
 // TODO: Logging
 module.exports = Module.extend({
