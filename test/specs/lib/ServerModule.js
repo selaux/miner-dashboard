@@ -13,7 +13,7 @@ var fs = require('fs'),
     Handlebars = require('../../../lib/handlebars/handlebars'),
     noDataTemplate = Handlebars.compile(fs.readFileSync(path.join(__dirname, '/../../../templates/noData.hbs')).toString()),
     jsonTemplate = Handlebars.compile(fs.readFileSync(path.join(__dirname, '/../../../templates/json.hbs')).toString()),
-    Module = require('../../../lib/Module');
+    Module = require('../../../lib/ServerModule');
 
 chai.use(sinonChai);
 
