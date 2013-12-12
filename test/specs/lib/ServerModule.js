@@ -1,18 +1,12 @@
 'use strict';
 
-var fs = require('fs'),
-    path = require('path'),
-
-    chai = require('chai'),
+var chai = require('chai'),
     expect = chai.expect,
     _ = require('lodash'),
 
     sinon = require('sinon'),
     sinonChai = require('sinon-chai'),
 
-    Handlebars = require('../../../lib/handlebars/handlebars'),
-    noDataTemplate = Handlebars.compile(fs.readFileSync(path.join(__dirname, '/../../../templates/noData.hbs')).toString()),
-    jsonTemplate = Handlebars.compile(fs.readFileSync(path.join(__dirname, '/../../../templates/json.hbs')).toString()),
     Module = require('../../../lib/ServerModule');
 
 chai.use(sinonChai);
@@ -29,6 +23,17 @@ describe('ServerModule', function () {
     });
 
     describe('constructor', function () {
+        var noDataTemplateStub;
+
+        beforeEach(function () {
+            noDataTemplateStub = sinon.stub().returns('rendered template');
+            sinon.stub(Module.prototype, 'getCompiledTemplate').returns(noDataTemplateStub);
+        });
+
+        afterEach(function () {
+            Module.prototype.getCompiledTemplate.restore();
+        });
+
         it('should set the instance properties correctly', function () {
             var oldDefaults = Module.prototype.defaults,
                 oldInitialize = Module.prototype.initialize,
@@ -45,10 +50,13 @@ describe('ServerModule', function () {
             expect(module.app).to.equal(app);
             expect(module.config).to.deep.equal({ other: 'config', some: 'defaults' });
             expect(module.initialize).to.have.been.calledOnce;
-            expect(module.view).to.deep.equal(noDataTemplate({
+
+            expect(noDataTemplateStub).to.have.been.calledOnce;
+            expect(noDataTemplateStub).to.have.been.calledWith({
                 id: module.id,
                 title: module.title
-            }));
+            });
+            expect(module.view).to.equal('rendered template');
 
             Module.prototype.defaults = oldDefaults;
             Module.prototype.initialize = oldInitialize;
@@ -62,10 +70,14 @@ describe('ServerModule', function () {
 
             module.id = 'foo';
             module.title = 'bar';
-            expect(module.renderViewWithoutData()).to.deep.equal(noDataTemplate({
+            module.noDataTemplate = sinon.stub();
+
+            module.renderViewWithoutData();
+            expect(module.noDataTemplate).to.have.been.calledOnce;
+            expect(module.noDataTemplate).to.have.been.calledWith({
                 id: module.id,
                 title: module.title
-            }));
+            });
         });
     });
 
@@ -75,13 +87,20 @@ describe('ServerModule', function () {
 
             module.id = 'foo';
             module.title = 'bar';
-            module.data = { some: 'json', data: 'of', the: 'module' },
-            expect(module.renderView()).to.deep.equal(jsonTemplate({
+            module.data = { some: 'json', data: 'of', the: 'module' };
+            module.template = sinon.stub();
+
+            module.renderView();
+
+            expect(module.template).to.have.been.calledOnce;
+            expect(module.template).to.have.been.calledWithMatch({
                 id: module.id,
                 title: module.title,
-                lastUpdated: new Date(),
-                json: JSON.stringify(module.data)
-            }));
+                json: JSON.stringify(module.data),
+                some: 'json',
+                data: 'of',
+                the: 'module'
+            });
         });
     });
 
