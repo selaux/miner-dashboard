@@ -1,12 +1,14 @@
 'use strict';
 
+var _ = require('lodash');
+
 module.exports = function (webinterface) {
     webinterface.get('/', function(req, res) {
         var app = webinterface.get('app');
 
         res.render('index', {
             title: app.title,
-            allViews: app.getViews().join('')
+            allViews: _.map(app.getViews(), function (view) { return view.render(); }).join('')
         });
     });
 };

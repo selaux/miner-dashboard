@@ -7,8 +7,7 @@ var chai = require('chai'),
     sinon = require('sinon'),
     sinonChai = require('sinon-chai'),
 
-    SandboxedModule = require('sandboxed-module'),
-
+    View = require('../../../lib/View'),
     Module = require('../../../lib/Module');
 
 chai.use(sinonChai);
@@ -25,17 +24,6 @@ describe('Module', function () {
     });
 
     describe('constructor', function () {
-        var noDataTemplateStub;
-
-        beforeEach(function () {
-            noDataTemplateStub = sinon.stub().returns('rendered template');
-            sinon.stub(Module.prototype, 'getCompiledTemplate').returns(noDataTemplateStub);
-        });
-
-        afterEach(function () {
-            Module.prototype.getCompiledTemplate.restore();
-        });
-
         it('should set the instance properties correctly', function () {
             var oldDefaults = Module.prototype.defaults,
                 oldInitialize = Module.prototype.initialize,
@@ -52,58 +40,11 @@ describe('Module', function () {
             expect(module.app).to.equal(app);
             expect(module.config).to.deep.equal({ other: 'config', some: 'defaults' });
             expect(module.initialize).to.have.been.calledOnce;
-
-            expect(noDataTemplateStub).to.have.been.calledOnce;
-            expect(noDataTemplateStub).to.have.been.calledWith({
-                id: module.id,
-                title: module.title
-            });
-            expect(module.view).to.equal('rendered template');
+            expect(module.view).to.be.a.instanceOf(View);
 
             Module.prototype.defaults = oldDefaults;
             Module.prototype.initialize = oldInitialize;
             delete Module.prototype.title;
-        });
-    });
-
-    describe('renderViewWithoutData', function () {
-        it('should render the default no-data view', function () {
-            var module = new Module();
-
-            module.id = 'foo';
-            module.title = 'bar';
-            module.noDataTemplate = sinon.stub();
-
-            module.renderViewWithoutData();
-
-            expect(module.noDataTemplate).to.have.been.calledOnce;
-            expect(module.noDataTemplate).to.have.been.calledWith({
-                id: module.id,
-                title: module.title
-            });
-        });
-    });
-
-    describe('renderView', function () {
-        it('should render a json representation of the data by default', function () {
-            var module = new Module();
-
-            module.id = 'foo';
-            module.title = 'bar';
-            module.data = { some: 'json', data: 'of', the: 'module' },
-            module.template = sinon.stub();
-
-            module.renderView();
-
-            expect(module.template).to.have.been.calledOnce;
-            expect(module.template).to.have.been.calledWithMatch({
-                id: module.id,
-                title: module.title,
-                json: JSON.stringify(module.data),
-                some: 'json',
-                data: 'of',
-                the: 'module'
-            });
         });
     });
 
@@ -125,36 +66,14 @@ describe('Module', function () {
         it('should retrigger the event on the instance', function (done) {
             var module = new Module();
 
+            module.view.render = sinon.stub().returns('rendered view');
+
             module.on('update:view', function (view) {
-                expect(view).to.be.ok;
+                expect(view).to.equal('rendered view');
                 done();
             });
 
             module.updateView();
-        });
-    });
-
-    describe('getCompiledTemplate', function () {
-        var compiledTemplate = function () {},
-            requires = {
-                fs: {
-                    readFileSync: sinon.stub().returns('template string')
-                },
-                './handlebars/handlebars': {
-                    compile: sinon.stub().returns(compiledTemplate)
-                }
-            },
-            Module = SandboxedModule.require('../../../lib/Module', {
-                requires: requires
-            });
-
-        it('should compile the template residing on the disk', function () {
-            var result = Module.prototype.getCompiledTemplate('templateName');
-
-            expect(requires.fs.readFileSync).to.have.been.calledOnce;
-            expect(requires['./handlebars/handlebars'].compile).to.have.been.calledOnce;
-            expect(requires['./handlebars/handlebars'].compile).to.have.been.calledWith('template string');
-            expect(result).to.equal(compiledTemplate);
         });
     });
 });
