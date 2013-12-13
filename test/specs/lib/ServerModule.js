@@ -1,26 +1,22 @@
 'use strict';
 
-var fs = require('fs'),
-    path = require('path'),
-
-    chai = require('chai'),
+var chai = require('chai'),
     expect = chai.expect,
     _ = require('lodash'),
 
     sinon = require('sinon'),
     sinonChai = require('sinon-chai'),
 
-    Handlebars = require('../../../lib/handlebars/handlebars'),
-    noDataTemplate = Handlebars.compile(fs.readFileSync(path.join(__dirname, '/../../../templates/noData.hbs')).toString()),
-    jsonTemplate = Handlebars.compile(fs.readFileSync(path.join(__dirname, '/../../../templates/json.hbs')).toString()),
-    Module = require('../../../lib/Module');
+    SandboxedModule = require('sandboxed-module'),
+
+    Module = require('../../../lib/ServerModule');
 
 chai.use(sinonChai);
 
-describe('Module', function () {
+describe('ServerModule', function () {
 
     describe('extend', function () {
-        it('should return a constructor that extends the Module', function () {
+        it('should return a constructor that extends the ServerModule', function () {
             var extendedModule = Module.extend({ some: 'new property' });
 
             expect(_.omit(extendedModule.prototype, 'some', 'constructor')).to.deep.equal(Module.prototype);
@@ -29,6 +25,17 @@ describe('Module', function () {
     });
 
     describe('constructor', function () {
+        var noDataTemplateStub;
+
+        beforeEach(function () {
+            noDataTemplateStub = sinon.stub().returns('rendered template');
+            sinon.stub(Module.prototype, 'getCompiledTemplate').returns(noDataTemplateStub);
+        });
+
+        afterEach(function () {
+            Module.prototype.getCompiledTemplate.restore();
+        });
+
         it('should set the instance properties correctly', function () {
             var oldDefaults = Module.prototype.defaults,
                 oldInitialize = Module.prototype.initialize,
@@ -45,10 +52,13 @@ describe('Module', function () {
             expect(module.app).to.equal(app);
             expect(module.config).to.deep.equal({ other: 'config', some: 'defaults' });
             expect(module.initialize).to.have.been.calledOnce;
-            expect(module.view).to.deep.equal(noDataTemplate({
+
+            expect(noDataTemplateStub).to.have.been.calledOnce;
+            expect(noDataTemplateStub).to.have.been.calledWith({
                 id: module.id,
                 title: module.title
-            }));
+            });
+            expect(module.view).to.equal('rendered template');
 
             Module.prototype.defaults = oldDefaults;
             Module.prototype.initialize = oldInitialize;
@@ -62,10 +72,14 @@ describe('Module', function () {
 
             module.id = 'foo';
             module.title = 'bar';
-            expect(module.renderViewWithoutData()).to.deep.equal(noDataTemplate({
+            module.noDataTemplate = sinon.stub();
+
+            module.renderViewWithoutData();
+            expect(module.noDataTemplate).to.have.been.calledOnce;
+            expect(module.noDataTemplate).to.have.been.calledWith({
                 id: module.id,
                 title: module.title
-            }));
+            });
         });
     });
 
@@ -75,13 +89,20 @@ describe('Module', function () {
 
             module.id = 'foo';
             module.title = 'bar';
-            module.data = { some: 'json', data: 'of', the: 'module' },
-            expect(module.renderView()).to.deep.equal(jsonTemplate({
+            module.data = { some: 'json', data: 'of', the: 'module' };
+            module.template = sinon.stub();
+
+            module.renderView();
+
+            expect(module.template).to.have.been.calledOnce;
+            expect(module.template).to.have.been.calledWithMatch({
                 id: module.id,
                 title: module.title,
-                lastUpdated: new Date(),
-                json: JSON.stringify(module.data)
-            }));
+                json: JSON.stringify(module.data),
+                some: 'json',
+                data: 'of',
+                the: 'module'
+            });
         });
     });
 
@@ -109,6 +130,30 @@ describe('Module', function () {
             });
 
             module.updateView();
+        });
+    });
+
+    describe('getCompiledTemplate', function () {
+        var compiledTemplate = function () {},
+            requires = {
+                fs: {
+                    readFileSync: sinon.stub().returns('template string')
+                },
+                './handlebars/handlebars': {
+                    compile: sinon.stub().returns(compiledTemplate)
+                }
+            },
+            Module = SandboxedModule.require('../../../lib/ServerModule', {
+                requires: requires
+            });
+
+        it('should compile the template residing on the disk', function () {
+            var result = Module.prototype.getCompiledTemplate('templateName');
+
+            expect(requires.fs.readFileSync).to.have.been.calledOnce;
+            expect(requires['./handlebars/handlebars'].compile).to.have.been.calledOnce;
+            expect(requires['./handlebars/handlebars'].compile).to.have.been.calledWith('template string');
+            expect(result).to.equal(compiledTemplate);
         });
     });
 });

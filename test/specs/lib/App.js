@@ -7,7 +7,7 @@ var EventEmitter = require('events').EventEmitter,
     sinon = require('sinon'),
     sinonChai = require('sinon-chai'),
 
-    Module = require('../../../lib/Module'),
+    ServerModule = require('../../../lib/ServerModule'),
     App = require('../../../lib/App');
 
 chai.use(sinonChai);
@@ -50,14 +50,14 @@ describe('App', function () {
 
         it('should set a reproducable hash as moduleId for the modules that dont have an id', function () {
             var moduleConfig = {
-                    module: function (app, config) { return new Module(app, config); }
+                    module: function (app, config) { return new ServerModule(app, config); }
                 },
                 app = new App({
                     modules: [moduleConfig]
                 });
 
             expect(app).to.be.ok;
-            expect(app.modules[0].id).to.equal('72c8061bc4e6ff90df26bdc3003327ed60e02d7d');
+            expect(app.modules[0].id).to.equal('18e9746462358e9a14d826af9383a1ec8eeb1094');
         });
 
         it('should setup a listener the update:data event', function (done) {
