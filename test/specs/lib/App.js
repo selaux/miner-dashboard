@@ -86,31 +86,6 @@ describe('App', function () {
             module.emit('update:data', newData);
         });
 
-        it('should setup a listener the update:view event', function (done) {
-            var module = new EventEmitter({
-                    wildcard: true,
-                    delimiter: '::'
-                }),
-                constructorStub = sinon.stub().returns(module),
-                moduleConfig = {
-                    id: 'someid',
-                    module: constructorStub,
-                    some: 'config'
-                },
-                app = new App({
-                    modules: [moduleConfig]
-                }),
-                newView = 'Some new data';
-
-            app.on('update:view:someid', function (data) {
-                expect(data).to.deep.equal(newView);
-                done();
-            });
-            
-            module.view = newView;
-            module.emit('update:view');
-        });
-
     });
 
     describe('getViews', function () {
@@ -144,17 +119,4 @@ describe('App', function () {
         });
     });
 
-    describe('updateView', function () {
-        it('should retrigger the event on the instance', function (done) {
-            var app = new App({}),
-                newData = { some: 'data' };
-
-            app.on('update:view:someId', function (data) {
-                expect(data).to.deep.equal(newData);
-                done();
-            });
-
-            app.updateView('someId', newData);
-        });
-    });
 });
