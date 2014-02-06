@@ -2,7 +2,6 @@
 
 var chai = require('chai'),
     expect = chai.expect,
-    _ = require('lodash'),
 
     sinon = require('sinon'),
     sinonChai = require('sinon-chai'),
@@ -12,15 +11,6 @@ var chai = require('chai'),
 chai.use(sinonChai);
 
 describe('Module', function () {
-
-    describe('extend', function () {
-        it('should return a constructor that extends the Module', function () {
-            var extendedModule = Module.extend({ some: 'new property' });
-
-            expect(_.omit(extendedModule.prototype, 'some', 'constructor')).to.deep.equal(Module.prototype);
-            expect(extendedModule.prototype.some).equal('new property');
-        });
-    });
 
     describe('constructor', function () {
         it('should set the instance properties correctly', function () {
