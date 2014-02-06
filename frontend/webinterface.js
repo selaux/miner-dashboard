@@ -57,8 +57,8 @@ module.exports = Module.extend({
             console.log('Express and Websocket server listening on port ' + webinterface.get('port'));
 
             self.app.modules.forEach(function (module) {
-                module.on('update:view', function (view) {
-                    self.io.sockets.emit('update:view', module.id, view);
+                module.on('update:data', function (data) {
+                    self.io.sockets.emit('update:data', module.id, data);
                 });
             });
         });
