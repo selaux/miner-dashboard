@@ -8,7 +8,7 @@ module.exports = function (webinterface) {
 
         res.render('index', {
             title: app.title,
-            allViews: _.map(app.getViews(), function (view) { return view.render(); }).join('')
+            allViews: _.map(app.views, function (view) { return view.render(); }).join('')
         });
     });
 };

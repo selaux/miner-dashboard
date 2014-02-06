@@ -8,6 +8,7 @@ var EventEmitter = require('events').EventEmitter,
     sinonChai = require('sinon-chai'),
 
     Module = require('../../../lib/Module'),
+    View = require('../../../lib/View'),
     App = require('../../../lib/App');
 
 chai.use(sinonChai);
@@ -28,7 +29,7 @@ describe('App', function () {
             expect(app.title).to.deep.equal('Miner-Dashboard');
         });
 
-        it('should initialize the modules inside the modules array', function () {
+        it('should initialize the modules and views inside the modules array', function () {
             var module = new EventEmitter({
                     wildcard: true,
                     delimiter: '::'
@@ -39,11 +40,16 @@ describe('App', function () {
                     module: constructorStub,
                     some: 'config'
                 },
-                app = new App({
-                    modules: [moduleConfig]
-                });
+                app;
+
+            module.template = 'json';
+            app = new App({
+                modules: [moduleConfig]
+            });
 
             expect(app.modules).to.have.length(1);
+            expect(app.views).to.have.length(1);
+            expect(app.views[0]).to.be.an.instanceOf(View);
             expect(constructorStub).to.have.been.calledOnce;
             expect(constructorStub).to.have.been.calledWith(app, moduleConfig);
         });
@@ -86,23 +92,6 @@ describe('App', function () {
             module.emit('update:data', newData);
         });
 
-    });
-
-    describe('getViews', function () {
-        it('should return the views of all modules', function () {
-            var app = new App({});
-
-            app.modules = [
-                { view: 'Some rendered <html>' },
-                { view: 'Other rendered html' },
-                { id: '__webinterface__' }
-            ];
-
-            expect(app.getViews()).to.deep.equal([
-                'Some rendered <html>',
-                'Other rendered html'
-            ]);
-        });
     });
 
     describe('updateData', function () {

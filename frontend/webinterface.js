@@ -15,6 +15,8 @@ module.exports = Module.extend({
         port: 3000
     },
 
+    template: null,
+
     initialize: function () {
         var self = this,
             webinterface = express();
