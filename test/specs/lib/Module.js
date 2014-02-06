@@ -7,7 +7,6 @@ var chai = require('chai'),
     sinon = require('sinon'),
     sinonChai = require('sinon-chai'),
 
-    View = require('../../../lib/View'),
     Module = require('../../../lib/Module');
 
 chai.use(sinonChai);
@@ -40,7 +39,6 @@ describe('Module', function () {
             expect(module.app).to.equal(app);
             expect(module.config).to.deep.equal({ other: 'config', some: 'defaults' });
             expect(module.initialize).to.have.been.calledOnce;
-            expect(module.view).to.be.a.instanceOf(View);
 
             Module.prototype.defaults = oldDefaults;
             Module.prototype.initialize = oldInitialize;
@@ -62,18 +60,4 @@ describe('Module', function () {
         });
     });
 
-    describe('updateView', function () {
-        it('should retrigger the event on the instance', function (done) {
-            var module = new Module();
-
-            module.view.render = sinon.stub().returns('rendered view');
-
-            module.on('update:view', function (view) {
-                expect(view).to.equal('rendered view');
-                done();
-            });
-
-            module.updateView();
-        });
-    });
 });
