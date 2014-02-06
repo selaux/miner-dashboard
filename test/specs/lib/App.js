@@ -8,7 +8,7 @@ var EventEmitter = require('events').EventEmitter,
     sinonChai = require('sinon-chai'),
 
     Module = require('../../../lib/Module'),
-    View = require('../../../lib/View'),
+    JSONView = require('../../../lib/views/json'),
     App = require('../../../lib/App');
 
 chai.use(sinonChai);
@@ -42,14 +42,14 @@ describe('App', function () {
                 },
                 app;
 
-            module.template = 'json';
+            constructorStub.prototype.viewId = 'json';
             app = new App({
                 modules: [moduleConfig]
             });
 
             expect(app.modules).to.have.length(1);
             expect(app.views).to.have.length(1);
-            expect(app.views[0]).to.be.an.instanceOf(View);
+            expect(app.views[0]).to.be.an.instanceOf(JSONView);
             expect(constructorStub).to.have.been.calledOnce;
             expect(constructorStub).to.have.been.calledWith(app, moduleConfig);
         });

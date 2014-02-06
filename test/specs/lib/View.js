@@ -19,12 +19,14 @@ describe('View', function () {
 
         beforeEach(function () {
             sinon.stub(View.prototype, 'getCompiledTemplate');
+            View.prototype.template = 'json';
             View.prototype.getCompiledTemplate.withArgs('noData').returns(noDataTemplate);
             View.prototype.getCompiledTemplate.withArgs('json').returns(jsonTemplate);
         });
 
         afterEach(function () {
             View.prototype.getCompiledTemplate.restore();
+            delete View.prototype.template;
         });
 
         it('should set the instance properties correctly', function () {
