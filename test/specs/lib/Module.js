@@ -36,18 +36,4 @@ describe('Module', function () {
         });
     });
 
-    describe('updateData', function () {
-        it('should trigger an event on the instance', function (done) {
-            var module = new Module(),
-                newData = { some: 'data' };
-
-            module.on('update:data', function (data) {
-                expect(data).to.deep.equal(newData);
-                done();
-            });
-
-            module.updateData(newData);
-        });
-    });
-
 });

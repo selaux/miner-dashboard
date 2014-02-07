@@ -66,7 +66,7 @@ describe('App', function () {
             expect(app.modules[0].id).to.equal('72c8061bc4e6ff90df26bdc3003327ed60e02d7d');
         });
 
-        it('should setup a listener the update:data event', function (done) {
+        it('should setup a listener the change event', function (done) {
             var module = new EventEmitter({
                     wildcard: true,
                     delimiter: '::'
@@ -89,7 +89,8 @@ describe('App', function () {
                 done();
             });
             
-            module.emit('update:data', newData);
+            module.toJSON = sinon.stub().returns(newData);
+            module.emit('change');
         });
 
     });

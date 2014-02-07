@@ -53,8 +53,8 @@ describe('modules/revenue/triplemining', function () {
         triplemining.technicalData = technicalData;
         triplemining.marketData = marketData;
 
-        triplemining.on('update:data', function (data) {
-            expect(data).to.deep.equal({
+        triplemining.on('change', function () {
+            expect(triplemining.toJSON()).to.deep.equal({
                 value: 2073600000 * 1e6,
                 currency: 'NMC',
                 interval: 'Day'
@@ -70,8 +70,8 @@ describe('modules/revenue/triplemining', function () {
         triplemining.marketData = marketData;
 
         setTimeout(function () {
-            triplemining.on('update:data', function (data) {
-                expect(data).to.deep.equal({
+            triplemining.on('change', function () {
+                expect(triplemining.toJSON()).to.deep.equal({
                     value: 2073600000 * 1e6,
                     currency: 'NMC',
                     interval: 'Day'
@@ -90,8 +90,8 @@ describe('modules/revenue/triplemining', function () {
         triplemining.technicalData = technicalData;
 
         setTimeout(function () {
-            triplemining.on('update:data', function (data) {
-                expect(data).to.deep.equal({
+            triplemining.on('change', function () {
+                expect(triplemining.toJSON()).to.deep.equal({
                     value: 2073600000 * 1e6,
                     currency: 'NMC',
                     interval: 'Day'
@@ -108,8 +108,8 @@ describe('modules/revenue/triplemining', function () {
 
         triplemining.technicalData = technicalData;
 
-        triplemining.on('update:data', function (data) {
-            expect(data).to.deep.equal({
+        triplemining.on('change', function () {
+            expect(triplemining.toJSON()).to.deep.equal({
                 value: 1036800000 * 1e6,
                 currency: 'BTC',
                 interval: 'Day'
@@ -133,7 +133,7 @@ describe('modules/revenue/triplemining', function () {
             triplemining.marketData = marketData;
 
             setTimeout(function () {
-                expect(triplemining.data).not.to.be.ok;
+                expect(triplemining.toJSON()).to.be.empty;
                 done();
             }, 50);
         });
@@ -152,7 +152,7 @@ describe('modules/revenue/triplemining', function () {
             triplemining.marketData = marketData;
 
             setTimeout(function () {
-                expect(triplemining.data).not.to.be.ok;
+                expect(triplemining.toJSON()).to.be.empty;
                 done();
             }, 50);
         });
