@@ -2,6 +2,7 @@
 
 [![Build Status](https://travis-ci.org/selaux/miner-dashboard.png)](https://travis-ci.org/selaux/miner-dashboard)
 [![Build Status](https://david-dm.org/selaux/miner-dashboard.png)](https://david-dm.org/selaux/miner-dashboard)
+[![tip for next commit](http://tip4commit.com/projects/563.svg)](http://tip4commit.com/projects/563)
 
 Node.js based app to show the current status of your miner in a browser.
 
@@ -71,10 +72,6 @@ Note: Each module can have an unique id assigned in the configuration object, so
 #### Technical Info
 
 - [blockchain.info](https://github.com/selaux/miner-dashboard/wiki/bitcoincharts.com)
-
-## Support this project
-
-If you want to support this project, either donate to `1BPpoibyxd765qnPyfn4XtG18cTsRJfw1d` or join my [triplemining.com minipool](http://selaux.triplemining.com) 
 
 ## Changelog
 
