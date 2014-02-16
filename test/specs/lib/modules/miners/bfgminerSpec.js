@@ -299,9 +299,12 @@ describe('modules/miners/bfgminer', function () {
                 shares: {
                     accepted: 20,
                     rejected: 14,
+                    rejectedPercentage: (14 / 55) * 100,
                     best: 1,
                     stale: 16,
-                    discarded: 5
+                    stalePercentage: (16 / 55) * 100,
+                    discarded: 5,
+                    discardedPercentage: (5 / 55) * 100
                 },
                 difficulty: {
                     accepted: 2.0,
