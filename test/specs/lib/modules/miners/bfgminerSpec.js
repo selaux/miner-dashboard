@@ -356,7 +356,8 @@ describe('modules/miners/bfgminer', function () {
                         'Name': 'One Mining Device',
                         'Hardware Errors': 1,
                         'Accepted': 2,
-                        'MHS 100s': 3
+                        'MHS 100s': 3,
+                        'Temperature': 40
                     },
                     {
                         'Status': 'Other Status',
@@ -364,7 +365,8 @@ describe('modules/miners/bfgminer', function () {
                         'Name': 'Different Mining Device',
                         'Hardware Errors': 4,
                         'Accepted': 16,
-                        'MHS 300s': 9
+                        'MHS 300s': 9,
+                        'Temperature': 50
                     }
                 ]
             },
@@ -375,7 +377,8 @@ describe('modules/miners/bfgminer', function () {
                     description: 'One Mining Device',
                     hardwareErrors: 1,
                     hardwareErrorRate: 50,
-                    avgHashrate: 3
+                    avgHashrate: 3,
+                    temperature: 40
                 },
                 {
                     connected: false,
@@ -383,7 +386,8 @@ describe('modules/miners/bfgminer', function () {
                     description: 'Different Mining Device',
                     hardwareErrors: 4,
                     hardwareErrorRate: 25,
-                    avgHashrate: 9
+                    avgHashrate: 9,
+                    temperature: 50
                 }
             ];
 

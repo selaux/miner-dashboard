@@ -77,7 +77,10 @@
                                     <td class="{{#if connected}}success{{else}}danger{{/if}}">Device {{id}}</td>
                                     <td>{{description}}</td>
                                     <td>{{hashrate avgHashrate}}</td>
-                                    <td>{{number hardwareErrorRate precision="2"}}% Hardware Error Rate</td>
+                                    {{#if temperature}}
+                                        <td>{{number temperature precision="1"}}&deg;C</td>
+                                    {{/if}}
+                                    <td>{{number hardwareErrorRate precision="2"}}% HW Error Rate</td>
                                 </tr>
                             </table>
                         </div>
