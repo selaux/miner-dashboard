@@ -323,6 +323,20 @@ describe('modules/miners/bfgminer', function () {
             }));
         });
 
+        it('should handle a response containing GHS instead of MHS', function () {
+            var summary,
+                response,
+                bfgAdapter = new BfgAdapter({}, config);
+
+            summary =  _.extend({}, summaryResponse.SUMMARY[0], { 'GHS av': 58 });
+            delete summary['MHS av'];
+            response = _.extend({}, summaryResponse, { SUMMARY: [ summary ] });
+
+            expect(bfgAdapter.handleSummaryResponse(response)).to.deep.equal(_.extend({}, parsedResponse, {
+                avgHashrate: 58000
+            }));
+        });
+
         it('should handle a response not containing the SUMMARY property', function () {
             var bfgAdapter = new BfgAdapter({}, config);
             expect(bfgAdapter.handleSummaryResponse({})).to.deep.equal({
