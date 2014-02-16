@@ -6,6 +6,7 @@ var EventEmitter = require('events').EventEmitter,
     sinon = require('sinon'),
     sinonChai = require('sinon-chai'),
     _ = require('lodash'),
+    moment = require('moment'),
     SandboxedModule = require('sandboxed-module'),
 
     BfgAdapter = require('../../../../../lib/modules/miners/bfgminer'),
@@ -453,6 +454,27 @@ describe('modules/miners/bfgminer', function () {
                     lastShareTime: undefined
                 }
             ]);
+        });
+
+        it('should handle a response containing the elapsed time since last share as a string', function () {
+            var bfgAdapter = new BfgAdapter({}, config),
+                pool = {
+                    'Status': 'Alive',
+                    'POOL': 0,
+                    'Priority': 0,
+                    'URL': 'http://some.url:3030',
+                    'Last Share Time': '0:01:30'
+                },
+                response = { POOLS: [ pool ] };
+
+            expect(bfgAdapter.handlePoolsResponse(response)).to.deep.equal([{
+                alive: true,
+                id: 0,
+                priority: 0,
+                url: 'http://some.url:3030',
+                lastShareTime: moment().startOf('minute').subtract('seconds', 90).toDate(),
+                active: true
+            }]);
         });
 
         it('should handle a response not containing the POOLS property', function () {
