@@ -465,14 +465,21 @@ describe('modules/miners/bfgminer', function () {
 
         it('should handle a response containing the elapsed time since last share as a string', function () {
             var bfgAdapter = new BfgAdapter({}, config),
-                pool = {
+                pool1 = {
                     'Status': 'Alive',
                     'POOL': 0,
                     'Priority': 0,
                     'URL': 'http://some.url:3030',
                     'Last Share Time': '0:01:30'
                 },
-                response = { POOLS: [ pool ] };
+                pool2 = {
+                    'Status': 'Alive',
+                    'POOL': 1,
+                    'Priority': 1,
+                    'URL': 'http://some.other.url:3030',
+                    'Last Share Time': '0'
+                },
+                response = { POOLS: [ pool1, pool2 ] };
 
             expect(bfgAdapter.handlePoolsResponse(response)).to.deep.equal([{
                 alive: true,
@@ -481,6 +488,13 @@ describe('modules/miners/bfgminer', function () {
                 url: 'http://some.url:3030',
                 lastShareTime: moment().startOf('minute').subtract('seconds', 90).toDate(),
                 active: true
+            },{
+                alive: true,
+                id: 1,
+                priority: 1,
+                url: 'http://some.other.url:3030',
+                lastShareTime: undefined,
+                active: false
             }]);
         });
 
