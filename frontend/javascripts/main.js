@@ -2,21 +2,35 @@
 
 'use strict';
 
-var io = require('socket.io-client');
+var $ = require('jquery'),
+    _ = require('lodash'),
+    io = require('socket.io-client'),
+    Module = require('../../lib/Module'),
+    modules = window.config;
 
-function connect() {
+function initializeApp() {
     var socket = io.connect('http://' + window.location.host, {
         'reconnect': true,
         'reconnection delay': 5000,
         'max reconnection attempts': Infinity
     });
 
-    socket.on('update:view', function (id, data) {
-        var div = document.createElement('div'),
-            element = document.getElementById(id);
-        div.innerHTML = data;
+    modules = modules.map(function (config) {
+        var $el = $('section[id="' + config.id + '"]'),
+            module = new Module(undefined, config),
+            View = require('lib/views/' + config.viewId),
+            view = new View(module, { el: $el });
 
-        element.parentNode.replaceChild(div.firstChild, element);
+        module.on('change', view.render, view);
+
+        return module;
+    });
+
+    socket.on('update:data', function (id, data) {
+        var module = _.find(modules, function (module) { return module.id === id; });
+        if (module) {
+            module.set(data);
+        }
     });
 
     socket.on('connect', function () {
@@ -28,4 +42,4 @@ function connect() {
     });
 }
 
-window.onload = connect;
+$(initializeApp);

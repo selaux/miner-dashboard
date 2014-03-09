@@ -76,10 +76,7 @@ module.exports = function (grunt) {
             main: {
                 files: {
                     'build/public/javascripts/main.js': [
-                        'lib/Module.js',
-                        'lib/views/*.js',
-                        'lib/handlebars/**/*.js',
-                        'build/compiledTemplates.js',
+                        'lib/views/**/*.js',
                         'frontend/javascripts/main.js'
                     ]
                 },
@@ -89,6 +86,18 @@ module.exports = function (grunt) {
                         'node_modules/lodash/dist/lodash.js:lodash',
                         'node_modules/backbone/backbone.js:backbone',
                         'node_modules/socket.io/node_modules/socket.io-client/dist/socket.io.js:socket.io-client'
+                    ],
+                    aliasMappings: [
+                        {
+                            cwd: 'lib/views/',
+                            src: ['**/*.js'],
+                            dest: 'lib/views/'
+                        }
+                    ],
+                    noParse: [
+                        'jquery',
+                        'lodash',
+                        'backbone'
                     ]
                 }
             }
