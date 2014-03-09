@@ -29,6 +29,6 @@
         "suiteTeardown": true,
         "teardown": true,
         "test": true,
-        "io": true
+        "require": true
     }
 }

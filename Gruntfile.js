@@ -9,7 +9,7 @@ module.exports = function (grunt) {
                         '**/*.js',
                         '!build/**/*.js',
                         '!node_modules/**/*.js',
-                        '!frontend/public/**/*.js'
+                        '!frontend/javascripts/**/*.js'
                     ]
                 },
                 options: {
@@ -19,8 +19,7 @@ module.exports = function (grunt) {
             frontend: {
                 files: {
                     src: [
-                        'frontend/public/**/*.js',
-                        '!frontend/public/javascripts/vendor/**/*.js'
+                        'frontend/javascripts/**/*.js'
                     ]
                 },
                 options: {
