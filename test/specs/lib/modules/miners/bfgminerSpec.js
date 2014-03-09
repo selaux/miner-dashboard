@@ -6,6 +6,7 @@ var EventEmitter = require('events').EventEmitter,
     sinon = require('sinon'),
     sinonChai = require('sinon-chai'),
     _ = require('lodash'),
+    moment = require('moment'),
     SandboxedModule = require('sandboxed-module'),
 
     BfgAdapter = require('../../../../../lib/modules/miners/bfgminer'),
@@ -298,8 +299,10 @@ describe('modules/miners/bfgminer', function () {
                 shares: {
                     accepted: 20,
                     rejected: 14,
+                    rejectedPercentage: 100 * 3.0 / 9.0,
                     best: 1,
                     stale: 16,
+                    stalePercentage: 100 * 4.0 / 9.0,
                     discarded: 5
                 },
                 difficulty: {
@@ -323,6 +326,38 @@ describe('modules/miners/bfgminer', function () {
             }));
         });
 
+        it('should handle a response containing GHS instead of MHS', function () {
+            var summary,
+                response,
+                bfgAdapter = new BfgAdapter({}, config);
+
+            summary =  _.extend({}, summaryResponse.SUMMARY[0], { 'GHS av': 58 });
+            delete summary['MHS av'];
+            response = _.extend({}, summaryResponse, { SUMMARY: [ summary ] });
+
+            expect(bfgAdapter.handleSummaryResponse(response)).to.deep.equal(_.extend({}, parsedResponse, {
+                avgHashrate: 58000
+            }));
+        });
+
+        it('should correctly calculate percentages if no work has been done yet', function () {
+            var summary = _.extend({}, summaryResponse.SUMMARY[0], { 'Difficulty Accepted': 0, 'Difficulty Rejected': 0, 'Difficulty Stale': 0 }),
+                response = _.extend({}, summaryResponse, { SUMMARY: [ summary ] }),
+                bfgAdapter = new BfgAdapter({}, config);
+
+            expect(bfgAdapter.handleSummaryResponse(response)).to.deep.equal(_.extend({}, parsedResponse, {
+                difficulty: {
+                    accepted: 0,
+                    rejected: 0,
+                    stale: 0
+                },
+                shares: _.extend({}, parsedResponse.shares, {
+                    rejectedPercentage: 0,
+                    stalePercentage: 0
+                })
+            }));
+        });
+
         it('should handle a response not containing the SUMMARY property', function () {
             var bfgAdapter = new BfgAdapter({}, config);
             expect(bfgAdapter.handleSummaryResponse({})).to.deep.equal({
@@ -341,7 +376,8 @@ describe('modules/miners/bfgminer', function () {
                         'Name': 'One Mining Device',
                         'Hardware Errors': 1,
                         'Accepted': 2,
-                        'MHS 100s': 3
+                        'MHS 100s': 3,
+                        'Temperature': 40
                     },
                     {
                         'Status': 'Other Status',
@@ -349,7 +385,8 @@ describe('modules/miners/bfgminer', function () {
                         'Name': 'Different Mining Device',
                         'Hardware Errors': 4,
                         'Accepted': 16,
-                        'MHS 300s': 9
+                        'MHS 300s': 9,
+                        'Temperature': 50
                     }
                 ]
             },
@@ -360,7 +397,8 @@ describe('modules/miners/bfgminer', function () {
                     description: 'One Mining Device',
                     hardwareErrors: 1,
                     hardwareErrorRate: 50,
-                    avgHashrate: 3
+                    avgHashrate: 3,
+                    temperature: 40
                 },
                 {
                     connected: false,
@@ -368,7 +406,8 @@ describe('modules/miners/bfgminer', function () {
                     description: 'Different Mining Device',
                     hardwareErrors: 4,
                     hardwareErrorRate: 25,
-                    avgHashrate: 9
+                    avgHashrate: 9,
+                    temperature: 50
                 }
             ];
 
@@ -439,6 +478,41 @@ describe('modules/miners/bfgminer', function () {
                     lastShareTime: undefined
                 }
             ]);
+        });
+
+        it('should handle a response containing the elapsed time since last share as a string', function () {
+            var bfgAdapter = new BfgAdapter({}, config),
+                pool1 = {
+                    'Status': 'Alive',
+                    'POOL': 0,
+                    'Priority': 0,
+                    'URL': 'http://some.url:3030',
+                    'Last Share Time': '0:01:30'
+                },
+                pool2 = {
+                    'Status': 'Alive',
+                    'POOL': 1,
+                    'Priority': 1,
+                    'URL': 'http://some.other.url:3030',
+                    'Last Share Time': '0'
+                },
+                response = { POOLS: [ pool1, pool2 ] };
+
+            expect(bfgAdapter.handlePoolsResponse(response)).to.deep.equal([{
+                alive: true,
+                id: 0,
+                priority: 0,
+                url: 'http://some.url:3030',
+                lastShareTime: moment().startOf('minute').subtract('seconds', 90).toDate(),
+                active: true
+            },{
+                alive: true,
+                id: 1,
+                priority: 1,
+                url: 'http://some.other.url:3030',
+                lastShareTime: undefined,
+                active: false
+            }]);
         });
 
         it('should handle a response not containing the POOLS property', function () {

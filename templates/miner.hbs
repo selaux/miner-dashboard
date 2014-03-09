@@ -26,9 +26,9 @@
                 <dt>Accepted Shares:</dt>
                 <dd>{{number shares.accepted}}</dd>
                 <dt>Rejected Shares:</dt>
-                <dd>{{number shares.rejected}}</dd>
+                <dd>{{number shares.rejected}} ({{number shares.rejectedPercentage precision="2"}}%)</dd>
                 <dt>Stale Shares:</dt>
-                <dd>{{number shares.stale}}</dd>
+                <dd>{{number shares.stale}} ({{number shares.stalePercentage precision="2"}}%)</dd>
                 <dt>Discarded Shares:</dt>
                 <dd>{{number shares.discarded}}</dd>
             </dl>
@@ -76,7 +76,10 @@
                                 <td class="{{#if connected}}success{{else}}danger{{/if}}">Device {{id}}</td>
                                 <td>{{description}}</td>
                                 <td>{{hashrate avgHashrate}}</td>
-                                <td>{{number hardwareErrorRate precision="2"}}% Hardware Error Rate</td>
+                                {{#if temperature}}
+                                    <td>{{number temperature precision="1"}}&deg;C</td>
+                                {{/if}}
+                                <td>{{number hardwareErrorRate precision="2"}}% HW Error Rate</td>
                             </tr>
                         </table>
                     </div>

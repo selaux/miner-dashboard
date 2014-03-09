@@ -35,7 +35,7 @@
         "lodash": "2.1.0",
         "request": "2.27.0",
         "socket.io": "0.9.16",
-        "grunt": "0.4.1",
+        "grunt": "0.4.2",
         "grunt-cli": "0.1.9",
         "grunt-contrib-handlebars": "0.7.0",
         "handlebars": "1.0.12",
