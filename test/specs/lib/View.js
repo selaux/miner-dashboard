@@ -66,7 +66,7 @@ describe('View', function () {
                     id: 'foo',
                     template: 'json',
                     title: 'bar',
-                    data: { some: 'json', data: 'of', the: 'module' }
+                    attributes: { some: 'json', data: 'of', the: 'module' }
                 },
                 view = new View(module);
 
@@ -78,7 +78,7 @@ describe('View', function () {
             expect(view.template).to.have.been.calledWithMatch({
                 id: module.id,
                 title: module.title,
-                json: JSON.stringify(module.data),
+                json: JSON.stringify(module.attributes),
                 some: 'json',
                 data: 'of',
                 the: 'module'
