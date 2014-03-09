@@ -35,6 +35,7 @@
         "socket.io": "0.9.16",
         "grunt": "0.4.1",
         "grunt-cli": "0.1.9",
+        "grunt-contrib-handlebars": "0.7.0",
         "handlebars": "1.0.12",
         "nodemailer": "0.5.3",
         "numeral": "1.5.2",

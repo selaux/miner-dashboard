@@ -7,6 +7,7 @@ module.exports = function (grunt) {
                 files: {
                     src: [
                         '**/*.js',
+                        '!build/**/*.js',
                         '!node_modules/**/*.js',
                         '!frontend/public/**/*.js'
                     ]
@@ -39,12 +40,30 @@ module.exports = function (grunt) {
                     'test/specs/**/*.js'
                 ]
             }
+        },
+
+        handlebars: {
+            compile: {
+                options: {
+                    commonjs: true,
+                    namespace: false,
+                    processName: function (path) {
+                        var filename = path.split('/')[1];
+                        return filename.substr(0, filename.length-4);
+                    }
+                },
+                files: {
+                    'build/compiledTemplates.js': 'templates/*.hbs'
+                }
+            }
         }
 
     });
 
     grunt.loadNpmTasks('grunt-contrib-jshint');
+    grunt.loadNpmTasks('grunt-contrib-handlebars');
     grunt.loadNpmTasks('grunt-mocha-test');
 
+    grunt.registerTask('compile', ['handlebars']);
     grunt.registerTask('test', ['jshint', 'mochaTest']);
 };

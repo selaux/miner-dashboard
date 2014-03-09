@@ -88,13 +88,9 @@ describe('View', function () {
 
     describe('getCompiledTemplate', function () {
         var compiledTemplate = function () {},
+            compiledTemplatesStub = sinon.stub().returns({ templateName: compiledTemplate }),
             requires = {
-                fs: {
-                    readFileSync: sinon.stub().returns('template string')
-                },
-                './handlebars/handlebars': {
-                    compile: sinon.stub().returns(compiledTemplate)
-                }
+                '../build/compiledTemplates': compiledTemplatesStub
             },
             View = SandboxedModule.require('../../../lib/View', {
                 requires: requires
@@ -103,9 +99,7 @@ describe('View', function () {
         it('should compile the template residing on the disk', function () {
             var result = View.prototype.getCompiledTemplate('templateName');
 
-            expect(requires.fs.readFileSync).to.have.been.calledOnce;
-            expect(requires['./handlebars/handlebars'].compile).to.have.been.calledOnce;
-            expect(requires['./handlebars/handlebars'].compile).to.have.been.calledWith('template string');
+            expect(compiledTemplatesStub).to.have.been.calledOnce;
             expect(result).to.equal(compiledTemplate);
         });
     });
