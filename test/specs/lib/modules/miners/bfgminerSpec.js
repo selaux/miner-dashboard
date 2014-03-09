@@ -299,12 +299,11 @@ describe('modules/miners/bfgminer', function () {
                 shares: {
                     accepted: 20,
                     rejected: 14,
-                    rejectedPercentage: (14 / 55) * 100,
+                    rejectedPercentage: 100 * 3.0 / 9.0,
                     best: 1,
                     stale: 16,
-                    stalePercentage: (16 / 55) * 100,
-                    discarded: 5,
-                    discardedPercentage: (5 / 55) * 100
+                    stalePercentage: 100 * 4.0 / 9.0,
+                    discarded: 5
                 },
                 difficulty: {
                     accepted: 2.0,
@@ -338,6 +337,24 @@ describe('modules/miners/bfgminer', function () {
 
             expect(bfgAdapter.handleSummaryResponse(response)).to.deep.equal(_.extend({}, parsedResponse, {
                 avgHashrate: 58000
+            }));
+        });
+
+        it('should correctly calculate percentages if no work has been done yet', function () {
+            var summary = _.extend({}, summaryResponse.SUMMARY[0], { 'Difficulty Accepted': 0, 'Difficulty Rejected': 0, 'Difficulty Stale': 0 }),
+                response = _.extend({}, summaryResponse, { SUMMARY: [ summary ] }),
+                bfgAdapter = new BfgAdapter({}, config);
+
+            expect(bfgAdapter.handleSummaryResponse(response)).to.deep.equal(_.extend({}, parsedResponse, {
+                difficulty: {
+                    accepted: 0,
+                    rejected: 0,
+                    stale: 0
+                },
+                shares: _.extend({}, parsedResponse.shares, {
+                    rejectedPercentage: 0,
+                    stalePercentage: 0
+                })
             }));
         });
 
