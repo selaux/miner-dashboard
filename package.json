@@ -17,8 +17,8 @@
         "url": "git://github.com/selaux/miner-dashboard.git"
     },
     "scripts": {
-        "start": "npm install --production && node app",
-        "test": "node_modules/.bin/grunt test"
+        "start": "npm install --production && grunt compile && node app",
+        "test": "node_modules/.bin/grunt compile test"
     },
     "bin": {
         "miner-dashboard": "app.js"
