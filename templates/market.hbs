@@ -1,14 +1,12 @@
-<section class="market panel panel-success" id="{{ id }}">
-    <header class="panel-heading">
-        <h2 class="panel-title">{{ title }}</h2>
-    </header>
-    <dl class="panel-body dl-horizontal">
-        <dt class="big-label">Latest Trade:</dt>
-        <dd class="big">{{number close}} {{currency}}</dd>
-        <dt>Best Bid:</dt>
-        <dd>{{number bid}} {{currency}}</dd>
-        <dt>Best Ask:</dt>
-        <dd>{{number ask}} {{currency}}</dd>
-    </dl>
-    <footer class="text-muted">Updated: {{time lastUpdated}}</footer>
-</section>
+<header class="panel-heading">
+    <h2 class="panel-title">{{ title }}</h2>
+</header>
+<dl class="panel-body dl-horizontal">
+    <dt class="big-label">Latest Trade:</dt>
+    <dd class="big">{{number close}} {{currency}}</dd>
+    <dt>Best Bid:</dt>
+    <dd>{{number bid}} {{currency}}</dd>
+    <dt>Best Ask:</dt>
+    <dd>{{number ask}} {{currency}}</dd>
+</dl>
+<footer class="text-muted">Updated: {{time lastUpdated}}</footer>

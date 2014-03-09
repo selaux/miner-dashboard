@@ -42,6 +42,7 @@ describe('App', function () {
                 },
                 app;
 
+            module.id = moduleConfig.id;
             constructorStub.prototype.viewId = 'json';
             app = new App({
                 modules: [moduleConfig]

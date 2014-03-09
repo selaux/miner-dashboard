@@ -34,8 +34,47 @@ describe('View', function () {
                 view = new View(module);
 
             expect(view.module).to.equal(module);
-            expect(view.template).to.equal(jsonTemplate);
+            expect(view.compiledTemplate).to.equal(jsonTemplate);
             expect(view.noDataTemplate).to.equal(noDataTemplate);
+        });
+    });
+
+    describe('className', function () {
+        var module,
+            view;
+
+        beforeEach(function () {
+            module = {
+                attributes: {},
+                has: sinon.stub(),
+                get: sinon.stub(),
+                viewId: 'someView'
+            };
+            view = new View(module);
+        });
+
+        it('should add panel-warning and noData classes when no data has been fetched yet', function () {
+            expect(view.className()).to.equal('panel panel-warning noData');
+        });
+
+        it('should add panel-success and viewId classes if there is no connection info for the module', function () {
+            module.attributes.foo = 'bar';
+            module.has.withArgs('connected').returns(false);
+            expect(view.className()).to.equal('panel panel-success someView');
+        });
+
+        it('should add panel-success and viewId classes if there is connection info and the connection is ok', function () {
+            module.attributes.foo = 'bar';
+            module.has.withArgs('connected').returns(true);
+            module.get.withArgs('connected').returns(true);
+            expect(view.className()).to.equal('panel panel-success someView');
+        });
+
+        it('should add panel-danger and viewId classes if there is connection info and the module is disconnected', function () {
+            module.attributes.foo = 'bar';
+            module.has.withArgs('connected').returns(true);
+            module.get.withArgs('connected').returns(false);
+            expect(view.className()).to.equal('panel panel-danger someView');
         });
     });
 
@@ -66,16 +105,17 @@ describe('View', function () {
                     id: 'foo',
                     template: 'json',
                     title: 'bar',
-                    attributes: { some: 'json', data: 'of', the: 'module' }
+                    attributes: { some: 'json', data: 'of', the: 'module' },
+                    has: sinon.stub().returns(false)
                 },
                 view = new View(module);
 
-            view.template = sinon.stub();
+            view.compiledTemplate = sinon.stub();
 
             view.renderViewWithData();
 
-            expect(view.template).to.have.been.calledOnce;
-            expect(view.template).to.have.been.calledWithMatch({
+            expect(view.compiledTemplate).to.have.been.calledOnce;
+            expect(view.compiledTemplate).to.have.been.calledWithMatch({
                 id: module.id,
                 title: module.title,
                 json: JSON.stringify(module.attributes),
