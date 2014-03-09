@@ -56,14 +56,53 @@ module.exports = function (grunt) {
                     'build/compiledTemplates.js': 'templates/*.hbs'
                 }
             }
+        },
+
+        copy: {
+            images: {
+                expand: true,
+                cwd: 'frontend/images/',
+                src: '**',
+                dest: 'build/public/images/'
+            },
+            stylesheets: {
+                expand: true,
+                cwd: 'frontend/stylesheets/',
+                src: '*.css',
+                dest: 'build/public/stylesheets/'
+            }
+        },
+
+        browserify: {
+            main: {
+                files: {
+                    'build/public/javascripts/main.js': [
+                        'lib/Module.js',
+                        'lib/views/*.js',
+                        'lib/handlebars/**/*.js',
+                        'build/compiledTemplates.js',
+                        'frontend/javascripts/main.js'
+                    ]
+                },
+                options: {
+                    alias: [
+                        'node_modules/jquery/dist/jquery.js:jquery',
+                        'node_modules/lodash/dist/lodash.js:lodash',
+                        'node_modules/backbone/backbone.js:backbone',
+                        'node_modules/socket.io/node_modules/socket.io-client/dist/socket.io.js:socket.io-client'
+                    ]
+                }
+            }
         }
 
     });
 
+    grunt.loadNpmTasks('grunt-browserify');
+    grunt.loadNpmTasks('grunt-contrib-copy');
     grunt.loadNpmTasks('grunt-contrib-jshint');
     grunt.loadNpmTasks('grunt-contrib-handlebars');
     grunt.loadNpmTasks('grunt-mocha-test');
 
-    grunt.registerTask('compile', ['handlebars']);
+    grunt.registerTask('compile', ['handlebars', 'copy', 'browserify']);
     grunt.registerTask('test', ['jshint', 'mochaTest']);
 };
