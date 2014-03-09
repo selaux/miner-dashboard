@@ -467,7 +467,7 @@ describe('modules/miners/bfgminer', function () {
                     priority: 0,
                     url: 'http://some.url:3030',
                     active: true,
-                    lastShareTime: new Date(1383752634000)
+                    lastShareTime: 1383752634000
                 },
                 {
                     alive: false,
@@ -503,7 +503,7 @@ describe('modules/miners/bfgminer', function () {
                 id: 0,
                 priority: 0,
                 url: 'http://some.url:3030',
-                lastShareTime: moment().startOf('minute').subtract('seconds', 90).toDate(),
+                lastShareTime: moment().startOf('minute').subtract('seconds', 90).toDate().getTime(),
                 active: true
             },{
                 alive: true,
