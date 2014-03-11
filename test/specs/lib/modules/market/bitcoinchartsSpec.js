@@ -44,8 +44,8 @@ describe('modules/market/bitcoincharts', function () {
             },
             bitcoincharts = new Bitcoincharts(app, config);
 
-        bitcoincharts.on('update:data', function (data) {
-            expect(data).to.deep.equal({
+        bitcoincharts.on('change', function () {
+            expect(bitcoincharts.toJSON()).to.deep.equal({
                 symbol: 'wantedSymbol',
                 ask: 14,
                 bid: 13,
@@ -68,7 +68,7 @@ describe('modules/market/bitcoincharts', function () {
             bitcoincharts = new Bitcoincharts({}, {});
 
         setTimeout(function () {
-            expect(bitcoincharts.data).not.to.be.ok;
+            expect(bitcoincharts.toJSON()).to.be.empty;
             done();
         }, 50);
     });
@@ -86,7 +86,7 @@ describe('modules/market/bitcoincharts', function () {
             bitcoincharts = new Bitcoincharts({}, {});
 
         setTimeout(function () {
-            expect(bitcoincharts.data).not.to.be.ok;
+            expect(bitcoincharts.toJSON()).to.be.empty;
             done();
         }, 50);
     });

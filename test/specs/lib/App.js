@@ -8,6 +8,7 @@ var EventEmitter = require('events').EventEmitter,
     sinonChai = require('sinon-chai'),
 
     Module = require('../../../lib/Module'),
+    JSONView = require('../../../lib/views/json'),
     App = require('../../../lib/App');
 
 chai.use(sinonChai);
@@ -28,7 +29,7 @@ describe('App', function () {
             expect(app.title).to.deep.equal('Miner-Dashboard');
         });
 
-        it('should initialize the modules inside the modules array', function () {
+        it('should initialize the modules and views inside the modules array', function () {
             var module = new EventEmitter({
                     wildcard: true,
                     delimiter: '::'
@@ -39,11 +40,17 @@ describe('App', function () {
                     module: constructorStub,
                     some: 'config'
                 },
-                app = new App({
-                    modules: [moduleConfig]
-                });
+                app;
+
+            module.id = moduleConfig.id;
+            constructorStub.prototype.viewId = 'json';
+            app = new App({
+                modules: [moduleConfig]
+            });
 
             expect(app.modules).to.have.length(1);
+            expect(app.views).to.have.length(1);
+            expect(app.views[0]).to.be.an.instanceOf(JSONView);
             expect(constructorStub).to.have.been.calledOnce;
             expect(constructorStub).to.have.been.calledWith(app, moduleConfig);
         });
@@ -60,7 +67,7 @@ describe('App', function () {
             expect(app.modules[0].id).to.equal('72c8061bc4e6ff90df26bdc3003327ed60e02d7d');
         });
 
-        it('should setup a listener the update:data event', function (done) {
+        it('should setup a listener the change event', function (done) {
             var module = new EventEmitter({
                     wildcard: true,
                     delimiter: '::'
@@ -83,51 +90,10 @@ describe('App', function () {
                 done();
             });
             
-            module.emit('update:data', newData);
+            module.toJSON = sinon.stub().returns(newData);
+            module.emit('change');
         });
 
-        it('should setup a listener the update:view event', function (done) {
-            var module = new EventEmitter({
-                    wildcard: true,
-                    delimiter: '::'
-                }),
-                constructorStub = sinon.stub().returns(module),
-                moduleConfig = {
-                    id: 'someid',
-                    module: constructorStub,
-                    some: 'config'
-                },
-                app = new App({
-                    modules: [moduleConfig]
-                }),
-                newView = 'Some new data';
-
-            app.on('update:view:someid', function (data) {
-                expect(data).to.deep.equal(newView);
-                done();
-            });
-            
-            module.view = newView;
-            module.emit('update:view');
-        });
-
-    });
-
-    describe('getViews', function () {
-        it('should return the views of all modules', function () {
-            var app = new App({});
-
-            app.modules = [
-                { view: 'Some rendered <html>' },
-                { view: 'Other rendered html' },
-                { id: '__webinterface__' }
-            ];
-
-            expect(app.getViews()).to.deep.equal([
-                'Some rendered <html>',
-                'Other rendered html'
-            ]);
-        });
     });
 
     describe('updateData', function () {
@@ -144,17 +110,4 @@ describe('App', function () {
         });
     });
 
-    describe('updateView', function () {
-        it('should retrigger the event on the instance', function (done) {
-            var app = new App({}),
-                newData = { some: 'data' };
-
-            app.on('update:view:someId', function (data) {
-                expect(data).to.deep.equal(newData);
-                done();
-            });
-
-            app.updateView('someId', newData);
-        });
-    });
 });

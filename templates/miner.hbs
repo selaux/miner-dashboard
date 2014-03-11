@@ -1,93 +1,91 @@
-<section class="miner panel {{#if connected}}panel-success{{else}}panel-danger{{/if}}" id="{{ id }}">
-    <header class="panel-heading">
+<header class="panel-heading">
+    <div class="row">
+        <h2 class="panel-title col-xs-6">{{ title }}</h2>
+        <div class="col-xs-6"><span class="pull-right">{{#if connected}}Connected{{else}}Disconnected{{/if}}</span></div>
+    </div>
+</header>
+{{#if connected}}
+    <div class="panel-body">
+        <h4>Overview</h4>
         <div class="row">
-            <h2 class="panel-title col-xs-6">{{ title }}</h2>
-            <div class="col-xs-6"><span class="pull-right">{{#if connected}}Connected{{else}}Disconnected{{/if}}</span></div>
+            <dl class="dl-horizontal col-xs-12 col-md-4">
+                <dt class="big-label">Hashrate:</dt>
+                <dd class="big">{{hashrate avgHashrate}}</dd>
+                <dt></dt>
+                <dd></dd>
+                <dt>Hardware Errors:</dt>
+                <dd>{{number hardwareErrors}}</dd>
+                <dt>Hardware Error Rate:</dt>
+                <dd>{{number hardwareErrorRate precision="2"}}%</dd>
+                <dt>Uptime:</dt>
+                <dd>{{timespan elapsed}}</dd>
+                <dt>Software:</dt>
+                <dd>{{description}}</dd>
+            </dl>
+            <dl class="dl-horizontal col-xs-12 col-md-4">
+                <dt>Accepted Shares:</dt>
+                <dd>{{number shares.accepted}}</dd>
+                <dt>Rejected Shares:</dt>
+                <dd>{{number shares.rejected}} ({{number shares.rejectedPercentage precision="2"}}%)</dd>
+                <dt>Stale Shares:</dt>
+                <dd>{{number shares.stale}} ({{number shares.stalePercentage precision="2"}}%)</dd>
+                <dt>Discarded Shares:</dt>
+                <dd>{{number shares.discarded}}</dd>
+            </dl>
+            <dl class="dl-horizontal col-xs-12 col-md-4">
+                <dt>Difficulty Accepted:</dt>
+                <dd>{{number difficulty.accepted precision="2"}}</dd>
+                <dt>Difficulty Rejected:</dt>
+                <dd>{{number difficulty.rejected precision="2"}}</dd>
+                <dt>Difficulty Stale:</dt>
+                <dd>{{number difficulty.stale precision="2"}}</dd>
+            </dl>
         </div>
-    </header>
-    {{#if connected}}
-        <div class="panel-body">
-            <h4>Overview</h4>
-            <div class="row">
-                <dl class="dl-horizontal col-xs-12 col-md-4">
-                    <dt class="big-label">Hashrate:</dt>
-                    <dd class="big">{{hashrate avgHashrate}}</dd>
-                    <dt></dt>
-                    <dd></dd>
-                    <dt>Hardware Errors:</dt>
-                    <dd>{{number hardwareErrors}}</dd>
-                    <dt>Hardware Error Rate:</dt>
-                    <dd>{{number hardwareErrorRate precision="2"}}%</dd>
-                    <dt>Uptime:</dt>
-                    <dd>{{timespan elapsed}}</dd>
-                    <dt>Software:</dt>
-                    <dd>{{description}}</dd>
-                </dl>
-                <dl class="dl-horizontal col-xs-12 col-md-4">
-                    <dt>Accepted Shares:</dt>
-                    <dd>{{number shares.accepted}}</dd>
-                    <dt>Rejected Shares:</dt>
-                    <dd>{{number shares.rejected}} ({{number shares.rejectedPercentage precision="2"}}%)</dd>
-                    <dt>Stale Shares:</dt>
-                    <dd>{{number shares.stale}} ({{number shares.stalePercentage precision="2"}}%)</dd>
-                    <dt>Discarded Shares:</dt>
-                    <dd>{{number shares.discarded}}</dd>
-                </dl>
-                <dl class="dl-horizontal col-xs-12 col-md-4">
-                    <dt>Difficulty Accepted:</dt>
-                    <dd>{{number difficulty.accepted precision="2"}}</dd>
-                    <dt>Difficulty Rejected:</dt>
-                    <dd>{{number difficulty.rejected precision="2"}}</dd>
-                    <dt>Difficulty Stale:</dt>
-                    <dd>{{number difficulty.stale precision="2"}}</dd>
-                </dl>
+        {{#if pools}}
+            <h4>Pools</h4>
+            <div class="pools table-responsive">
+                <table class="table table-bordered">
+                    <tr>
+                        <th></th>
+                        <th>Priority</th>
+                        <th>Url</th>
+                        <th>Alive</th>
+                        <th>Active</th>
+                        <th>Last Share Submitted</th>
+                    </tr>
+                {{#each pools}}
+                    <tr>
+                        <td class="{{#if alive}}success{{else}}danger{{/if}}">Pool {{id}}</td>
+                        <td>{{priority}}</td>
+                        <td>{{url}}</td>
+                        <td>{{#if alive}}Yes{{else}}No{{/if}}</td>
+                        <td>{{#if active}}Yes{{else}}No{{/if}}</td>
+                        <td>{{#if lastShareTime}}{{time lastShareTime}}{{else}}Never{{/if}}</td>
+                    </tr>
+                {{/each}}
+                </table>
             </div>
-            {{#if pools}}
-                <h4>Pools</h4>
-                <div class="pools table-responsive">
-                    <table class="table table-bordered">
-                        <tr>
-                            <th></th>
-                            <th>Priority</th>
-                            <th>Url</th>
-                            <th>Alive</th>
-                            <th>Active</th>
-                            <th>Last Share Submitted</th>
-                        </tr>
-                    {{#each pools}}
-                        <tr>
-                            <td class="{{#if alive}}success{{else}}danger{{/if}}">Pool {{id}}</td>
-                            <td>{{priority}}</td>
-                            <td>{{url}}</td>
-                            <td>{{#if alive}}Yes{{else}}No{{/if}}</td>
-                            <td>{{#if active}}Yes{{else}}No{{/if}}</td>
-                            <td>{{#if lastShareTime}}{{time lastShareTime}}{{else}}Never{{/if}}</td>
-                        </tr>
-                    {{/each}}
-                    </table>
-                </div>
-            {{/if}}
-            {{#if devices}}
-                <h4>Devices</h4>
-                <div class="row devices">
-                    {{#each devices}}
-                        <div class="col-xs-12 col-md-4">
-                            <table class="table table-bordered">
-                                <tr>
-                                    <td class="{{#if connected}}success{{else}}danger{{/if}}">Device {{id}}</td>
-                                    <td>{{description}}</td>
-                                    <td>{{hashrate avgHashrate}}</td>
-                                    {{#if temperature}}
-                                        <td>{{number temperature precision="1"}}&deg;C</td>
-                                    {{/if}}
-                                    <td>{{number hardwareErrorRate precision="2"}}% HW Error Rate</td>
-                                </tr>
-                            </table>
-                        </div>
-                    {{/each}}
-                </div>
-            {{/if}}
-        </div>
-        <footer class="text-muted">Updated: {{time lastUpdated}}</footer>
-    {{/if}}   
-</section>
+        {{/if}}
+        {{#if devices}}
+            <h4>Devices</h4>
+            <div class="row devices">
+                {{#each devices}}
+                    <div class="col-xs-12 col-md-4">
+                        <table class="table table-bordered">
+                            <tr>
+                                <td class="{{#if connected}}success{{else}}danger{{/if}}">Device {{id}}</td>
+                                <td>{{description}}</td>
+                                <td>{{hashrate avgHashrate}}</td>
+                                {{#if temperature}}
+                                    <td>{{number temperature precision="1"}}&deg;C</td>
+                                {{/if}}
+                                <td>{{number hardwareErrorRate precision="2"}}% HW Error Rate</td>
+                            </tr>
+                        </table>
+                    </div>
+                {{/each}}
+            </div>
+        {{/if}}
+    </div>
+    <footer class="text-muted">Updated: {{time lastUpdated}}</footer>
+{{/if}}

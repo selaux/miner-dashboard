@@ -34,8 +34,8 @@ describe('modules/technical/blockchainInfo', function () {
         var app = {},
             blockchainInfo = new BlockchainInfo(app);
 
-        blockchainInfo.on('update:data', function (data) {
-            expect(data).to.deep.equal(_.extend({}, statsAnswer, {
+        blockchainInfo.on('change', function () {
+            expect(blockchainInfo.toJSON()).to.deep.equal(_.extend({}, statsAnswer, {
                 btcPerBlock: 25,
                 probability: 0.01
             }));
@@ -55,7 +55,7 @@ describe('modules/technical/blockchainInfo', function () {
             blockchainInfo = new BlockchainInfo({});
 
             setTimeout(function () {
-                expect(blockchainInfo.data).not.to.be.ok;
+                expect(blockchainInfo.toJSON()).to.be.empty;
                 done();
             }, 50);
         });
@@ -71,7 +71,7 @@ describe('modules/technical/blockchainInfo', function () {
             blockchainInfo = new BlockchainInfo({});
 
             setTimeout(function () {
-                expect(blockchainInfo.data).not.to.be.ok;
+                expect(blockchainInfo.toJSON()).to.be.empty;
                 done();
             }, 50);
         });

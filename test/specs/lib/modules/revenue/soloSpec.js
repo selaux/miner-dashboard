@@ -32,8 +32,8 @@ describe('modules/revenue/solo', function () {
         solo.marketData = { ask: 100, currency: 'NMC' };
         solo.technicalData = { btcPerBlock: 10, probability: 0.0001 };
 
-        solo.on('update:data', function (data) {
-            expect(data).to.deep.equal({
+        solo.on('change', function () {
+            expect(solo.toJSON()).to.deep.equal({
                 value: 8640,
                 currency: 'NMC',
                 interval: 'Day'
@@ -50,8 +50,8 @@ describe('modules/revenue/solo', function () {
         solo.marketData = { ask: 100, currency: 'NMC' };
         solo.technicalData = { btcPerBlock: 10, probability: 0.0001 };
 
-        solo.on('update:data', function (data) {
-            expect(data).to.deep.equal({
+        solo.on('change', function () {
+            expect(solo.toJSON()).to.deep.equal({
                 value: 0,
                 currency: 'NMC',
                 interval: 'Day'
@@ -68,8 +68,8 @@ describe('modules/revenue/solo', function () {
         solo.minerData = { minerId: { avgHashrate: 1e-6 } };
         solo.technicalData = { btcPerBlock: 10, probability: 0.0001 };
 
-        solo.on('update:data', function (data) {
-            expect(data).to.deep.equal({
+        solo.on('change', function () {
+            expect(solo.toJSON()).to.deep.equal({
                 value: 8640,
                 currency: 'NMC',
                 interval: 'Day'
@@ -88,8 +88,8 @@ describe('modules/revenue/solo', function () {
 
         solo.technicalData = { btcPerBlock: 10, probability: 0.0001 };
 
-        solo.on('update:data', function (data) {
-            expect(data).to.deep.equal({
+        solo.on('change', function () {
+            expect(solo.toJSON()).to.deep.equal({
                 value: 86.4,
                 currency: 'BTC',
                 interval: 'Day'
@@ -106,8 +106,8 @@ describe('modules/revenue/solo', function () {
         solo.minerData = { minerId: { avgHashrate: 1e-6 } };
         solo.marketData = { ask: 100, currency: 'NMC' };
 
-        solo.on('update:data', function (data) {
-            expect(data).to.deep.equal({
+        solo.on('change', function () {
+            expect(solo.toJSON()).to.deep.equal({
                 value: 8640,
                 currency: 'NMC',
                 interval: 'Day'

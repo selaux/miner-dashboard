@@ -101,7 +101,7 @@ describe('modules/miners/bfgminer', function () {
         });
 
         it('should call the sendCommand method and use the data it returns', function (done) {
-            bfgAdapterStub.updateData = function (data) {
+            bfgAdapterStub.set = function (data) {
                 commands.forEach(function (command) {
                     expect(bfgAdapterStub['handle' + capitalizeFirstLetter(command) + 'Response']).to.have.been.calledOnce;
                 });
@@ -127,7 +127,7 @@ describe('modules/miners/bfgminer', function () {
             it('should trigger a status update with the miner status as disconnected when an error occurs with the ' + command + ' command', function (done) {
                 var otherCommands = _.without(commands, command);
 
-                bfgAdapterStub.updateData = function (data) {
+                bfgAdapterStub.set = function (data) {
                     expect(bfgAdapterStub['handle' + capitalizeFirstLetter(command) + 'Response']).not.to.have.beenCalled;
                     expect(bfgAdapterStub.sendCommand).to.have.been.calledThrice;
 
@@ -467,7 +467,7 @@ describe('modules/miners/bfgminer', function () {
                     priority: 0,
                     url: 'http://some.url:3030',
                     active: true,
-                    lastShareTime: new Date(1383752634000)
+                    lastShareTime: 1383752634000
                 },
                 {
                     alive: false,
@@ -503,7 +503,7 @@ describe('modules/miners/bfgminer', function () {
                 id: 0,
                 priority: 0,
                 url: 'http://some.url:3030',
-                lastShareTime: moment().startOf('minute').subtract('seconds', 90).toDate(),
+                lastShareTime: moment().startOf('minute').subtract('seconds', 90).toDate().getTime(),
                 active: true
             },{
                 alive: true,

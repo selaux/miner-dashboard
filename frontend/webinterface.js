@@ -15,6 +15,8 @@ module.exports = Module.extend({
         port: 3000
     },
 
+    template: null,
+
     initialize: function () {
         var self = this,
             webinterface = express();
@@ -34,14 +36,17 @@ module.exports = Module.extend({
             webinterface.set('config', self.config);
             webinterface.set('app', self.app);
 
-            webinterface.use(express.favicon(path.join(__dirname, '/public/images/favicon.ico')));
+            webinterface.use(express.favicon(path.join(__dirname, '../build/public/images/favicon.ico')));
             webinterface.use(express.logger('dev'));
             webinterface.use(express.bodyParser());
             webinterface.use(express.methodOverride());
             webinterface.use(webinterface.router);
 
-            webinterface.use(require('stylus').middleware(path.join(__dirname, '/public')));
-            webinterface.use(express.static(path.join(__dirname, '/public')));
+            webinterface.use(require('stylus').middleware({
+                src: __dirname,
+                dest: path.join(__dirname, '../build/public')
+            }));
+            webinterface.use(express.static(path.join(__dirname, '../build/public')));
         });
 
         webinterface.configure('development', function(){
@@ -55,8 +60,8 @@ module.exports = Module.extend({
             console.log('Express and Websocket server listening on port ' + webinterface.get('port'));
 
             self.app.modules.forEach(function (module) {
-                module.on('update:view', function (view) {
-                    self.io.sockets.emit('update:view', module.id, view);
+                module.on('change', function (data) {
+                    self.io.sockets.emit('update:data', module.id, data);
                 });
             });
         });

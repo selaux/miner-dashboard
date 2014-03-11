@@ -1,12 +1,10 @@
-<section class="revenue panel panel-success" id="{{ id }}">
-    <header class="panel-heading">
-        <div class="row">
-            <h2 class="panel-title col-xs-6">{{ title }}</h2>
-        </div>
-    </header>
-    <dl class="panel-body dl-horizontal">
-        <dt class="big-label">Revenue:</dt>
-        <dd class="big">{{number value}} {{currency}}/{{interval}}</dd>
-    </dl>
-    <footer class="text-muted">Updated: {{time lastUpdated}}</footer>
-</section>
+<header class="panel-heading">
+    <div class="row">
+        <h2 class="panel-title col-xs-6">{{ title }}</h2>
+    </div>
+</header>
+<dl class="panel-body dl-horizontal">
+    <dt class="big-label">Revenue:</dt>
+    <dd class="big">{{number value}} {{currency}}/{{interval}}</dd>
+</dl>
+<footer class="text-muted">Updated: {{time lastUpdated}}</footer>
