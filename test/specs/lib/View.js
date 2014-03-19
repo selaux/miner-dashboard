@@ -106,6 +106,7 @@ describe('View', function () {
                     template: 'json',
                     title: 'bar',
                     attributes: { some: 'json', data: 'of', the: 'module' },
+                    lastUpdated: 123,
                     has: sinon.stub().returns(false)
                 },
                 view = new View(module);
@@ -118,6 +119,7 @@ describe('View', function () {
             expect(view.compiledTemplate).to.have.been.calledWithMatch({
                 id: module.id,
                 title: module.title,
+                lastUpdated: 123,
                 json: JSON.stringify(module.attributes),
                 some: 'json',
                 data: 'of',

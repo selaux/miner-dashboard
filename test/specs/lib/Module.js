@@ -36,4 +36,13 @@ describe('Module', function () {
         });
     });
 
+    describe('set', function () {
+        it('should add a lastUpdated timestamp', function () {
+            var module = new Module({}, {}),
+                now = new Date().getTime();
+            module.set('test', 'attribute');
+            expect(module.lastUpdated).to.be.within(now-10, now+10);
+        });
+    });
+
 });
