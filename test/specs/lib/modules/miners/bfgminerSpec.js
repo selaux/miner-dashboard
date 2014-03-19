@@ -133,6 +133,7 @@ describe('modules/miners/bfgminer', function () {
 
                     expect(data).to.deep.equal({
                         connected: false,
+                        avgHashrate: 0,
                         error: 'Error: Test Error'
                     });
                     done();
@@ -543,6 +544,71 @@ describe('modules/miners/bfgminer', function () {
             expect(bfgAdapter.get('historicalData')[0]).to.deep.equal({ timestamp: now-5000, avgHashrate: 456 });
             expect(bfgAdapter.get('historicalData')[1].avgHashrate).to.equal(789);
             expect(bfgAdapter.get('historicalData')[1].timestamp).to.be.within(now-1, now+1);
+        });
+
+        it('should remove historical data that has been logged longer than the expiration date', function () {
+            var bfgAdapter = new BfgAdapter({}, _.defaults({ historicalDataStoredFor: 5000 }, config)),
+                now = new Date().getTime();
+
+            bfgAdapter.attributes.historicalData = [
+                { timestamp: now-5100, avgHashrate: 456 },
+                { timestamp: now-2500, avgHashrate: 456 }
+            ];
+            bfgAdapter.set({ avgHashrate: 789 });
+            expect(bfgAdapter.get('historicalData')).to.have.length(2);
+            expect(bfgAdapter.get('historicalData')[0]).to.deep.equal({ timestamp: now-2500, avgHashrate: 456 });
+            expect(bfgAdapter.get('historicalData')[1].avgHashrate).to.equal(789);
+            expect(bfgAdapter.get('historicalData')[1].timestamp).to.be.within(now-1, now+1);
+        });
+    });
+
+    describe('aggregateValues', function () {
+        it('should aggregate data if the time between first non-aggregated value and the mode is larger than the historicalDataPrecision', function () {
+            var bfgAdapter = new BfgAdapter({}, _.defaults({ historicalDataPrecision: 4, historicalDataStoredFor: Infinity }, config)),
+                aggregated;
+
+            aggregated = bfgAdapter.aggregateValues([
+                { timestamp: 1, avgHashrate: 2, aggregated: false },
+                { timestamp: 2, avgHashrate: 4, aggregated: false },
+                { timestamp: 3, avgHashrate: 2, aggregated: false },
+                { timestamp: 4, avgHashrate: 4, aggregated: false },
+                { timestamp: 5, avgHashrate: 2, aggregated: false },
+                { timestamp: 6, avgHashrate: 4, aggregated: false },
+                { timestamp: 7, avgHashrate: 2, aggregated: false },
+                { timestamp: 8, avgHashrate: 4, aggregated: false },
+                { timestamp: 9, avgHashrate: 2, aggregated: false },
+                { timestamp: 10, avgHashrate: 4, aggregated: false }
+            ]);
+            expect(aggregated).to.have.length(5);
+            expect(aggregated[0]).to.deep.equal({ timestamp: 21/6, avgHashrate: 3, aggregated: true });
+            expect(aggregated[1]).to.deep.equal({ timestamp: 7, avgHashrate: 2, aggregated: false });
+            expect(aggregated[2]).to.deep.equal({ timestamp: 8, avgHashrate: 4, aggregated: false });
+            expect(aggregated[3]).to.deep.equal({ timestamp: 9, avgHashrate: 2, aggregated: false });
+            expect(aggregated[4]).to.deep.equal({ timestamp: 10, avgHashrate: 4, aggregated: false });
+        });
+
+        it('should aggregate data if the time between the current measurement and the first measurement is larger than twice the historicalDataPrecision', function () {
+            var bfgAdapter = new BfgAdapter({}, _.defaults({ historicalDataPrecision: 4, historicalDataStoredFor: Infinity }, config)),
+                aggregated;
+
+            aggregated = bfgAdapter.aggregateValues([
+                { timestamp: 1, avgHashrate: 3, aggregated: true },
+                { timestamp: 2, avgHashrate: 4, aggregated: false },
+                { timestamp: 3, avgHashrate: 2, aggregated: false },
+                { timestamp: 4, avgHashrate: 4, aggregated: false },
+                { timestamp: 5, avgHashrate: 2, aggregated: false },
+                { timestamp: 6, avgHashrate: 4, aggregated: false },
+                { timestamp: 7, avgHashrate: 2, aggregated: false },
+                { timestamp: 8, avgHashrate: 4, aggregated: false },
+                { timestamp: 9, avgHashrate: 2, aggregated: false }
+            ]);
+
+            expect(aggregated).to.have.length(5);
+            expect(aggregated[0]).to.deep.equal({ timestamp: 1, avgHashrate: 3, aggregated: true });
+            expect(aggregated[1]).to.deep.equal({ timestamp: 20 / 5, avgHashrate: 16 / 5, aggregated: true });
+            expect(aggregated[2]).to.deep.equal({ timestamp: 7, avgHashrate: 2, aggregated: false });
+            expect(aggregated[3]).to.deep.equal({ timestamp: 8, avgHashrate: 4, aggregated: false });
+            expect(aggregated[4]).to.deep.equal({ timestamp: 9, avgHashrate: 2, aggregated: false });
         });
     });
 
