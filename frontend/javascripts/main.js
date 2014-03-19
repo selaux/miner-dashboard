@@ -6,7 +6,8 @@ var $ = require('jquery'),
     _ = require('lodash'),
     io = require('socket.io-client'),
     Module = require('../../lib/Module'),
-    modules = window.config;
+    modules = window.config,
+    dataMap = window.dataMap;
 
 function initializeApp() {
     var socket = io.connect('http://' + window.location.host, {
@@ -17,11 +18,13 @@ function initializeApp() {
 
     modules = modules.map(function (config) {
         var $el = $('section[id="' + config.id + '"]'),
-            module = new Module(undefined, config),
+            module = new Module(null, config),
             View = require('lib/views/' + config.viewId),
             view = new View(module, { el: $el });
 
+        module.set(dataMap[config.id]);
         module.on('change', view.render, view);
+        view.postRender();
 
         return module;
     });
