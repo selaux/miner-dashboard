@@ -522,4 +522,28 @@ describe('modules/miners/bfgminer', function () {
 
     });
 
+    describe('set', function () {
+        it('should add the avgHashrate value to historicalData', function () {
+            var bfgAdapter = new BfgAdapter({}, config),
+                now = new Date().getTime();
+
+            bfgAdapter.set({ avgHashrate: 123 });
+            expect(bfgAdapter.get('historicalData')).to.have.length(1);
+            expect(bfgAdapter.get('historicalData')[0].avgHashrate).to.equal(123);
+            expect(bfgAdapter.get('historicalData')[0].timestamp).to.be.within(now-1, now+1);
+        });
+
+        it('should append the avgHashrate value to existing historicalData', function () {
+            var bfgAdapter = new BfgAdapter({}, config),
+                now = new Date().getTime();
+
+            bfgAdapter.attributes.historicalData = [ { timestamp: now-5000, avgHashrate: 456 } ];
+            bfgAdapter.set({ avgHashrate: 789 });
+            expect(bfgAdapter.get('historicalData')).to.have.length(2);
+            expect(bfgAdapter.get('historicalData')[0]).to.deep.equal({ timestamp: now-5000, avgHashrate: 456 });
+            expect(bfgAdapter.get('historicalData')[1].avgHashrate).to.equal(789);
+            expect(bfgAdapter.get('historicalData')[1].timestamp).to.be.within(now-1, now+1);
+        });
+    });
+
 });
