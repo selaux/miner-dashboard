@@ -41,6 +41,7 @@ module.exports = Module.extend({
             webinterface.use(express.logger('dev'));
             webinterface.use(express.bodyParser());
             webinterface.use(express.methodOverride());
+            webinterface.use(express.compress());
             webinterface.use(webinterface.router);
 
             webinterface.use(stylus.middleware({
