@@ -307,6 +307,7 @@ describe('modules/miners/bfgminer', function () {
                         'Hardware Errors': 10,
                         'Local Work': 11,
                         'MHS 10s': 12.000,
+                        'MHS av': 21.000,
                         'Network Blocks': 13,
                         'Rejected': 14,
                         'Remote Failures': 15,
@@ -321,6 +322,7 @@ describe('modules/miners/bfgminer', function () {
                 connected: true,
                 elapsed: 6,
                 description: 'test miner 0.1',
+                averageHashrate: 21.000,
                 currentHashrate: 12.000,
                 hardwareErrors: 10,
                 hardwareErrorRate: 50,
@@ -359,10 +361,11 @@ describe('modules/miners/bfgminer', function () {
                 response,
                 bfgAdapter = new BfgAdapter({}, config);
 
-            summary =  _.extend({}, _.omit(summaryResponse.SUMMARY[0], 'MHS 10s'), { 'GHS 10s': 58 });
+            summary =  _.extend({}, _.omit(summaryResponse.SUMMARY[0], 'MHS 10s', 'MHS av'), { 'GHS 10s': 58, 'GHS av': 128 });
             response = _.extend({}, summaryResponse, { SUMMARY: [ summary ] });
 
             expect(bfgAdapter.handleSummaryResponse(response)).to.deep.equal(_.extend({}, parsedResponse, {
+                averageHashrate: 128000,
                 currentHashrate: 58000
             }));
         });
@@ -376,6 +379,7 @@ describe('modules/miners/bfgminer', function () {
             response = _.extend({}, summaryResponse, { SUMMARY: [ summary ] });
 
             expect(bfgAdapter.handleSummaryResponse(response)).to.deep.equal(_.extend({}, parsedResponse, {
+                averageHashrate: 58,
                 currentHashrate: undefined
             }));
         });

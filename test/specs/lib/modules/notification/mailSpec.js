@@ -57,7 +57,7 @@ describe('modules/notification/mail', function () {
 
         mail = new Mail(app, config);
 
-        module.emit('update:data', { currentHashrate: 0 });
+        module.emit('update:data', { averageHashrate: 0 });
     });
 
     describe('getNotifications', function () {
@@ -72,10 +72,10 @@ describe('modules/notification/mail', function () {
                     },
                     mail = new Mail(app, config);
 
-                expect(mail.getNotifications('someModule', { currentHashrate: 0 })).to.deep.equal([
+                expect(mail.getNotifications('someModule', { averageHashrate: 0 })).to.deep.equal([
                     'Hashrate 0 MH/s of someModule has dropped below 0 MH/s'
                 ]);
-                expect(mail.getNotifications('otherModule', { currentHashrate: 0 })).to.deep.equal([
+                expect(mail.getNotifications('otherModule', { averageHashrate: 0 })).to.deep.equal([
                     'Hashrate 0 MH/s of otherModule has dropped below 0 MH/s'
                 ]);
             });
@@ -91,11 +91,11 @@ describe('modules/notification/mail', function () {
                     },
                     mail = new Mail(app, config);
 
-                expect(mail.getNotifications('someModule', { currentHashrate: 75 })).to.deep.equal([
+                expect(mail.getNotifications('someModule', { averageHashrate: 75 })).to.deep.equal([
                     'Hashrate 75 MH/s of someModule has dropped below 100 MH/s'
                 ]);
-                expect(mail.getNotifications('otherModule', { currentHashrate: 75 })).to.deep.equal([]);
-                expect(mail.getNotifications('otherModule', { currentHashrate: 49 })).to.deep.equal([
+                expect(mail.getNotifications('otherModule', { averageHashrate: 75 })).to.deep.equal([]);
+                expect(mail.getNotifications('otherModule', { averageHashrate: 49 })).to.deep.equal([
                     'Hashrate 49 MH/s of otherModule has dropped below 50 MH/s'
                 ]);
             });
@@ -108,15 +108,15 @@ describe('modules/notification/mail', function () {
                     },
                     mail = new Mail(app, config);
 
-                expect(mail.getNotifications('someModule', { currentHashrate: 0 })).to.deep.equal([
+                expect(mail.getNotifications('someModule', { averageHashrate: 0 })).to.deep.equal([
                     'Hashrate 0 MH/s of someModule has dropped below 0 MH/s'
                 ]);
-                expect(mail.getNotifications('someModule', { currentHashrate: 0 })).to.deep.equal([]);
-                expect(mail.getNotifications('otherModule', { currentHashrate: 0 })).to.deep.equal([
+                expect(mail.getNotifications('someModule', { averageHashrate: 0 })).to.deep.equal([]);
+                expect(mail.getNotifications('otherModule', { averageHashrate: 0 })).to.deep.equal([
                     'Hashrate 0 MH/s of otherModule has dropped below 0 MH/s'
                 ]);
-                expect(mail.getNotifications('someModule', { currentHashrate: 10 })).to.deep.equal([]);
-                expect(mail.getNotifications('someModule', { currentHashrate: 0 })).to.deep.equal([
+                expect(mail.getNotifications('someModule', { averageHashrate: 10 })).to.deep.equal([]);
+                expect(mail.getNotifications('someModule', { averageHashrate: 0 })).to.deep.equal([
                     'Hashrate 0 MH/s of someModule has dropped below 0 MH/s'
                 ]);
             });
