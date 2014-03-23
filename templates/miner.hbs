@@ -10,7 +10,7 @@
         <div class="row">
             <div class="hashrate col-xs-12 col-md-3">
                 <div class="graph"></div>
-                <strong>Current Hashrate: {{hashrate avgHashrate}}</strong>
+                <strong>Current Hashrate: {{hashrate currentHashrate}}</strong>
             </div>
             <dl class="dl-horizontal col-xs-12 col-md-3">
                 <dt>Hardware Errors:</dt>
@@ -75,7 +75,7 @@
                             <tr>
                                 <td class="{{#if connected}}success{{else}}danger{{/if}}">Device {{id}}</td>
                                 <td>{{description}}</td>
-                                <td>{{hashrate avgHashrate}}</td>
+                                <td>{{hashrate currentHashrate}}</td>
                                 {{#if temperature}}
                                     <td>{{number temperature precision="1"}}&deg;C</td>
                                 {{/if}}

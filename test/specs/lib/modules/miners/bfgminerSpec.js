@@ -85,13 +85,13 @@ describe('modules/miners/bfgminer', function () {
 
         beforeEach(function () {
             responseData = {
-                summary: { avgHashrate: 123 },
-                devs: [ { avgHashrate: 124 } ],
+                summary: { currentHashrate: 123 },
+                devs: [ { currentHashrate: 124 } ],
                 pools: [ { pool: 'data' } ]
             };
             parsedData = {
-                summary: { avgHashrate: 123 },
-                devs: [ { avgHashrate: 124 } ],
+                summary: { currentHashrate: 123 },
+                devs: [ { currentHashrate: 124 } ],
                 pools: [ { pool: 'data' } ]
             };
             bfgAdapterStub = {
@@ -135,7 +135,7 @@ describe('modules/miners/bfgminer', function () {
 
                 expect(bfgAdapterStub.sendCommand).to.have.been.calledThrice;
 
-                expect(data).to.deep.equal(_.extend({}, { avgHashrate: 124 }, {
+                expect(data).to.deep.equal(_.extend({}, { currentHashrate: 124 }, {
                     devices: parsedData.devs,
                     pools: parsedData.pools
                 }));
@@ -160,7 +160,7 @@ describe('modules/miners/bfgminer', function () {
 
                     expect(data).to.deep.equal({
                         connected: false,
-                        avgHashrate: 0,
+                        currentHashrate: 0,
                         error: 'Error: Test Error'
                     });
                     done();
@@ -321,7 +321,7 @@ describe('modules/miners/bfgminer', function () {
                 connected: true,
                 elapsed: 6,
                 description: 'test miner 0.1',
-                avgHashrate: 12.000,
+                currentHashrate: 12.000,
                 hardwareErrors: 10,
                 hardwareErrorRate: 50,
                 shares: {
@@ -363,7 +363,7 @@ describe('modules/miners/bfgminer', function () {
             response = _.extend({}, summaryResponse, { SUMMARY: [ summary ] });
 
             expect(bfgAdapter.handleSummaryResponse(response)).to.deep.equal(_.extend({}, parsedResponse, {
-                avgHashrate: 58000
+                currentHashrate: 58000
             }));
         });
 
@@ -376,7 +376,7 @@ describe('modules/miners/bfgminer', function () {
             response = _.extend({}, summaryResponse, { SUMMARY: [ summary ] });
 
             expect(bfgAdapter.handleSummaryResponse(response)).to.deep.equal(_.extend({}, parsedResponse, {
-                avgHashrate: undefined
+                currentHashrate: undefined
             }));
         });
 
@@ -437,7 +437,7 @@ describe('modules/miners/bfgminer', function () {
                     description: 'One Mining Device',
                     hardwareErrors: 1,
                     hardwareErrorRate: 50,
-                    avgHashrate: 3,
+                    currentHashrate: 3,
                     temperature: 40
                 },
                 {
@@ -446,7 +446,7 @@ describe('modules/miners/bfgminer', function () {
                     description: 'Different Mining Device',
                     hardwareErrors: 4,
                     hardwareErrorRate: 25,
-                    avgHashrate: 9,
+                    currentHashrate: 9,
                     temperature: 50
                 }
             ];
@@ -563,25 +563,25 @@ describe('modules/miners/bfgminer', function () {
     });
 
     describe('set', function () {
-        it('should add the avgHashrate value to historicalData', function () {
+        it('should add the currentHashrate value to historicalData', function () {
             var bfgAdapter = new BfgAdapter({}, config),
                 now = new Date().getTime();
 
-            bfgAdapter.set({ avgHashrate: 123 });
+            bfgAdapter.set({ currentHashrate: 123 });
             expect(bfgAdapter.get('historicalData')).to.have.length(1);
-            expect(bfgAdapter.get('historicalData')[0].avgHashrate).to.equal(123);
+            expect(bfgAdapter.get('historicalData')[0].currentHashrate).to.equal(123);
             expect(bfgAdapter.get('historicalData')[0].timestamp).to.be.within(now-1, now+1);
         });
 
-        it('should append the avgHashrate value to existing historicalData', function () {
+        it('should append the currentHashrate value to existing historicalData', function () {
             var bfgAdapter = new BfgAdapter({}, config),
                 now = new Date().getTime();
 
-            bfgAdapter.attributes.historicalData = [ { timestamp: now-5000, avgHashrate: 456 } ];
-            bfgAdapter.set({ avgHashrate: 789 });
+            bfgAdapter.attributes.historicalData = [ { timestamp: now-5000, currentHashrate: 456 } ];
+            bfgAdapter.set({ currentHashrate: 789 });
             expect(bfgAdapter.get('historicalData')).to.have.length(2);
-            expect(bfgAdapter.get('historicalData')[0]).to.deep.equal({ timestamp: now-5000, avgHashrate: 456 });
-            expect(bfgAdapter.get('historicalData')[1].avgHashrate).to.equal(789);
+            expect(bfgAdapter.get('historicalData')[0]).to.deep.equal({ timestamp: now-5000, currentHashrate: 456 });
+            expect(bfgAdapter.get('historicalData')[1].currentHashrate).to.equal(789);
             expect(bfgAdapter.get('historicalData')[1].timestamp).to.be.within(now-1, now+1);
         });
 
@@ -590,13 +590,13 @@ describe('modules/miners/bfgminer', function () {
                 now = new Date().getTime();
 
             bfgAdapter.attributes.historicalData = [
-                { timestamp: now-5100, avgHashrate: 456 },
-                { timestamp: now-2500, avgHashrate: 456 }
+                { timestamp: now-5100, currentHashrate: 456 },
+                { timestamp: now-2500, currentHashrate: 456 }
             ];
-            bfgAdapter.set({ avgHashrate: 789 });
+            bfgAdapter.set({ currentHashrate: 789 });
             expect(bfgAdapter.get('historicalData')).to.have.length(2);
-            expect(bfgAdapter.get('historicalData')[0]).to.deep.equal({ timestamp: now-2500, avgHashrate: 456 });
-            expect(bfgAdapter.get('historicalData')[1].avgHashrate).to.equal(789);
+            expect(bfgAdapter.get('historicalData')[0]).to.deep.equal({ timestamp: now-2500, currentHashrate: 456 });
+            expect(bfgAdapter.get('historicalData')[1].currentHashrate).to.equal(789);
             expect(bfgAdapter.get('historicalData')[1].timestamp).to.be.within(now-1, now+1);
         });
     });
@@ -607,11 +607,11 @@ describe('modules/miners/bfgminer', function () {
                 historicalData;
 
             historicalData = bfgAdapter.buildMeanValue([
-                { source: [ { avgHashrate: 2, timestamp: 1 }, { avgHashrate: 4, timestamp: 3 } ] }
+                { source: [ { currentHashrate: 2, timestamp: 1 }, { currentHashrate: 4, timestamp: 3 } ] }
             ]);
             expect(historicalData).to.have.length(1);
             expect(historicalData[0].source).to.have.length(2);
-            expect(historicalData[0].avgHashrate).to.equal(3);
+            expect(historicalData[0].currentHashrate).to.equal(3);
             expect(historicalData[0].timestamp).to.equal(2);
         });
 
@@ -620,11 +620,11 @@ describe('modules/miners/bfgminer', function () {
                 historicalData;
 
             historicalData = bfgAdapter.buildMeanValue([
-                { source: [ { avgHashrate: 2, timestamp: 1 }, { avgHashrate: 4, timestamp: 6 } ] }
+                { source: [ { currentHashrate: 2, timestamp: 1 }, { currentHashrate: 4, timestamp: 6 } ] }
             ]);
             expect(historicalData).to.have.length(1);
             expect(historicalData[0].source).to.be.undefined;
-            expect(historicalData[0].avgHashrate).to.equal(3);
+            expect(historicalData[0].currentHashrate).to.equal(3);
             expect(historicalData[0].timestamp).to.equal(3.5);
         });
 
@@ -633,8 +633,8 @@ describe('modules/miners/bfgminer', function () {
                 historicalData;
 
             historicalData = bfgAdapter.buildMeanValue([
-                { avgHashrate: 2, timestamp: 1 },
-                { source: [ { avgHashrate: 4, timestamp: 6 } ] }
+                { currentHashrate: 2, timestamp: 1 },
+                { source: [ { currentHashrate: 4, timestamp: 6 } ] }
             ]);
             expect(historicalData).to.have.length(2);
             expect(historicalData[1].source).to.be.undefined;

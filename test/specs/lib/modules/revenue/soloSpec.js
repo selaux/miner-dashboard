@@ -27,7 +27,7 @@ describe('modules/revenue/solo', function () {
             solo = new Solo(this.app, config);
 
         solo.minerData = {
-            minerId1: { avgHashrate: 0.5 * 1e-6 }
+            minerId1: { currentHashrate: 0.5 * 1e-6 }
         };
         solo.marketData = { ask: 100, currency: 'NMC' };
         solo.technicalData = { btcPerBlock: 10, probability: 0.0001 };
@@ -41,7 +41,7 @@ describe('modules/revenue/solo', function () {
             done();
         });
 
-        this.app.emit('update:data:minerId2', { avgHashrate: 0.5 * 1e-6 });
+        this.app.emit('update:data:minerId2', { currentHashrate: 0.5 * 1e-6 });
     });
 
     it('should calculate revenue when miner is not connected', function (done) {
@@ -65,7 +65,7 @@ describe('modules/revenue/solo', function () {
     it('should calculate revenue when market prices are updated', function (done) {
         var solo = new Solo(this.app, defaultConfig);
 
-        solo.minerData = { minerId: { avgHashrate: 1e-6 } };
+        solo.minerData = { minerId: { currentHashrate: 1e-6 } };
         solo.technicalData = { btcPerBlock: 10, probability: 0.0001 };
 
         solo.on('change', function () {
@@ -97,13 +97,13 @@ describe('modules/revenue/solo', function () {
             done();
         });
 
-        this.app.emit('update:data:minerId', { avgHashrate: 1e-6 });
+        this.app.emit('update:data:minerId', { currentHashrate: 1e-6 });
     });
 
     it('should calculate revenue when technical info is updated', function (done) {
         var solo = new Solo(this.app, defaultConfig);
 
-        solo.minerData = { minerId: { avgHashrate: 1e-6 } };
+        solo.minerData = { minerId: { currentHashrate: 1e-6 } };
         solo.marketData = { ask: 100, currency: 'NMC' };
 
         solo.on('change', function () {
