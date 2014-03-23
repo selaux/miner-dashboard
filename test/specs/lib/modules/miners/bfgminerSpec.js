@@ -279,7 +279,7 @@ describe('modules/miners/bfgminer', function () {
                         'Getworks': 9,
                         'Hardware Errors': 10,
                         'Local Work': 11,
-                        'MHS av': 12.000,
+                        'MHS 10s': 12.000,
                         'Network Blocks': 13,
                         'Rejected': 14,
                         'Remote Failures': 15,
@@ -332,8 +332,7 @@ describe('modules/miners/bfgminer', function () {
                 response,
                 bfgAdapter = new BfgAdapter({}, config);
 
-            summary =  _.extend({}, summaryResponse.SUMMARY[0], { 'GHS av': 58 });
-            delete summary['MHS av'];
+            summary =  _.extend({}, _.omit(summaryResponse.SUMMARY[0], 'MHS 10s'), { 'GHS 10s': 58 });
             response = _.extend({}, summaryResponse, { SUMMARY: [ summary ] });
 
             expect(bfgAdapter.handleSummaryResponse(response)).to.deep.equal(_.extend({}, parsedResponse, {
