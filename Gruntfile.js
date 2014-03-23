@@ -80,12 +80,12 @@ module.exports = function (grunt) {
                         'node_modules/lodash/dist/lodash.js:lodash',
                         'node_modules/backbone/backbone.js:backbone',
                         'node_modules/socket.io/node_modules/socket.io-client/dist/socket.io.js:socket.io-client'
-                    ].concat(function () {
+                    ].concat((function () {
                         var files = grunt.file.expand({ cwd: __dirname }, 'lib/views/**/*.js');
                         return files.map(function (file) {
                             return file + ':' + file.substr(0, file.lastIndexOf('.'));
                         });
-                    }()),
+                    }())),
                     noParse: [
                         'jquery',
                         'lodash',
