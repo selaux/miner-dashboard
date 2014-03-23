@@ -28,10 +28,10 @@
         "backbone": "1.1.2",
         "jquery": "2.1.0",
         "cheerio": "0.13.1",
-        "express": "3.4.0",
+        "express": "3.4.8",
         "express3-handlebars": "0.5.0",
         "eventemitter2": "0.4.13",
-        "stylus": "0.38.0",
+        "stylus": "0.42.3",
         "lodash": "2.1.0",
         "request": "2.27.0",
         "socket.io": "0.9.16",
@@ -45,7 +45,8 @@
         "numeral": "1.5.2",
         "timespan": "2.3.0",
         "moment": "2.4.0",
-        "nomnom": "1.6.2"
+        "nomnom": "1.6.2",
+        "rickshaw": "1.4.6"
     },
     "devDependencies": {
         "grunt-contrib-jshint": "0.6.3",

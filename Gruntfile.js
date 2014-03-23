@@ -63,12 +63,6 @@ module.exports = function (grunt) {
                 cwd: 'frontend/images/',
                 src: '**',
                 dest: 'build/public/images/'
-            },
-            stylesheets: {
-                expand: true,
-                cwd: 'frontend/stylesheets/',
-                src: '*.css',
-                dest: 'build/public/stylesheets/'
             }
         },
 

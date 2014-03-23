@@ -1,5 +1,7 @@
 @import "bootstrap.min.css"
 @import "bootstrap-theme.css"
+@import "../../node_modules/rickshaw/src/css/graph.css"
+@import "../../node_modules/rickshaw/src/css/detail.css"
 
 body
     padding: 20px
@@ -36,6 +38,17 @@ dt
             bottom: 15px
             font-size: 10px
     .miner
+        .hashrate
+            position: relative
+            .graph
+                height: 120px
+            strong
+                position: absolute
+                left: 20px
+                top: 5px
+                opacity: 1
+            &:hover strong
+                opacity: 0
         .devices
             margin-bottom: 20px
             table

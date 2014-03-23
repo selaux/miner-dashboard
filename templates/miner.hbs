@@ -8,11 +8,11 @@
     <div class="panel-body">
         <h4>Overview</h4>
         <div class="row">
-            <dl class="dl-horizontal col-xs-12 col-md-4">
-                <dt class="big-label">Hashrate:</dt>
-                <dd class="big">{{hashrate avgHashrate}}</dd>
-                <dt></dt>
-                <dd></dd>
+            <div class="hashrate col-xs-12 col-md-3">
+                <div class="graph"></div>
+                <strong>Current Hashrate: {{hashrate avgHashrate}}</strong>
+            </div>
+            <dl class="dl-horizontal col-xs-12 col-md-3">
                 <dt>Hardware Errors:</dt>
                 <dd>{{number hardwareErrors}}</dd>
                 <dt>Hardware Error Rate:</dt>
@@ -22,7 +22,7 @@
                 <dt>Software:</dt>
                 <dd>{{description}}</dd>
             </dl>
-            <dl class="dl-horizontal col-xs-12 col-md-4">
+            <dl class="dl-horizontal col-xs-12 col-md-3">
                 <dt>Accepted Shares:</dt>
                 <dd>{{number shares.accepted}}</dd>
                 <dt>Rejected Shares:</dt>
@@ -32,7 +32,7 @@
                 <dt>Discarded Shares:</dt>
                 <dd>{{number shares.discarded}}</dd>
             </dl>
-            <dl class="dl-horizontal col-xs-12 col-md-4">
+            <dl class="dl-horizontal col-xs-12 col-md-3">
                 <dt>Difficulty Accepted:</dt>
                 <dd>{{number difficulty.accepted precision="2"}}</dd>
                 <dt>Difficulty Rejected:</dt>

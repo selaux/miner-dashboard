@@ -2,6 +2,7 @@
 
 var express = require('express'),
     exphbs  = require('express3-handlebars'),
+    stylus = require('stylus'),
     routes = require('./routes'),
     http = require('http'),
     path = require('path'),
@@ -42,9 +43,14 @@ module.exports = Module.extend({
             webinterface.use(express.methodOverride());
             webinterface.use(webinterface.router);
 
-            webinterface.use(require('stylus').middleware({
+            webinterface.use(stylus.middleware({
                 src: __dirname,
-                dest: path.join(__dirname, '../build/public')
+                dest: path.join(__dirname, '../build/public'),
+                compile: function (str, path) {
+                    return stylus(str)
+                        .set('filename', path)
+                        .set('include css', true);
+                }
             }));
             webinterface.use(express.static(path.join(__dirname, '../build/public')));
         });
