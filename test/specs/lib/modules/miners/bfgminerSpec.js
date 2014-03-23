@@ -75,16 +75,8 @@ describe('modules/miners/bfgminer', function () {
                 'devs',
                 'pools'
             ],
-            responseData = {
-                summary: 'summary data',
-                devs: 'device data',
-                pools: 'pool data'
-            },
-            parsedData = {
-                summary: { summary: 'data' },
-                devs: [ { device: 'data' } ],
-                pools: [ { pool: 'data' } ]
-            },
+            responseData,
+            parsedData,
             bfgAdapterStub;
 
         function capitalizeFirstLetter(string) {
@@ -92,6 +84,16 @@ describe('modules/miners/bfgminer', function () {
         }
 
         beforeEach(function () {
+            responseData = {
+                summary: { avgHashrate: 123 },
+                devs: [ { avgHashrate: 124 } ],
+                pools: [ { pool: 'data' } ]
+            };
+            parsedData = {
+                summary: { avgHashrate: 123 },
+                devs: [ { avgHashrate: 124 } ],
+                pools: [ { pool: 'data' } ]
+            };
             bfgAdapterStub = {
                 sendCommand: sinon.stub(),
                 handleSummaryResponse: sinon.stub(),
@@ -117,7 +119,32 @@ describe('modules/miners/bfgminer', function () {
 
             commands.forEach(function (command) {
                 bfgAdapterStub.sendCommand.withArgs(command).yieldsAsync(null, responseData[command]);
-                bfgAdapterStub['handle' + capitalizeFirstLetter(command) + 'Response'].returns(parsedData[command]);
+                bfgAdapterStub['handle' + capitalizeFirstLetter(command) + 'Response'].returns(responseData[command]);
+            });
+
+            BfgAdapter.prototype.update.call(bfgAdapterStub);
+        });
+
+        it('should sum up the device hashrates if the current hashrate is not returned in the summary', function (done) {
+            responseData.summary = {};
+
+            bfgAdapterStub.set = function (data) {
+                commands.forEach(function (command) {
+                    expect(bfgAdapterStub['handle' + capitalizeFirstLetter(command) + 'Response']).to.have.been.calledOnce;
+                });
+
+                expect(bfgAdapterStub.sendCommand).to.have.been.calledThrice;
+
+                expect(data).to.deep.equal(_.extend({}, { avgHashrate: 124 }, {
+                    devices: parsedData.devs,
+                    pools: parsedData.pools
+                }));
+                done();
+            };
+
+            commands.forEach(function (command) {
+                bfgAdapterStub.sendCommand.withArgs(command).yieldsAsync(null, responseData[command]);
+                bfgAdapterStub['handle' + capitalizeFirstLetter(command) + 'Response'].returns(responseData[command]);
             });
 
             BfgAdapter.prototype.update.call(bfgAdapterStub);
@@ -337,6 +364,19 @@ describe('modules/miners/bfgminer', function () {
 
             expect(bfgAdapter.handleSummaryResponse(response)).to.deep.equal(_.extend({}, parsedResponse, {
                 avgHashrate: 58000
+            }));
+        });
+
+        it('should handle a response containing "MHS av" only', function () {
+            var summary,
+                response,
+                bfgAdapter = new BfgAdapter({}, config);
+
+            summary =  _.extend({}, _.omit(summaryResponse.SUMMARY[0], 'MHS 10s'), { 'MHS av': 58 });
+            response = _.extend({}, summaryResponse, { SUMMARY: [ summary ] });
+
+            expect(bfgAdapter.handleSummaryResponse(response)).to.deep.equal(_.extend({}, parsedResponse, {
+                avgHashrate: undefined
             }));
         });
 
