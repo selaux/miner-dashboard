@@ -4,6 +4,7 @@ var EventEmitter = require('events').EventEmitter,
 
     chai = require('chai'),
     expect = chai.expect,
+    _ = require('lodash'),
 
     Solo = require('../../../../../lib/modules/revenue/solo');
 
@@ -33,7 +34,7 @@ describe('modules/revenue/solo', function () {
         solo.technicalData = { btcPerBlock: 10, probability: 0.0001 };
 
         solo.on('change', function () {
-            expect(solo.toJSON()).to.deep.equal({
+            expect(_.omit(solo.toJSON(), 'historicalData')).to.deep.equal({
                 value: 8640,
                 currency: 'NMC',
                 interval: 'Day'
@@ -51,7 +52,7 @@ describe('modules/revenue/solo', function () {
         solo.technicalData = { btcPerBlock: 10, probability: 0.0001 };
 
         solo.on('change', function () {
-            expect(solo.toJSON()).to.deep.equal({
+            expect(_.omit(solo.toJSON(), 'historicalData')).to.deep.equal({
                 value: 0,
                 currency: 'NMC',
                 interval: 'Day'
@@ -69,7 +70,7 @@ describe('modules/revenue/solo', function () {
         solo.technicalData = { btcPerBlock: 10, probability: 0.0001 };
 
         solo.on('change', function () {
-            expect(solo.toJSON()).to.deep.equal({
+            expect(_.omit(solo.toJSON(), 'historicalData')).to.deep.equal({
                 value: 8640,
                 currency: 'NMC',
                 interval: 'Day'
@@ -89,7 +90,7 @@ describe('modules/revenue/solo', function () {
         solo.technicalData = { btcPerBlock: 10, probability: 0.0001 };
 
         solo.on('change', function () {
-            expect(solo.toJSON()).to.deep.equal({
+            expect(_.omit(solo.toJSON(), 'historicalData')).to.deep.equal({
                 value: 86.4,
                 currency: 'BTC',
                 interval: 'Day'
@@ -107,7 +108,7 @@ describe('modules/revenue/solo', function () {
         solo.marketData = { ask: 100, currency: 'NMC' };
 
         solo.on('change', function () {
-            expect(solo.toJSON()).to.deep.equal({
+            expect(_.omit(solo.toJSON(), 'historicalData')).to.deep.equal({
                 value: 8640,
                 currency: 'NMC',
                 interval: 'Day'
@@ -128,6 +129,16 @@ describe('modules/revenue/solo', function () {
                 title: 'Some Title'
             });
         expect(solo.title).to.equal('Some Title');
+    });
+
+    it('should add the values to historicalData', function () {
+        var solo = new Solo(this.app, {}),
+            now = new Date().getTime();
+
+        solo.set({ currency: 'BTC', value: 123, interval: 'Day' });
+        expect(solo.get('historicalData')).to.have.length(1);
+        expect(solo.get('historicalData')[0].value).to.equal(123);
+        expect(solo.get('historicalData')[0].timestamp).to.be.within(now-1, now+1);
     });
 
 });

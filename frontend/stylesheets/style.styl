@@ -17,6 +17,19 @@ a
 dt
     font-weight: normal
 
+.graph-element
+    position: relative
+    .graph
+      height: 120px
+      margin-bottom: 20px
+    strong
+      position: absolute
+      left: 20px
+      top: 5px
+      opacity: 1
+    &:hover strong
+      opacity: 0
+
 #modules
     section
         position: relative
@@ -39,16 +52,7 @@ dt
             font-size: 10px
     .miner
         .hashrate
-            position: relative
-            .graph
-                height: 120px
-            strong
-                position: absolute
-                left: 20px
-                top: 5px
-                opacity: 1
-            &:hover strong
-                opacity: 0
+            @extend .graph-element
         .devices
             margin-bottom: 20px
             table
@@ -60,3 +64,6 @@ dt
                         width: 10%
                     &:nth-child(3)
                         width: 30%
+    .revenue
+        .value
+            @extend .graph-element

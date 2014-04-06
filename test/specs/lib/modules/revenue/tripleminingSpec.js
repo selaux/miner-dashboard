@@ -54,7 +54,7 @@ describe('modules/revenue/triplemining', function () {
         triplemining.marketData = marketData;
 
         triplemining.on('change', function () {
-            expect(triplemining.toJSON()).to.deep.equal({
+            expect(_.omit(triplemining.toJSON(), 'historicalData')).to.deep.equal({
                 value: 2073600000 * 1e6,
                 currency: 'NMC',
                 interval: 'Day'
@@ -71,7 +71,7 @@ describe('modules/revenue/triplemining', function () {
 
         setTimeout(function () {
             triplemining.on('change', function () {
-                expect(triplemining.toJSON()).to.deep.equal({
+                expect(_.omit(triplemining.toJSON(), 'historicalData')).to.deep.equal({
                     value: 2073600000 * 1e6,
                     currency: 'NMC',
                     interval: 'Day'
@@ -91,7 +91,7 @@ describe('modules/revenue/triplemining', function () {
 
         setTimeout(function () {
             triplemining.on('change', function () {
-                expect(triplemining.toJSON()).to.deep.equal({
+                expect(_.omit(triplemining.toJSON(), 'historicalData')).to.deep.equal({
                     value: 2073600000 * 1e6,
                     currency: 'NMC',
                     interval: 'Day'
@@ -109,7 +109,7 @@ describe('modules/revenue/triplemining', function () {
         triplemining.technicalData = technicalData;
 
         triplemining.on('change', function () {
-            expect(triplemining.toJSON()).to.deep.equal({
+            expect(_.omit(triplemining.toJSON(), 'historicalData')).to.deep.equal({
                 value: 1036800000 * 1e6,
                 currency: 'BTC',
                 interval: 'Day'
@@ -171,6 +171,17 @@ describe('modules/revenue/triplemining', function () {
             triplemining = new Triplemining(app, { title: 'Some Title' });
 
         expect(triplemining.title).to.equal('Some Title');
+    });
+
+    it('should add the values to historicalData', function () {
+        var app = new EventEmitter(),
+            triplemining = new Triplemining(app),
+            now = new Date().getTime();
+
+        triplemining.set({ currency: 'BTC', value: 123, interval: 'Day' });
+        expect(triplemining.get('historicalData')).to.have.length(1);
+        expect(triplemining.get('historicalData')[0].value).to.equal(123);
+        expect(triplemining.get('historicalData')[0].timestamp).to.be.within(now-1, now+1);
     });
 
 });
