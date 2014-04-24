@@ -19,7 +19,7 @@ Node.js based app to show the current status of your miner in a browser.
 
 ## Installation
 
-Requirements: nodejs >= 0.8
+Requirements: nodejs >= 0.10
 
 Step 1: Clone the repository or [download the current version](https://github.com/selaux/miner-dashboard/releases) and extract it.
 
