@@ -1,12 +1,16 @@
 <header class="panel-heading">
     <h2 class="panel-title">{{ title }}</h2>
 </header>
-<dl class="panel-body dl-horizontal">
-    <dt class="big-label">Latest Trade:</dt>
-    <dd class="big">{{number close}} {{currency}}</dd>
-    <dt>Best Bid:</dt>
-    <dd>{{number bid}} {{currency}}</dd>
-    <dt>Best Ask:</dt>
-    <dd>{{number ask}} {{currency}}</dd>
-</dl>
+<div class="panel-body">
+    <div class="latestTrade col-xs-12 col-md-3">
+        <div class="graph"></div>
+        <strong>Latest Trade: {{number close}} {{currency}}</strong>
+    </div>
+    <dl class="dl-horizontal col-xs-12 col-md-3">
+        <dt>Best Bid:</dt>
+        <dd>{{number bid}} {{currency}}</dd>
+        <dt>Best Ask:</dt>
+        <dd>{{number ask}} {{currency}}</dd>
+    </dl>
+</div>
 <footer class="text-muted">Updated: {{time lastUpdated}}</footer>

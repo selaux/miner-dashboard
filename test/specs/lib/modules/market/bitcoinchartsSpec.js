@@ -2,6 +2,7 @@
 
 var chai = require('chai'),
     expect = chai.expect,
+    _ = require('lodash'),
     SandboxedModule = require('sandboxed-module'),
 
     bitcoinChartsAnswer = [
@@ -45,7 +46,7 @@ describe('modules/market/bitcoincharts', function () {
             bitcoincharts = new Bitcoincharts(app, config);
 
         bitcoincharts.on('change', function () {
-            expect(bitcoincharts.toJSON()).to.deep.equal({
+            expect(_.omit(bitcoincharts.toJSON(), 'historicalData')).to.deep.equal({
                 symbol: 'wantedSymbol',
                 ask: 14,
                 bid: 13,
@@ -99,6 +100,20 @@ describe('modules/market/bitcoincharts', function () {
             bitcoincharts = new Bitcoincharts(app, config);
 
         expect(bitcoincharts.title).to.equal('wantedSymbol Market @ Bitcoin Charts');
+    });
+
+    describe('set', function () {
+        it('should add the bid, ask and close values to historicalData', function () {
+            var bitcoinCharts = new Bitcoincharts({}, {}),
+                now = new Date().getTime();
+
+            bitcoinCharts.set({ ask: 1, bid: 2, close: 3 });
+            expect(bitcoinCharts.get('historicalData')).to.have.length(1);
+            expect(bitcoinCharts.get('historicalData')[0].ask).to.equal(1);
+            expect(bitcoinCharts.get('historicalData')[0].bid).to.equal(2);
+            expect(bitcoinCharts.get('historicalData')[0].close).to.equal(3);
+            expect(bitcoinCharts.get('historicalData')[0].timestamp).to.be.within(now-1, now+1);
+        });
     });
 
 });
