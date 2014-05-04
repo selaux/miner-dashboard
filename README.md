@@ -56,7 +56,7 @@ Note: Each module can have an unique id assigned in the configuration object, so
 
 - [BFGMiner](https://github.com/selaux/miner-dashboard/wiki/BFGMiner)
 - [CGMiner](https://github.com/selaux/miner-dashboard/wiki/CGMiner)
-- [Aggregated Hashrate](https://github.com/selaux/miner-dashboard/wiki/aggregatedMiners)
+- [Aggregated Hashrate](https://github.com/selaux/miner-dashboard/wiki/Aggregated-Hashrate)
 
 #### Markets
 
