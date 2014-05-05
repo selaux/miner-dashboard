@@ -14,7 +14,7 @@ Node.js based app to show the current status of your miner in a browser.
 
 #### Screenshot
 
-[![Miner Dashboard](http://i.imgur.com/ldgQ33v.png)](http://i.imgur.com/ldgQ33v.png)
+[![Miner Dashboard](http://i.imgur.com/sr37ydG.png)](http://i.imgur.com/sr37ydG.png)
 
 
 ## Installation
@@ -75,6 +75,13 @@ Note: Each module can have an unique id assigned in the configuration object, so
 - [blockchain.info](https://github.com/selaux/miner-dashboard/wiki/bitcoincharts.com)
 
 ## Changelog
+
+#### 0.3.0
+- Adds charts to a lot of modules
+- Fix issues with Antminer cgminer version
+- Now shows device temperatures and uptime per miner
+- Now shows current hashrate instead of average
+- It's now possible to install over npm
 
 #### 0.2.0
 - a bunch of stability enhancements
