@@ -1,6 +1,9 @@
 'use strict';
 
 var express = require('express'),
+    favicon = require('serve-favicon'),
+    compression = require('compression'),
+    errorHandler = require('errorhandler'),
     exphbs  = require('express3-handlebars'),
     stylus = require('stylus'),
     routes = require('./routes'),
@@ -22,43 +25,34 @@ module.exports = Module.extend({
         var self = this,
             webinterface = express();
 
-        webinterface.configure(function () {
-            webinterface.set('port', self.config.port);
+        webinterface.set('port', self.config.port);
 
-            webinterface.set('views', path.join(__dirname, '/views'));
-            webinterface.engine('hbs', exphbs({
-                layoutsDir: path.join(__dirname, '/views/layouts/'),
-                partialsDir: path.join(__dirname, '/views/partials/'),
-                defaultLayout: 'main',
-                extname: '.hbs'
-            }));
-            webinterface.set('view engine', 'hbs');
+        webinterface.set('views', path.join(__dirname, '/views'));
+        webinterface.engine('hbs', exphbs({
+            layoutsDir: path.join(__dirname, '/views/layouts/'),
+            partialsDir: path.join(__dirname, '/views/partials/'),
+            defaultLayout: 'main',
+            extname: '.hbs'
+        }));
+        webinterface.set('view engine', 'hbs');
 
-            webinterface.set('config', self.config);
-            webinterface.set('app', self.app);
+        webinterface.set('config', self.config);
+        webinterface.set('app', self.app);
 
-            webinterface.use(express.favicon(path.join(__dirname, '../build/public/images/favicon.ico')));
-            webinterface.use(express.logger('dev'));
-            webinterface.use(express.bodyParser());
-            webinterface.use(express.methodOverride());
-            webinterface.use(express.compress());
-            webinterface.use(webinterface.router);
+        webinterface.use(favicon(path.join(__dirname, '../build/public/images/favicon.ico')));
+        webinterface.use(compression());
+        webinterface.use(errorHandler());
 
-            webinterface.use(stylus.middleware({
-                src: __dirname,
-                dest: path.join(__dirname, '../build/public'),
-                compile: function (str, path) {
-                    return stylus(str)
-                        .set('filename', path)
-                        .set('include css', true);
-                }
-            }));
-            webinterface.use(express.static(path.join(__dirname, '../build/public')));
-        });
-
-        webinterface.configure('development', function(){
-            webinterface.use(express.errorHandler());
-        });
+        webinterface.use(stylus.middleware({
+            src: __dirname,
+            dest: path.join(__dirname, '../build/public'),
+            compile: function (str, path) {
+                return stylus(str)
+                    .set('filename', path)
+                    .set('include css', true);
+            }
+        }));
+        webinterface.use(express.static(path.join(__dirname, '../build/public')));
 
         routes(webinterface);
 
