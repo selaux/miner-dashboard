@@ -39,6 +39,11 @@ module.exports = Module.extend({
         webinterface.set('config', self.config);
         webinterface.set('app', self.app);
 
+        webinterface.use(function (req, res, next) {
+            next();
+            self.app.logger.info('%s - %s %s HTTP/%s', req.ip, req.method, req.path, req.httpVersion);
+        });
+
         webinterface.use(favicon(path.join(__dirname, '../build/public/images/favicon.ico')));
         webinterface.use(compression());
         webinterface.use(errorHandler());
@@ -58,7 +63,7 @@ module.exports = Module.extend({
 
         self.server = http.createServer(webinterface).listen(webinterface.get('port'), function(){
             self.io = require('socket.io').listen(self.server, { log: false });
-            console.log('Express and Websocket server listening on port ' + webinterface.get('port'));
+            self.app.logger.info('server listening on port ' + webinterface.get('port'));
 
             self.app.modules.forEach(function (module) {
                 module.on('change', function (data) {

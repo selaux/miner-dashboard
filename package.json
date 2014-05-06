@@ -49,7 +49,8 @@
         "serve-favicon": "2.0.0",
         "socket.io": "0.9.16",
         "stylus": "0.44.0",
-        "timespan": "2.3.0"
+        "timespan": "2.3.0",
+        "winston": "0.7.3"
     },
     "devDependencies": {
         "grunt-contrib-jshint": "0.10.0",

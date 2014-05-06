@@ -3,6 +3,8 @@
 var EventEmitter = require('events').EventEmitter,
 
     chai = require('chai'),
+    sinon = require('sinon'),
+    sinonChai = require('sinon-chai'),
     expect = chai.expect,
     SandboxedModule = require('sandboxed-module'),
     _ = require('lodash'),
@@ -27,8 +29,11 @@ var EventEmitter = require('events').EventEmitter,
         }
     });
 
+chai.use(sinonChai);
+
 describe('modules/revenue/triplemining', function () {
-    var config = {
+    var app,
+        config = {
         apiKey: 'someApiKey',
         worker: 'testWorker',
         market: 'marketId',
@@ -44,11 +49,12 @@ describe('modules/revenue/triplemining', function () {
             statusCode: 200,
             body: userResponse
         };
+        app = new EventEmitter();
+        app.logger = { debug: sinon.stub(), info: sinon.stub() };
     });
 
     it('should update after getting data from triplemining', function (done) {
-        var app = new EventEmitter(),
-            triplemining = new Triplemining(app, config);
+        var triplemining = new Triplemining(app, config);
 
         triplemining.technicalData = technicalData;
         triplemining.marketData = marketData;
@@ -59,13 +65,19 @@ describe('modules/revenue/triplemining', function () {
                 currency: 'NMC',
                 interval: 'Day'
             });
+            expect(app.logger.debug).to.have.been.calledOnce;
+            expect(app.logger.debug).to.have.been.calledWith(
+                '%s - fetched revenue estimate from triplemining',
+                triplemining.id,
+                JSON.stringify([ 200, 200 ]),
+                JSON.stringify([ poolResponse, userResponse ])
+            );
             done();
         });
     });
 
     it('should update data after an update of the technical module', function (done) {
-        var app = new EventEmitter(),
-            triplemining = new Triplemining(app, config);
+        var triplemining = new Triplemining(app, config);
 
         triplemining.marketData = marketData;
 
@@ -84,8 +96,7 @@ describe('modules/revenue/triplemining', function () {
     });
 
     it('should update data after an update of the market module', function (done) {
-        var app = new EventEmitter(),
-            triplemining = new Triplemining(app, config);
+        var triplemining = new Triplemining(app, config);
 
         triplemining.technicalData = technicalData;
 
@@ -103,8 +114,7 @@ describe('modules/revenue/triplemining', function () {
     });
 
     it('should return revenue in btc if no market module is specified', function (done) {
-        var app = new EventEmitter(),
-            triplemining = new Triplemining(app, _.omit(config, 'market'));
+        var triplemining = new Triplemining(app, _.omit(config, 'market'));
 
         triplemining.technicalData = technicalData;
 
@@ -123,8 +133,7 @@ describe('modules/revenue/triplemining', function () {
         'https://api.triplemining.com/json/someApiKey'
     ].forEach(function (url) {
         it('should not throw an error if the request to ' + url + 'fails with an error', function (done) {
-            var app = new EventEmitter(),
-                triplemining;
+            var triplemining;
 
             responses[url] = null;
 
@@ -139,8 +148,7 @@ describe('modules/revenue/triplemining', function () {
         });
 
         it('should not throw an error if the request to ' + url + 'returns a non 200 http status code and no data', function (done) {
-            var app = new EventEmitter(),
-                triplemining;
+            var triplemining;
 
             responses[url] = {
                 statusCode: 500,
@@ -160,22 +168,19 @@ describe('modules/revenue/triplemining', function () {
     });
 
     it('should have the title set to Earnings if no title is specified in config', function () {
-        var app = new EventEmitter(),
-            triplemining = new Triplemining(app);
+        var triplemining = new Triplemining(app);
 
         expect(triplemining.title).to.equal('Revenue');
     });
 
     it('should have the title set to config.title if it is set', function () {
-        var app = new EventEmitter(),
-            triplemining = new Triplemining(app, { title: 'Some Title' });
+        var triplemining = new Triplemining(app, { title: 'Some Title' });
 
         expect(triplemining.title).to.equal('Some Title');
     });
 
     it('should add the values to historicalData', function () {
-        var app = new EventEmitter(),
-            triplemining = new Triplemining(app),
+        var triplemining = new Triplemining(app),
             now = new Date().getTime();
 
         triplemining.set({ currency: 'BTC', value: 123, interval: 'Day' });

@@ -19,6 +19,11 @@ var EventEmitter = require('events').EventEmitter,
 chai.use(sinonChai);
 
 describe('modules/miners/bfgminer', function () {
+    var app;
+
+    beforeEach(function () {
+        app = { logger: { debug: sinon.stub(), info: sinon.stub() } };
+    });
 
     describe('initialize', function () {
         var fakeTimer;
@@ -34,12 +39,12 @@ describe('modules/miners/bfgminer', function () {
         });
 
         it('should request the status from a miner on instantiation', function () {
-            var bfgAdapter = new BfgAdapter({}, config);
+            var bfgAdapter = new BfgAdapter(app, config);
             expect(bfgAdapter.update).to.have.been.calledOnce;
         });
 
         it('should request the status from a miner once every second per default', function () {
-            var bfgAdapter = new BfgAdapter({}, config);
+            var bfgAdapter = new BfgAdapter(app, config);
             fakeTimer.tick(1010);
             expect(bfgAdapter.update).to.have.been.calledTwice;
             fakeTimer.tick(1010);
@@ -47,7 +52,7 @@ describe('modules/miners/bfgminer', function () {
         });
 
         it('should request the status from a miner with the specified interval', function () {
-            var bfgAdapter = new BfgAdapter({}, {
+            var bfgAdapter = new BfgAdapter(app, {
                     host: 'abc',
                     port: 1,
                     interval: 250
@@ -59,12 +64,12 @@ describe('modules/miners/bfgminer', function () {
         });
 
         it('should use the id as a title when no title is set', function () {
-            var bfgAdapter = new BfgAdapter({}, { id: 'someId' });
+            var bfgAdapter = new BfgAdapter(app, { id: 'someId' });
             expect(bfgAdapter.title).to.equal('someId');
         });
 
         it('should use the config title property as title when it is set', function () {
-            var bfgAdapter = new BfgAdapter({}, { title: 'Some Title' });
+            var bfgAdapter = new BfgAdapter(app, { title: 'Some Title' });
             expect(bfgAdapter.title).to.equal('Some Title');
         });
     });
@@ -95,6 +100,8 @@ describe('modules/miners/bfgminer', function () {
                 pools: [ { pool: 'data' } ]
             };
             bfgAdapterStub = {
+                id: 'someId',
+                app: app,
                 sendCommand: sinon.stub(),
                 handleSummaryResponse: sinon.stub(),
                 handleDevsResponse: sinon.stub(),
@@ -109,6 +116,23 @@ describe('modules/miners/bfgminer', function () {
                 });
 
                 expect(bfgAdapterStub.sendCommand).to.have.been.calledThrice;
+
+                expect(app.logger.debug).to.have.been.calledThrice;
+                expect(app.logger.debug).to.have.been.calledWith(
+                    '%s - fetched summary',
+                    bfgAdapterStub.id,
+                    JSON.stringify(responseData.summary)
+                );
+                expect(app.logger.debug).to.have.been.calledWith(
+                    '%s - fetched devs',
+                    bfgAdapterStub.id,
+                    JSON.stringify(responseData.devs)
+                );
+                expect(app.logger.debug).to.have.been.calledWith(
+                    '%s - fetched pools',
+                    bfgAdapterStub.id,
+                    JSON.stringify(responseData.pools)
+                );
 
                 expect(data).to.deep.equal(_.extend({}, parsedData.summary, {
                     devices: parsedData.devs,
@@ -152,11 +176,15 @@ describe('modules/miners/bfgminer', function () {
 
         commands.forEach(function (command) {
             it('should trigger a status update with the miner status as disconnected when an error occurs with the ' + command + ' command', function (done) {
-                var otherCommands = _.without(commands, command);
+                var otherCommands = _.without(commands, command),
+                    err = new Error('Test Error');
 
                 bfgAdapterStub.set = function (data) {
                     expect(bfgAdapterStub['handle' + capitalizeFirstLetter(command) + 'Response']).not.to.have.beenCalled;
                     expect(bfgAdapterStub.sendCommand).to.have.been.calledThrice;
+
+                    expect(app.logger.info).to.have.been.calledOnce;
+                    expect(app.logger.info).to.have.been.calledWith('%s - error fetching data', bfgAdapterStub.id, err);
 
                     expect(data).to.deep.equal({
                         connected: false,
@@ -166,7 +194,7 @@ describe('modules/miners/bfgminer', function () {
                     done();
                 };
 
-                bfgAdapterStub.sendCommand.withArgs(command).yieldsAsync(new Error('Test Error'));
+                bfgAdapterStub.sendCommand.withArgs(command).yieldsAsync(err);
                 otherCommands.forEach(function (otherCommand) {
                     bfgAdapterStub.sendCommand.withArgs(otherCommand).yieldsAsync(null, responseData[otherCommand]);
                     bfgAdapterStub['handle' + capitalizeFirstLetter(otherCommand) + 'Response'].returns(parsedData[otherCommand]);
@@ -343,14 +371,14 @@ describe('modules/miners/bfgminer', function () {
             };
 
         it('should handle a correct response', function () {
-            var bfgAdapter = new BfgAdapter({}, config);
+            var bfgAdapter = new BfgAdapter(app, config);
             expect(bfgAdapter.handleSummaryResponse(summaryResponse)).to.deep.equal(parsedResponse);
         });
 
         it('should handle a correct response with a Device Hardware% property', function () {
             var summary = _.extend({}, summaryResponse.SUMMARY[0], { 'Device Hardware%': 58 }),
                 response = _.extend({}, summaryResponse, { SUMMARY: [ summary ] }),
-                bfgAdapter = new BfgAdapter({}, config);
+                bfgAdapter = new BfgAdapter(app, config);
             expect(bfgAdapter.handleSummaryResponse(response)).to.deep.equal(_.extend({}, parsedResponse, {
                 hardwareErrorRate: 58
             }));
@@ -359,7 +387,7 @@ describe('modules/miners/bfgminer', function () {
         it('should handle a response containing GHS instead of MHS', function () {
             var summary,
                 response,
-                bfgAdapter = new BfgAdapter({}, config);
+                bfgAdapter = new BfgAdapter(app, config);
 
             summary =  _.extend({}, _.omit(summaryResponse.SUMMARY[0], 'MHS 10s', 'MHS av'), { 'GHS 10s': 58, 'GHS av': 128 });
             response = _.extend({}, summaryResponse, { SUMMARY: [ summary ] });
@@ -373,7 +401,7 @@ describe('modules/miners/bfgminer', function () {
         it('should handle a response containing "MHS av" only', function () {
             var summary,
                 response,
-                bfgAdapter = new BfgAdapter({}, config);
+                bfgAdapter = new BfgAdapter(app, config);
 
             summary =  _.extend({}, _.omit(summaryResponse.SUMMARY[0], 'MHS 10s'), { 'MHS av': 58 });
             response = _.extend({}, summaryResponse, { SUMMARY: [ summary ] });
@@ -387,7 +415,7 @@ describe('modules/miners/bfgminer', function () {
         it('should correctly calculate percentages if no work has been done yet', function () {
             var summary = _.extend({}, summaryResponse.SUMMARY[0], { 'Difficulty Accepted': 0, 'Difficulty Rejected': 0, 'Difficulty Stale': 0 }),
                 response = _.extend({}, summaryResponse, { SUMMARY: [ summary ] }),
-                bfgAdapter = new BfgAdapter({}, config);
+                bfgAdapter = new BfgAdapter(app, config);
 
             expect(bfgAdapter.handleSummaryResponse(response)).to.deep.equal(_.extend({}, parsedResponse, {
                 difficulty: {
@@ -403,7 +431,7 @@ describe('modules/miners/bfgminer', function () {
         });
 
         it('should handle a response not containing the SUMMARY property', function () {
-            var bfgAdapter = new BfgAdapter({}, config);
+            var bfgAdapter = new BfgAdapter(app, config);
             expect(bfgAdapter.handleSummaryResponse({})).to.deep.equal({
                 connected: false
             });
@@ -456,7 +484,7 @@ describe('modules/miners/bfgminer', function () {
             ];
 
         it('should handle a correct response', function () {
-            var bfgAdapter = new BfgAdapter({}, config);
+            var bfgAdapter = new BfgAdapter(app, config);
             expect(bfgAdapter.handleDevsResponse(devicesResponse)).to.deep.equal(parsedResponse);
         });
 
@@ -468,7 +496,7 @@ describe('modules/miners/bfgminer', function () {
                         }, dev);
                     })
                 },
-                bfgAdapter = new BfgAdapter({}, config);
+                bfgAdapter = new BfgAdapter(app, config);
 
             expect(bfgAdapter.handleDevsResponse(response)).to.deep.equal(parsedResponse.map(function (dev, it) {
                 return _.extend({}, dev, { hardwareErrorRate: it });
@@ -476,7 +504,7 @@ describe('modules/miners/bfgminer', function () {
         });
 
         it('should handle a response not containing the DEVS property', function () {
-            var bfgAdapter = new BfgAdapter({}, config);
+            var bfgAdapter = new BfgAdapter(app, config);
             expect(bfgAdapter.handleDevsResponse({})).to.deep.equal([]);
         });
 
@@ -503,7 +531,7 @@ describe('modules/miners/bfgminer', function () {
         };
 
         it('should handle a correct response', function () {
-            var bfgAdapter = new BfgAdapter({}, config);
+            var bfgAdapter = new BfgAdapter(app, config);
             expect(bfgAdapter.handlePoolsResponse(poolsResponse)).to.deep.equal([
                 {
                     alive: true,
@@ -525,7 +553,7 @@ describe('modules/miners/bfgminer', function () {
         });
 
         it('should handle a response containing the elapsed time since last share as a string', function () {
-            var bfgAdapter = new BfgAdapter({}, config),
+            var bfgAdapter = new BfgAdapter(app, config),
                 pool1 = {
                     'Status': 'Alive',
                     'POOL': 0,
@@ -560,7 +588,7 @@ describe('modules/miners/bfgminer', function () {
         });
 
         it('should handle a response not containing the POOLS property', function () {
-            var bfgAdapter = new BfgAdapter({}, config);
+            var bfgAdapter = new BfgAdapter(app, config);
             expect(bfgAdapter.handlePoolsResponse({})).to.deep.equal([]);
         });
 
@@ -568,7 +596,7 @@ describe('modules/miners/bfgminer', function () {
 
     describe('set', function () {
         it('should add the currentHashrate value to historicalData', function () {
-            var bfgAdapter = new BfgAdapter({}, config),
+            var bfgAdapter = new BfgAdapter(app, config),
                 now = new Date().getTime();
 
             bfgAdapter.set({ currentHashrate: 123 });

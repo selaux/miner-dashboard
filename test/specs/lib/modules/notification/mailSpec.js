@@ -3,6 +3,8 @@
 var EventEmitter = require('events').EventEmitter,
     
     chai = require('chai'),
+    sinon = require('sinon'),
+    sinonChai = require('sinon-chai'),
     expect = chai.expect,
     SandboxedModule = require('sandboxed-module'),
 
@@ -14,12 +16,15 @@ var EventEmitter = require('events').EventEmitter,
     }),
     app;
 
+chai.use(sinonChai);
+
 describe('modules/notification/mail', function () {
 
     beforeEach(function () {
         app = new EventEmitter();
         app.modules = [];
         app.title = 'Some Title';
+        app.logger = { debug: sinon.stub(), info: sinon.stub() };
         nodemailerStub.createTransport = function () {};
     });
 
@@ -43,6 +48,12 @@ describe('modules/notification/mail', function () {
             expect(transportParams).to.deep.equal(config.transport);
             return {
                 sendMail: function (params) {
+                    expect(app.logger.info).to.have.been.calledOnce;
+                    expect(app.logger.info).to.have.been.calledWith(
+                        '%s - sending notification',
+                        mail.id,
+                        'Hashrate 0 MH/s of moduleId has dropped below 10 MH/s'
+                    );
                     expect(params).to.deep.equal({
                         from: config.from,
                         to: config.to,

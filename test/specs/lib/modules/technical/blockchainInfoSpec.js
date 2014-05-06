@@ -2,13 +2,16 @@
 
 var _ = require('lodash'),
     chai = require('chai'),
+    sinon = require('sinon'),
+    sinonChai = require('sinon-chai'),
     expect = chai.expect,
     SandboxedModule = require('sandboxed-module'),
 
     responses = {},
     statsAnswer = {
         some: 'stats',
-        difficulty: 100 * (1 / 4295032833)
+        difficulty: 100 * (1 / 4295032833),
+        'hash_rate': 123
     },
     btcPerBlockAnswer = 2500000000,
     BlockchainInfo = SandboxedModule.require('../../../../../lib/modules/technical/blockchainInfo', {
@@ -17,9 +20,13 @@ var _ = require('lodash'),
         }
     });
 
+chai.use(sinonChai);
+
 describe('modules/technical/blockchainInfo', function () {
+    var app;
 
     beforeEach(function () {
+        app = { logger: { debug: sinon.stub(), info: sinon.stub() } };
         responses['http://blockchain.info/stats?format=json'] = {
             statusCode: 200,
             body: statsAnswer
@@ -31,14 +38,21 @@ describe('modules/technical/blockchainInfo', function () {
     });
 
     it('should get data from blockchainInfo correctly', function (done) {
-        var app = {},
-            blockchainInfo = new BlockchainInfo(app);
+        var blockchainInfo = new BlockchainInfo(app);
 
         blockchainInfo.on('change', function () {
             expect(blockchainInfo.toJSON()).to.deep.equal(_.extend({}, statsAnswer, {
                 btcPerBlock: 25,
-                probability: 0.01
+                probability: 0.01,
+                'hash_rate': 123000
             }));
+            expect(app.logger.debug).to.have.been.calledOnce;
+            expect(app.logger.debug).to.have.been.calledWith(
+                '%s - fetched data from blockchain.info',
+                blockchainInfo.id,
+                JSON.stringify([ 200, 200 ]),
+                JSON.stringify([ statsAnswer, btcPerBlockAnswer ])
+            );
             done();
         });
     });
@@ -47,15 +61,17 @@ describe('modules/technical/blockchainInfo', function () {
         'http://blockchain.info/stats?format=json',
         'http://blockchain.info/q/bcperblock'
     ].forEach(function (url) {
-        it('should not throw an error if the request to ' + url + 'fails with an error', function (done) {
+        it('should not throw an error if the request to ' + url + 'fails with an error and log the incident', function (done) {
             var blockchainInfo;
 
             responses[url] = null;
 
-            blockchainInfo = new BlockchainInfo({});
+            blockchainInfo = new BlockchainInfo(app);
 
             setTimeout(function () {
                 expect(blockchainInfo.toJSON()).to.be.empty;
+                expect(app.logger.info).to.have.been.calledOnce;
+                expect(app.logger.info).to.have.been.calledWith('%s - error fetching data from blockchain.info', blockchainInfo.id, new Error('Test Error'));
                 done();
             }, 50);
         });
@@ -68,7 +84,7 @@ describe('modules/technical/blockchainInfo', function () {
                 body: 'Internal Server Error'
             };
 
-            blockchainInfo = new BlockchainInfo({});
+            blockchainInfo = new BlockchainInfo(app);
 
             setTimeout(function () {
                 expect(blockchainInfo.toJSON()).to.be.empty;
@@ -79,8 +95,7 @@ describe('modules/technical/blockchainInfo', function () {
     });
 
     it('should have the title set correctly', function () {
-        var app = {},
-            blockchainInfo = new BlockchainInfo(app);
+        var blockchainInfo = new BlockchainInfo(app);
 
         expect(blockchainInfo.title).to.equal('Blockchain.info');
     });

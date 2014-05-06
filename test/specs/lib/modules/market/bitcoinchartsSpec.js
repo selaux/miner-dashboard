@@ -1,6 +1,8 @@
 'use strict';
 
 var chai = require('chai'),
+    sinon = require('sinon'),
+    sinonChai = require('sinon-chai'),
     expect = chai.expect,
     _ = require('lodash'),
     SandboxedModule = require('sandboxed-module'),
@@ -36,16 +38,30 @@ var chai = require('chai'),
         }
     });
 
+chai.use(sinonChai);
+
 describe('modules/market/bitcoincharts', function () {
+    var app;
+
+    beforeEach(function () {
+        app = { logger: { debug: sinon.stub(), info: sinon.stub() } };
+    });
 
     it('should get data from bitcoincharts correctly', function (done) {
-        var app = {},
-            config = {
+        var config = {
                 symbol: 'wantedSymbol'
             },
             bitcoincharts = new Bitcoincharts(app, config);
 
         bitcoincharts.on('change', function () {
+            expect(app.logger.debug).to.have.been.calledOnce;
+            expect(app.logger.debug).to.have.been.calledWith(
+                '%s - fetched markets from bitcoincharts.com',
+                bitcoincharts.id,
+                '200',
+                JSON.stringify(bitcoinChartsAnswer)
+            );
+
             expect(_.omit(bitcoincharts.toJSON(), 'historicalData')).to.deep.equal({
                 symbol: 'wantedSymbol',
                 ask: 14,
@@ -57,18 +73,26 @@ describe('modules/market/bitcoincharts', function () {
     });
 
     it('it should handle errors that occur during the request', function (done) {
-        var Bitcoincharts = SandboxedModule.require('../../../../../lib/modules/markets/bitcoincharts', {
+        var err = new Error('Test Error'),
+            Bitcoincharts = SandboxedModule.require('../../../../../lib/modules/markets/bitcoincharts', {
                 requires: {
                     'request': function (options, callback) {
                         setTimeout(function () {
-                            callback(new Error('Test Error'));
+                            callback(err);
                         }, 20);
                     }
                 }
             }),
-            bitcoincharts = new Bitcoincharts({}, {});
+            bitcoincharts = new Bitcoincharts(app, {});
 
         setTimeout(function () {
+            expect(app.logger.info).to.have.been.calledOnce;
+            expect(app.logger.info).to.have.been.calledWith(
+                '%s - error fetching markets from bitcoincharts.com',
+                bitcoincharts.id,
+                err
+            );
+
             expect(bitcoincharts.toJSON()).to.be.empty;
             done();
         }, 50);
@@ -84,7 +108,7 @@ describe('modules/market/bitcoincharts', function () {
                     }
                 }
             }),
-            bitcoincharts = new Bitcoincharts({}, {});
+            bitcoincharts = new Bitcoincharts(app, {});
 
         setTimeout(function () {
             expect(bitcoincharts.toJSON()).to.be.empty;
@@ -93,8 +117,7 @@ describe('modules/market/bitcoincharts', function () {
     });
 
     it('should set the title correctly', function () {
-        var app = {},
-            config = {
+        var config = {
                 symbol: 'wantedSymbol'
             },
             bitcoincharts = new Bitcoincharts(app, config);
@@ -104,7 +127,7 @@ describe('modules/market/bitcoincharts', function () {
 
     describe('set', function () {
         it('should add the bid, ask and close values to historicalData', function () {
-            var bitcoinCharts = new Bitcoincharts({}, {}),
+            var bitcoinCharts = new Bitcoincharts(app, {}),
                 now = new Date().getTime();
 
             bitcoinCharts.set({ ask: 1, bid: 2, close: 3 });
