@@ -1,7 +1,6 @@
 'use strict';
 
-var _ = require('lodash'),
-    chai = require('chai'),
+var chai = require('chai'),
     sinon = require('sinon'),
     sinonChai = require('sinon-chai'),
     expect = chai.expect,
@@ -9,7 +8,10 @@ var _ = require('lodash'),
 
     responses = {},
     statsAnswer = {
-        some: 'stats',
+        'n_blocks_total': 123,
+        'minutes_between_blocks': 12,
+        'n_tx': 10,
+        'total_btc_sent': 1,
         difficulty: 100 * (1 / 4295032833),
         'hash_rate': 123
     },
@@ -41,11 +43,16 @@ describe('modules/technical/blockchainInfo', function () {
         var blockchainInfo = new BlockchainInfo(app);
 
         blockchainInfo.on('change', function () {
-            expect(blockchainInfo.toJSON()).to.deep.equal(_.extend({}, statsAnswer, {
-                btcPerBlock: 25,
+            expect(blockchainInfo.toJSON()).to.deep.equal({
+                blockReward: 25,
                 probability: 0.01,
-                'hash_rate': 123000
-            }));
+                difficulty: 100 * (1 / 4295032833),
+                networkHashrate: 123000,
+                blockChainLength: 123,
+                timeBetweenBlocks: 12,
+                numberOfTransactions: 10,
+                totalTransactionValue: 1
+            });
             expect(app.logger.debug).to.have.been.calledOnce;
             expect(app.logger.debug).to.have.been.calledWith(
                 '%s - fetched data from blockchain.info',

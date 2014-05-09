@@ -31,7 +31,7 @@ describe('modules/revenue/solo', function () {
             minerId1: { averageHashrate: 0.5 * 1e-6 }
         };
         solo.marketData = { ask: 100, currency: 'NMC' };
-        solo.technicalData = { btcPerBlock: 10, probability: 0.0001 };
+        solo.technicalData = { blockReward: 10, probability: 0.0001 };
 
         solo.on('change', function () {
             expect(_.omit(solo.toJSON(), 'historicalData')).to.deep.equal({
@@ -49,7 +49,7 @@ describe('modules/revenue/solo', function () {
         var solo = new Solo(this.app, defaultConfig);
 
         solo.marketData = { ask: 100, currency: 'NMC' };
-        solo.technicalData = { btcPerBlock: 10, probability: 0.0001 };
+        solo.technicalData = { blockReward: 10, probability: 0.0001 };
 
         solo.on('change', function () {
             expect(_.omit(solo.toJSON(), 'historicalData')).to.deep.equal({
@@ -67,7 +67,7 @@ describe('modules/revenue/solo', function () {
         var solo = new Solo(this.app, defaultConfig);
 
         solo.minerData = { minerId: { averageHashrate: 1e-6 } };
-        solo.technicalData = { btcPerBlock: 10, probability: 0.0001 };
+        solo.technicalData = { blockReward: 10, probability: 0.0001 };
 
         solo.on('change', function () {
             expect(_.omit(solo.toJSON(), 'historicalData')).to.deep.equal({
@@ -87,7 +87,7 @@ describe('modules/revenue/solo', function () {
             technical: 'technicalId'
         });
 
-        solo.technicalData = { btcPerBlock: 10, probability: 0.0001 };
+        solo.technicalData = { blockReward: 10, probability: 0.0001 };
 
         solo.on('change', function () {
             expect(_.omit(solo.toJSON(), 'historicalData')).to.deep.equal({
@@ -116,7 +116,7 @@ describe('modules/revenue/solo', function () {
             done();
         });
 
-        this.app.emit('update:data:technicalId', { btcPerBlock: 10, probability: 0.0001 });
+        this.app.emit('update:data:technicalId', { blockReward: 10, probability: 0.0001 });
     });
 
     it('should set the title to "Revenue" when no title is set in config', function () {
