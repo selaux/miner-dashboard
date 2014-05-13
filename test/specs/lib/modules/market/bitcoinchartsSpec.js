@@ -6,6 +6,7 @@ var chai = require('chai'),
     expect = chai.expect,
     _ = require('lodash'),
     SandboxedModule = require('sandboxed-module'),
+    Bluebird = require('bluebird'),
 
     bitcoinChartsAnswer = [
         {
@@ -20,30 +21,23 @@ var chai = require('chai'),
             bid: 13,
             close: 12
         }
-    ],
-    Bitcoincharts = SandboxedModule.require('../../../../../lib/modules/markets/bitcoincharts', {
-        requires: {
-            'request': function (options, callback) {
-                expect(options).to.deep.equal({
-                    uri: 'http://api.bitcoincharts.com/v1/markets.json',
-                    json: true
-                });
-                setTimeout(function () {
-                    callback(null, {
-                        statusCode: 200,
-                        body: bitcoinChartsAnswer
-                    });
-                }, 20);
-            }
-        }
-    });
+    ];
 
 chai.use(sinonChai);
 
 describe('modules/market/bitcoincharts', function () {
-    var app;
+    var app,
+        Bitcoincharts,
+        requestStub;
 
     beforeEach(function () {
+        requestStub = sinon.stub();
+        requestStub.withArgs('http://api.bitcoincharts.com/v1/markets.json').returns(Bluebird.resolve(bitcoinChartsAnswer));
+        Bitcoincharts = SandboxedModule.require('../../../../../lib/modules/markets/bitcoincharts', {
+            requires: {
+                '../../utils/request': requestStub
+            }
+        });
         app = { logger: { debug: sinon.stub(), info: sinon.stub() } };
     });
 
@@ -54,48 +48,43 @@ describe('modules/market/bitcoincharts', function () {
             bitcoincharts = new Bitcoincharts(app, config);
 
         bitcoincharts.on('change', function () {
-            expect(app.logger.debug).to.have.been.calledOnce;
-            expect(app.logger.debug).to.have.been.calledWith(
-                '%s - fetched markets from bitcoincharts.com',
-                bitcoincharts.id,
-                '200',
-                JSON.stringify(bitcoinChartsAnswer)
-            );
+            setImmediate(function () {
+                expect(app.logger.debug).to.have.been.calledOnce;
+                expect(app.logger.debug).to.have.been.calledWith(
+                    '%s - fetched markets from bitcoincharts.com',
+                    bitcoincharts.id,
+                    JSON.stringify(bitcoinChartsAnswer)
+                );
 
-            expect(_.omit(bitcoincharts.toJSON(), 'historicalData')).to.deep.equal({
-                symbol: 'wantedSymbol',
-                ask: 14,
-                bid: 13,
-                close: 12
+                expect(_.omit(bitcoincharts.toJSON(), 'historicalData')).to.deep.equal({
+                    symbol: 'wantedSymbol',
+                    ask: 14,
+                    bid: 13,
+                    close: 12
+                });
+                done();
             });
-            done();
         });
     });
 
     it('it should handle errors that occur during the request', function (done) {
         var err = new Error('Test Error'),
-            Bitcoincharts = SandboxedModule.require('../../../../../lib/modules/markets/bitcoincharts', {
-                requires: {
-                    'request': function (options, callback) {
-                        setTimeout(function () {
-                            callback(err);
-                        }, 20);
-                    }
-                }
-            }),
-            bitcoincharts = new Bitcoincharts(app, {});
+            bitcoincharts;
 
+        requestStub.withArgs('http://api.bitcoincharts.com/v1/markets.json').returns(Bluebird.reject(err));
+
+        bitcoincharts = new Bitcoincharts(app, {});
         setTimeout(function () {
             expect(app.logger.info).to.have.been.calledOnce;
             expect(app.logger.info).to.have.been.calledWith(
                 '%s - error fetching markets from bitcoincharts.com',
                 bitcoincharts.id,
-                err
+                err.toString()
             );
 
             expect(bitcoincharts.toJSON()).to.be.empty;
             done();
-        }, 50);
+        }, 10);
     });
 
     it('it should handle non 200 status codes', function (done) {

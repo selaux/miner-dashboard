@@ -45,7 +45,6 @@
         "nodemailer": "0.6.3",
         "nomnom": "1.6.2",
         "numeral": "1.5.3",
-        "request": "2.34.0",
         "rickshaw": "1.4.6",
         "serve-favicon": "2.0.0",
         "socket.io": "0.9.16",
