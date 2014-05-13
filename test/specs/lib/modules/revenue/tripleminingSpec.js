@@ -7,9 +7,9 @@ var EventEmitter = require('events').EventEmitter,
     sinonChai = require('sinon-chai'),
     expect = chai.expect,
     SandboxedModule = require('sandboxed-module'),
+    Bluebird = require('bluebird'),
     _ = require('lodash'),
 
-    responses = {},
     technicalData = {
         probability: 1
     },
@@ -22,17 +22,14 @@ var EventEmitter = require('events').EventEmitter,
     },
     userResponse = {
         'estimated_payout': 4.0000
-    },
-    Triplemining = SandboxedModule.require('../../../../../lib/modules/revenue/triplemining', {
-        requires: {
-            request: require('../../../../utils/requestStub')(responses)
-        }
-    });
+    };
 
 chai.use(sinonChai);
 
 describe('modules/revenue/triplemining', function () {
-    var app,
+    var Triplemining,
+        requestStub,
+        app,
         config = {
         apiKey: 'someApiKey',
         worker: 'testWorker',
@@ -41,14 +38,14 @@ describe('modules/revenue/triplemining', function () {
     };
 
     beforeEach(function () {
-        responses['https://api.triplemining.com/json/stats'] = {
-            statusCode: 200,
-            body: poolResponse
-        };
-        responses['https://api.triplemining.com/json/someApiKey'] = {
-            statusCode: 200,
-            body: userResponse
-        };
+        requestStub = sinon.stub();
+        requestStub.withArgs('https://api.triplemining.com/json/stats').returns(Bluebird.resolve(poolResponse));
+        requestStub.withArgs('https://api.triplemining.com/json/someApiKey').returns(Bluebird.resolve(userResponse));
+        Triplemining = SandboxedModule.require('../../../../../lib/modules/revenue/triplemining', {
+            requires: {
+                '../../utils/request': requestStub
+            }
+        });
         app = new EventEmitter();
         app.logger = { debug: sinon.stub(), info: sinon.stub() };
     });
@@ -60,19 +57,20 @@ describe('modules/revenue/triplemining', function () {
         triplemining.marketData = marketData;
 
         triplemining.on('change', function () {
-            expect(_.omit(triplemining.toJSON(), 'historicalData')).to.deep.equal({
-                value: 2073600000 * 1e6,
-                currency: 'NMC',
-                interval: 'Day'
+            setImmediate(function () {
+                expect(_.omit(triplemining.toJSON(), 'historicalData')).to.deep.equal({
+                    value: 2073600000 * 1e6,
+                    currency: 'NMC',
+                    interval: 'Day'
+                });
+                expect(app.logger.debug).to.have.been.calledOnce;
+                expect(app.logger.debug).to.have.been.calledWith(
+                    '%s - fetched revenue estimate from triplemining',
+                    triplemining.id,
+                    JSON.stringify([ poolResponse, userResponse ])
+                );
+                done();
             });
-            expect(app.logger.debug).to.have.been.calledOnce;
-            expect(app.logger.debug).to.have.been.calledWith(
-                '%s - fetched revenue estimate from triplemining',
-                triplemining.id,
-                JSON.stringify([ 200, 200 ]),
-                JSON.stringify([ poolResponse, userResponse ])
-            );
-            done();
         });
     });
 
@@ -133,38 +131,22 @@ describe('modules/revenue/triplemining', function () {
         'https://api.triplemining.com/json/someApiKey'
     ].forEach(function (url) {
         it('should not throw an error if the request to ' + url + 'fails with an error', function (done) {
-            var triplemining;
+            var error = new Error('Test Error'),
+                triplemining;
 
-            responses[url] = null;
+            requestStub.withArgs(url).returns(Bluebird.reject(error));
 
-            triplemining = new Triplemining(app);
+            triplemining = new Triplemining(app, { apiKey: 'someApiKey' });
             triplemining.technicalData = technicalData;
             triplemining.marketData = marketData;
 
             setTimeout(function () {
                 expect(triplemining.toJSON()).to.be.empty;
+                expect(app.logger.info).to.have.been.calledOnce;
+                expect(app.logger.info).to.have.been.calledWith('%s - error fetching revenue estimate from triplemining', triplemining.id, error.toString());
                 done();
-            }, 50);
+            }, 10);
         });
-
-        it('should not throw an error if the request to ' + url + 'returns a non 200 http status code and no data', function (done) {
-            var triplemining;
-
-            responses[url] = {
-                statusCode: 500,
-                body: 'Internal Server Error'
-            };
-
-            triplemining = new Triplemining(app);
-            triplemining.technicalData = technicalData;
-            triplemining.marketData = marketData;
-
-            setTimeout(function () {
-                expect(triplemining.toJSON()).to.be.empty;
-                done();
-            }, 50);
-        });
-
     });
 
     it('should have the title set to Earnings if no title is specified in config', function () {
