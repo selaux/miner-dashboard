@@ -30,7 +30,7 @@ module.exports = Module.extend({
         webinterface.set('views', path.join(__dirname, '/views'));
         webinterface.engine('hbs', exphbs({
             layoutsDir: path.join(__dirname, '/views/layouts/'),
-            partialsDir: path.join(__dirname, '/views/partials/'),
+            partialsDir: path.join(__dirname, '/views/'),
             defaultLayout: 'main',
             extname: '.hbs'
         }));
