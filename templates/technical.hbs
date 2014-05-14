@@ -4,7 +4,11 @@
 <div class="panel-body row">
     <div class="col-xs-12 col-md-3">
         <table class="table table-bordered">
-            <tr><td>Total Hashrate</td><td>{{hashrate networkHashrate}}</td></tr>
+            {{#if networkHashrate}}
+                <tr><td>Total Hashrate</td><td>{{hashrate networkHashrate}}</td></tr>
+            {{else}}
+                <tr><td>Algorithm</td><td>{{algorithm}}</td></tr>
+            {{/if}}
             <tr><td>Difficulty</td><td>{{number difficulty precision="2"}}</td></tr>
         </table>
     </div>
@@ -14,11 +18,13 @@
             <tr><td>Time between Blocks</td><td>{{number timeBetweenBlocks precision="2"}} Minutes</td></tr>
         </table>
     </div>
-    <div class="col-xs-12 col-md-3">
-        <table class="table table-bordered">
-            <tr><td>Number of Transactions</td><td>{{number numberOfTransactions precision="1"}}</td></tr>
-            <tr><td>Total Output Volume</td><td>{{number totalTransactionValue}} BTC</td></tr>
-        </table>
-    </div>
+    {{#if numberOfTransactions}}
+        <div class="col-xs-12 col-md-3">
+            <table class="table table-bordered">
+                <tr><td>Number of Transactions</td><td>{{number numberOfTransactions precision="1"}}</td></tr>
+                <tr><td>Total Output Volume</td><td>{{number totalTransactionValue}} BTC</td></tr>
+            </table>
+        </div>
+    {{/if}}
 </div>
 <footer class="text-muted">Updated: {{time lastUpdated}}</footer>

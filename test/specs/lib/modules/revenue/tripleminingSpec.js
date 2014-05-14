@@ -6,6 +6,7 @@ var EventEmitter = require('events').EventEmitter,
     _ = require('lodash'),
 
     technicalData = {
+        coin: 'BTC',
         probability: 1
     },
     marketData = {

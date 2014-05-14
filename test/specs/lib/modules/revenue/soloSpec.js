@@ -83,12 +83,12 @@ describe('modules/revenue/solo', function () {
             technical: 'technicalId'
         });
 
-        solo.technicalData = { blockReward: 10, probability: 0.0001 };
+        solo.technicalData = { blockReward: 10, probability: 0.0001, coin: 'NMC' };
 
         solo.on('change', function () {
             expect(_.omit(solo.toJSON(), 'historicalData')).to.deep.equal({
                 value: 86.4,
-                currency: 'BTC',
+                currency: 'NMC',
                 interval: 'Day'
             });
             done();

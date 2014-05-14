@@ -38,6 +38,8 @@ describe('modules/technical/blockchainInfo', function () {
         blockchainInfo.on('change', function () {
             setImmediate(function () {
                 expect(blockchainInfo.toJSON()).to.deep.equal({
+                    coin: 'BTC',
+                    algorithm: 'SHA-256',
                     blockReward: 25,
                     probability: 0.01,
                     difficulty: 100 * (1 / 4295032833),
