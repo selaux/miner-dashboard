@@ -2,12 +2,14 @@
 
 var EventEmitter = require('events').EventEmitter,
     chai = require('chai'),
+    chaiAsPromised = require('chai-as-promised'),
     expect = chai.expect,
     sinon = require('sinon'),
     sinonChai = require('sinon-chai'),
     _ = require('lodash'),
     moment = require('moment'),
     SandboxedModule = require('sandboxed-module'),
+    Bluebird = require('bluebird'),
 
     BfgAdapter = require('../../../../../lib/modules/miners/bfgminer'),
 
@@ -17,6 +19,7 @@ var EventEmitter = require('events').EventEmitter,
     };
 
 chai.use(sinonChai);
+chai.use(chaiAsPromised);
 
 describe('modules/miners/bfgminer', function () {
     var app;
@@ -111,38 +114,30 @@ describe('modules/miners/bfgminer', function () {
 
         it('should call the sendCommand method and use the data it returns', function (done) {
             bfgAdapterStub.set = function (data) {
-                commands.forEach(function (command) {
-                    expect(bfgAdapterStub['handle' + capitalizeFirstLetter(command) + 'Response']).to.have.been.calledOnce;
+                setImmediate(function () {
+                    commands.forEach(function (command) {
+                        expect(bfgAdapterStub['handle' + capitalizeFirstLetter(command) + 'Response']).to.have.been.calledOnce;
+                    });
+
+                    expect(bfgAdapterStub.sendCommand).to.have.been.calledThrice;
+
+                    expect(app.logger.debug).to.have.been.calledOnce;
+                    expect(app.logger.debug).to.have.been.calledWithMatch(
+                        '%s - fetched miner data',
+                        bfgAdapterStub.id,
+                        JSON.stringify([responseData.summary, responseData.devs, responseData.pools ])
+                    );
+
+                    expect(data).to.deep.equal(_.extend({}, parsedData.summary, {
+                        devices: parsedData.devs,
+                        pools: parsedData.pools
+                    }));
+                    done();
                 });
-
-                expect(bfgAdapterStub.sendCommand).to.have.been.calledThrice;
-
-                expect(app.logger.debug).to.have.been.calledThrice;
-                expect(app.logger.debug).to.have.been.calledWith(
-                    '%s - fetched summary',
-                    bfgAdapterStub.id,
-                    JSON.stringify(responseData.summary)
-                );
-                expect(app.logger.debug).to.have.been.calledWith(
-                    '%s - fetched devs',
-                    bfgAdapterStub.id,
-                    JSON.stringify(responseData.devs)
-                );
-                expect(app.logger.debug).to.have.been.calledWith(
-                    '%s - fetched pools',
-                    bfgAdapterStub.id,
-                    JSON.stringify(responseData.pools)
-                );
-
-                expect(data).to.deep.equal(_.extend({}, parsedData.summary, {
-                    devices: parsedData.devs,
-                    pools: parsedData.pools
-                }));
-                done();
             };
 
             commands.forEach(function (command) {
-                bfgAdapterStub.sendCommand.withArgs(command).yieldsAsync(null, responseData[command]);
+                bfgAdapterStub.sendCommand.withArgs(command).returns(Bluebird.resolve(responseData[command]));
                 bfgAdapterStub['handle' + capitalizeFirstLetter(command) + 'Response'].returns(responseData[command]);
             });
 
@@ -153,21 +148,23 @@ describe('modules/miners/bfgminer', function () {
             responseData.summary = {};
 
             bfgAdapterStub.set = function (data) {
-                commands.forEach(function (command) {
-                    expect(bfgAdapterStub['handle' + capitalizeFirstLetter(command) + 'Response']).to.have.been.calledOnce;
+                setImmediate(function () {
+                    commands.forEach(function (command) {
+                        expect(bfgAdapterStub['handle' + capitalizeFirstLetter(command) + 'Response']).to.have.been.calledOnce;
+                    });
+
+                    expect(bfgAdapterStub.sendCommand).to.have.been.calledThrice;
+
+                    expect(data).to.deep.equal(_.extend({}, { currentHashrate: 124 }, {
+                        devices: parsedData.devs,
+                        pools: parsedData.pools
+                    }));
+                    done();
                 });
-
-                expect(bfgAdapterStub.sendCommand).to.have.been.calledThrice;
-
-                expect(data).to.deep.equal(_.extend({}, { currentHashrate: 124 }, {
-                    devices: parsedData.devs,
-                    pools: parsedData.pools
-                }));
-                done();
             };
 
             commands.forEach(function (command) {
-                bfgAdapterStub.sendCommand.withArgs(command).yieldsAsync(null, responseData[command]);
+                bfgAdapterStub.sendCommand.withArgs(command).returns(Bluebird.resolve(responseData[command]));
                 bfgAdapterStub['handle' + capitalizeFirstLetter(command) + 'Response'].returns(responseData[command]);
             });
 
@@ -180,23 +177,24 @@ describe('modules/miners/bfgminer', function () {
                     err = new Error('Test Error');
 
                 bfgAdapterStub.set = function (data) {
-                    expect(bfgAdapterStub['handle' + capitalizeFirstLetter(command) + 'Response']).not.to.have.beenCalled;
-                    expect(bfgAdapterStub.sendCommand).to.have.been.calledThrice;
+                    setImmediate(function () {
+                        expect(bfgAdapterStub.sendCommand).to.have.been.calledThrice;
 
-                    expect(app.logger.info).to.have.been.calledOnce;
-                    expect(app.logger.info).to.have.been.calledWith('%s - error fetching data', bfgAdapterStub.id, err);
+                        expect(app.logger.info).to.have.been.calledOnce;
+                        expect(app.logger.info).to.have.been.calledWith('%s - error fetching miner data', bfgAdapterStub.id, err.toString());
 
-                    expect(data).to.deep.equal({
-                        connected: false,
-                        currentHashrate: 0,
-                        error: 'Error: Test Error'
+                        expect(data).to.deep.equal({
+                            connected: false,
+                            currentHashrate: 0,
+                            error: 'Error: Test Error'
+                        });
+                        done();
                     });
-                    done();
                 };
 
-                bfgAdapterStub.sendCommand.withArgs(command).yieldsAsync(err);
+                bfgAdapterStub.sendCommand.withArgs(command).returns(Bluebird.reject(err));
                 otherCommands.forEach(function (otherCommand) {
-                    bfgAdapterStub.sendCommand.withArgs(otherCommand).yieldsAsync(null, responseData[otherCommand]);
+                    bfgAdapterStub.sendCommand.withArgs(otherCommand).returns(Bluebird.resolve(responseData[otherCommand]));
                     bfgAdapterStub['handle' + capitalizeFirstLetter(otherCommand) + 'Response'].returns(parsedData[otherCommand]);
                 });
 
@@ -258,16 +256,16 @@ describe('modules/miners/bfgminer', function () {
         it('should callback with the returned data', function (done) {
             netModuleStub.connect = netConnect(responseString);
 
-            BfgAdapter.prototype.sendCommand.call({
-                config: config
-            }, 'some command', 'some parameters', function (err, data) {
-                expect(err).not.to.be.ok;
+            expect(BfgAdapter.prototype.sendCommand.call(
+                { config: config },
+                'some command',
+                'some parameters'
+            )).to.eventually.deep.equal(response).notify(function () {
                 expect(netEmitter.options).to.deep.equal(config);
                 expect(netEmitter.written).to.deep.equal({
                     command: 'some command',
                     parameter: 'some parameters'
                 });
-                expect(data).to.deep.equal(response);
                 done();
             });
         });
@@ -275,37 +273,25 @@ describe('modules/miners/bfgminer', function () {
         it('should callback with an error when the miner returns invalid json', function (done) {
             netModuleStub.connect = netConnect('Invalid JSON');
 
-            BfgAdapter.prototype.sendCommand.call({
+            expect(BfgAdapter.prototype.sendCommand.call({
                 config: config
-            }, 'some command', 'some parameters', function (err) {
-                expect(err).to.be.ok;
-                expect(err.message).to.equal('Unexpected token I');
-                done();
-            });
+            }, 'some command')).to.be.rejectedWith('Unexpected token I').notify(done);
         });
 
         it('should callback with an error when an error occurs on connection', function (done) {
             netModuleStub.connect = netConnect(responseString, true);
 
-            BfgAdapter.prototype.sendCommand.call({
+            expect(BfgAdapter.prototype.sendCommand.call({
                 config: config
-            }, 'some command', 'some parameters', function (err) {
-                expect(err).to.be.ok;
-                expect(err.message).to.equal('Error on connection');
-                done();
-            });
+            }, 'some command')).to.be.rejectedWith('Error on connection').notify(done);
         });
 
         it('should callback with an error when an error occurs on transmission', function (done) {
             netModuleStub.connect = netConnect(responseString, false, true);
 
-            BfgAdapter.prototype.sendCommand.call({
+            expect(BfgAdapter.prototype.sendCommand.call({
                 config: config
-            }, 'some command', 'some parameters', function (err) {
-                expect(err).to.be.ok;
-                expect(err.message).to.equal('Error on transmission');
-                done();
-            });
+            }, 'some command')).to.be.rejectedWith('Error on transmission').notify(done);
         });
     });
 
