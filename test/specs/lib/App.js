@@ -2,16 +2,9 @@
 
 var EventEmitter = require('events').EventEmitter,
 
-    chai = require('chai'),
-    expect = chai.expect,
-    sinon = require('sinon'),
-    sinonChai = require('sinon-chai'),
-
     Module = require('../../../lib/Module'),
     JSONView = require('../../../lib/views/json'),
     App = require('../../../lib/App');
-
-chai.use(sinonChai);
 
 describe('App', function () {
 

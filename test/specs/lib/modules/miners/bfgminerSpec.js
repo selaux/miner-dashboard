@@ -1,11 +1,6 @@
 'use strict';
 
 var EventEmitter = require('events').EventEmitter,
-    chai = require('chai'),
-    chaiAsPromised = require('chai-as-promised'),
-    expect = chai.expect,
-    sinon = require('sinon'),
-    sinonChai = require('sinon-chai'),
     _ = require('lodash'),
     moment = require('moment'),
     SandboxedModule = require('sandboxed-module'),
@@ -17,9 +12,6 @@ var EventEmitter = require('events').EventEmitter,
         host: 'some.host',
         port: 1111
     };
-
-chai.use(sinonChai);
-chai.use(chaiAsPromised);
 
 describe('modules/miners/bfgminer', function () {
     var app;

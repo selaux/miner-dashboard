@@ -1,14 +1,6 @@
 'use strict';
 
-var chai = require('chai'),
-    expect = chai.expect,
-
-    sinon = require('sinon'),
-    sinonChai = require('sinon-chai'),
-
-    Module = require('../../../lib/Module');
-
-chai.use(sinonChai);
+var Module = require('../../../lib/Module');
 
 describe('Module', function () {
 

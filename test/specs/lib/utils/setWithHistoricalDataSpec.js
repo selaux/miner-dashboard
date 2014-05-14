@@ -1,13 +1,6 @@
 'use strict';
 
-var chai = require('chai'),
-    sinon = require('sinon'),
-    sinonChai = require('sinon-chai'),
-    expect = chai.expect,
-
-    setWithHistoricalData;
-
-chai.use(sinonChai);
+var setWithHistoricalData;
 
 describe('utils/setWithHistoricalData', function () {
     var now = new Date().getTime(),

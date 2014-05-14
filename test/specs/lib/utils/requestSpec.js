@@ -1,15 +1,7 @@
 'use strict';
 
 var EventEmitter = require('events').EventEmitter,
-    chai = require('chai'),
-    sinon = require('sinon'),
-    sinonChai = require('sinon-chai'),
-    chaiAsPromised = require('chai-as-promised'),
-    expect = chai.expect,
     sandboxedModule = require('sandboxed-module');
-
-chai.use(sinonChai);
-chai.use(chaiAsPromised);
 
 describe('request', function () {
     var requiredModules,

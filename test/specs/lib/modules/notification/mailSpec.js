@@ -1,11 +1,6 @@
 'use strict';
 
 var EventEmitter = require('events').EventEmitter,
-    
-    chai = require('chai'),
-    sinon = require('sinon'),
-    sinonChai = require('sinon-chai'),
-    expect = chai.expect,
     SandboxedModule = require('sandboxed-module'),
 
     nodemailerStub = {},
@@ -15,8 +10,6 @@ var EventEmitter = require('events').EventEmitter,
         }
     }),
     app;
-
-chai.use(sinonChai);
 
 describe('modules/notification/mail', function () {
 

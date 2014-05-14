@@ -1,9 +1,6 @@
 'use strict';
 
-var chai = require('chai'),
-    expect = chai.expect,
-
-    hashrate = require('../../../../../lib/handlebars/helpers/hashrate');
+var hashrate = require('../../../../../lib/handlebars/helpers/hashrate');
 
 describe('handlebars/helpers/hashrate', function () {
 

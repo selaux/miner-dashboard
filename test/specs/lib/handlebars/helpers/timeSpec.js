@@ -1,9 +1,6 @@
 'use strict';
 
 var moment = require('moment'),
-    chai = require('chai'),
-    expect = chai.expect,
-
     time = require('../../../../../lib/handlebars/helpers/time');
 
 describe('handlebars/helpers/time', function () {

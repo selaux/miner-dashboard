@@ -1,11 +1,6 @@
 'use strict';
 
 var EventEmitter = require('events').EventEmitter,
-
-    chai = require('chai'),
-    sinon = require('sinon'),
-    sinonChai = require('sinon-chai'),
-    expect = chai.expect,
     SandboxedModule = require('sandboxed-module'),
     Bluebird = require('bluebird'),
     _ = require('lodash'),
@@ -23,8 +18,6 @@ var EventEmitter = require('events').EventEmitter,
     userResponse = {
         'estimated_payout': 4.0000
     };
-
-chai.use(sinonChai);
 
 describe('modules/revenue/triplemining', function () {
     var Triplemining,

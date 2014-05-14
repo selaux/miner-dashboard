@@ -1,16 +1,8 @@
 'use strict';
 
-var chai = require('chai'),
-    expect = chai.expect,
-
-    sinon = require('sinon'),
-    sinonChai = require('sinon-chai'),
-
-    SandboxedModule = require('sandboxed-module'),
+var SandboxedModule = require('sandboxed-module'),
 
     View = require('../../../lib/View');
-
-chai.use(sinonChai);
 
 describe('View', function () {
     describe('constructor', function () {

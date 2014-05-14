@@ -1,9 +1,6 @@
 'use strict';
 
-var chai = require('chai'),
-    expect = chai.expect,
-
-    timespan = require('../../../../../lib/handlebars/helpers/timespan');
+var timespan = require('../../../../../lib/handlebars/helpers/timespan');
 
 describe('handlebars/helpers/number', function () {
 

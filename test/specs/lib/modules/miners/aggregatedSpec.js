@@ -2,15 +2,9 @@
 
 var EventEmitter = require('events').EventEmitter,
 
-    chai = require('chai'),
-    sinon = require('sinon'),
-    sinonChai = require('sinon-chai'),
-    expect = chai.expect,
     _ = require('lodash'),
 
     Aggregated = require('../../../../../lib/modules/miners/aggregated');
-
-chai.use(sinonChai);
 
 describe('modules/miners/aggregated', function () {
     var app,

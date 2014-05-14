@@ -1,9 +1,6 @@
 'use strict';
 
-var chai = require('chai'),
-    expect = chai.expect,
-
-    number = require('../../../../../lib/handlebars/helpers/number');
+var number = require('../../../../../lib/handlebars/helpers/number');
 
 describe('handlebars/helpers/number', function () {
 

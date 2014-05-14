@@ -1,9 +1,6 @@
 'use strict';
 
-var chai = require('chai'),
-    expect = chai.expect,
-
-    winston = require('winston'),
+var winston = require('winston'),
     Logger = require('../../../lib/Logger');
 
 describe('Logger', function () {

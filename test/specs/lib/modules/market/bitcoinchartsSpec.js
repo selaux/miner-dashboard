@@ -1,10 +1,6 @@
 'use strict';
 
-var chai = require('chai'),
-    sinon = require('sinon'),
-    sinonChai = require('sinon-chai'),
-    expect = chai.expect,
-    _ = require('lodash'),
+var _ = require('lodash'),
     SandboxedModule = require('sandboxed-module'),
     Bluebird = require('bluebird'),
 
@@ -22,8 +18,6 @@ var chai = require('chai'),
             close: 12
         }
     ];
-
-chai.use(sinonChai);
 
 describe('modules/market/bitcoincharts', function () {
     var app,

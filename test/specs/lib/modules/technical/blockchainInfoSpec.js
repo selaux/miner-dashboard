@@ -1,10 +1,6 @@
 'use strict';
 
-var chai = require('chai'),
-    sinon = require('sinon'),
-    sinonChai = require('sinon-chai'),
-    expect = chai.expect,
-    SandboxedModule = require('sandboxed-module'),
+var SandboxedModule = require('sandboxed-module'),
     Bluebird = require('bluebird'),
 
     statsAnswer = {
@@ -16,8 +12,6 @@ var chai = require('chai'),
         'hash_rate': 123
     },
     btcPerBlockAnswer = 2500000000;
-
-chai.use(sinonChai);
 
 describe('modules/technical/blockchainInfo', function () {
     var BlockchainInfo,

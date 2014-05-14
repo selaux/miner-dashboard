@@ -1,11 +1,7 @@
 'use strict';
 
 var EventEmitter = require('events').EventEmitter,
-
-    chai = require('chai'),
-    expect = chai.expect,
     _ = require('lodash'),
-
     Solo = require('../../../../../lib/modules/revenue/solo');
 
 describe('modules/revenue/solo', function () {
