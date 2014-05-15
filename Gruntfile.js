@@ -19,7 +19,8 @@ module.exports = function (grunt) {
             frontend: {
                 files: {
                     src: [
-                        'frontend/javascripts/**/*.js'
+                        'frontend/javascripts/**/*.js',
+                        '!frontend/javascripts/vendor/**/*.js'
                     ]
                 },
                 options: {
@@ -80,7 +81,9 @@ module.exports = function (grunt) {
                         'node_modules/jquery/dist/jquery.js:jquery',
                         'node_modules/lodash/dist/lodash.js:lodash',
                         'node_modules/backbone/backbone.js:backbone',
-                        'node_modules/socket.io/node_modules/socket.io-client/dist/socket.io.js:socket.io-client'
+                        'node_modules/socket.io/node_modules/socket.io-client/dist/socket.io.js:socket.io-client',
+                        'frontend/javascripts/vendor/d3.js:d3',
+                        'frontend/javascripts/vendor/rickshaw.js:rickshaw'
                     ].concat((function () {
                         var files = grunt.file.expand({ cwd: __dirname }, 'lib/views/**/*.js');
                         return files.map(function (file) {
