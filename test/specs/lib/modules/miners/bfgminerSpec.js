@@ -207,6 +207,9 @@ describe('modules/miners/bfgminer', function () {
 
                     netEmitter.options = options;
 
+                    netEmitter.destroy = sinon.stub();
+                    netEmitter.end = sinon.stub();
+                    netEmitter.setTimeout = sinon.stub();
                     netEmitter.write = function (written) {
                         var packet1,
                             packet2;
@@ -252,13 +255,16 @@ describe('modules/miners/bfgminer', function () {
                 { config: config },
                 'some command',
                 'some parameters'
-            )).to.eventually.deep.equal(response).notify(function () {
+            )).to.eventually.deep.equal(response).notify(function (e) {
                 expect(netEmitter.options).to.deep.equal(config);
                 expect(netEmitter.written).to.deep.equal({
                     command: 'some command',
                     parameter: 'some parameters'
                 });
-                done();
+                expect(netEmitter.setTimeout).to.have.been.calledOnce;
+                expect(netEmitter.setTimeout).to.have.been.calledWith(30000);
+                expect(netEmitter.end).to.have.been.calledOnce;
+                done(e);
             });
         });
 
@@ -267,7 +273,10 @@ describe('modules/miners/bfgminer', function () {
 
             expect(BfgAdapter.prototype.sendCommand.call({
                 config: config
-            }, 'some command')).to.be.rejectedWith('Unexpected token I').notify(done);
+            }, 'some command')).to.be.rejectedWith('Unexpected token I').notify(function (e) {
+                    expect(netEmitter.end).to.have.been.calledOnce;
+                    done(e);
+                });
         });
 
         it('should callback with an error when an error occurs on connection', function (done) {
@@ -275,7 +284,10 @@ describe('modules/miners/bfgminer', function () {
 
             expect(BfgAdapter.prototype.sendCommand.call({
                 config: config
-            }, 'some command')).to.be.rejectedWith('Error on connection').notify(done);
+            }, 'some command')).to.be.rejectedWith('Error on connection').notify(function (e) {
+                expect(netEmitter.destroy).to.have.been.calledOnce;
+                done(e);
+            });
         });
 
         it('should callback with an error when an error occurs on transmission', function (done) {
@@ -283,7 +295,10 @@ describe('modules/miners/bfgminer', function () {
 
             expect(BfgAdapter.prototype.sendCommand.call({
                 config: config
-            }, 'some command')).to.be.rejectedWith('Error on transmission').notify(done);
+            }, 'some command')).to.be.rejectedWith('Error on transmission').notify(function (e) {
+                expect(netEmitter.destroy).to.have.been.calledOnce;
+                done(e);
+            });
         });
     });
 
