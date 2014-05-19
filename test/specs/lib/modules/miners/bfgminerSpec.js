@@ -196,12 +196,12 @@ describe('modules/miners/bfgminer', function () {
     });
 
     describe('sendCommand', function () {
-        var config = { host: 'some host', port: 1234 },
+        var config = { host: 'some host', port: 1234, interval: 5000 },
             response = { some: 'response' },
             netEmitter,
             responseString = JSON.stringify(response) + '\x00',
             netModuleStub = {},
-            netConnect = function (responseData, throwErrorOnConnection, throwErrorOnTransmission) {
+            netConnect = function (responseData, throwErrorOnConnection, throwErrorOnTransmission, throwTimeout) {
                 return function (options, callback) {
                     netEmitter = new EventEmitter();
 
@@ -234,6 +234,10 @@ describe('modules/miners/bfgminer', function () {
                         setTimeout(function () {
                             netEmitter.emit('error', new Error('Error on connection'));
                         }, 10);
+                    } else if (throwTimeout) {
+                        setTimeout(function () {
+                            netEmitter.emit('timeout');
+                        }, 10);
                     } else {
                         setTimeout(callback, 20);
                     }
@@ -256,13 +260,16 @@ describe('modules/miners/bfgminer', function () {
                 'some command',
                 'some parameters'
             )).to.eventually.deep.equal(response).notify(function (e) {
-                expect(netEmitter.options).to.deep.equal(config);
+                expect(netEmitter.options).to.deep.equal({
+                    host: 'some host',
+                    port: 1234
+                });
                 expect(netEmitter.written).to.deep.equal({
                     command: 'some command',
                     parameter: 'some parameters'
                 });
                 expect(netEmitter.setTimeout).to.have.been.calledOnce;
-                expect(netEmitter.setTimeout).to.have.been.calledWith(30000);
+                expect(netEmitter.setTimeout).to.have.been.calledWith(5000);
                 expect(netEmitter.end).to.have.been.calledOnce;
                 done(e);
             });
@@ -296,6 +303,17 @@ describe('modules/miners/bfgminer', function () {
             expect(BfgAdapter.prototype.sendCommand.call({
                 config: config
             }, 'some command')).to.be.rejectedWith('Error on transmission').notify(function (e) {
+                expect(netEmitter.destroy).to.have.been.calledOnce;
+                done(e);
+            });
+        });
+
+        it('should callback with an error when a timeout occurs', function (done) {
+            netModuleStub.connect = netConnect(responseString, false, false, true);
+
+            expect(BfgAdapter.prototype.sendCommand.call({
+                config: config
+            }, 'some command')).to.be.rejectedWith('ETIMEOUT').notify(function (e) {
                 expect(netEmitter.destroy).to.have.been.calledOnce;
                 done(e);
             });
