@@ -26,7 +26,7 @@ describe('modules/revenue/solo', function () {
         solo.minerData = {
             minerId1: { averageHashrate: 0.5 * 1e-6 }
         };
-        solo.marketData = { ask: 100, currency: 'NMC' };
+        solo.marketData = { close: 100, currency: 'NMC' };
         solo.technicalData = { blockReward: 10, probability: 0.0001 };
 
         solo.on('change', function () {
@@ -44,7 +44,7 @@ describe('modules/revenue/solo', function () {
     it('should calculate revenue when miner is not connected', function (done) {
         var solo = new Solo(this.app, defaultConfig);
 
-        solo.marketData = { ask: 100, currency: 'NMC' };
+        solo.marketData = { close: 100, currency: 'NMC' };
         solo.technicalData = { blockReward: 10, probability: 0.0001 };
 
         solo.on('change', function () {
@@ -74,7 +74,7 @@ describe('modules/revenue/solo', function () {
             done();
         });
 
-        this.app.emit('update:data:marketId', { ask: 100, currency: 'NMC' });
+        this.app.emit('update:data:marketId', { close: 100, currency: 'NMC' });
     });
 
     it('should calculate revenue when no market is specified', function (done) {
@@ -101,7 +101,7 @@ describe('modules/revenue/solo', function () {
         var solo = new Solo(this.app, defaultConfig);
 
         solo.minerData = { minerId: { averageHashrate: 1e-6 } };
-        solo.marketData = { ask: 100, currency: 'NMC' };
+        solo.marketData = { close: 100, currency: 'NMC' };
 
         solo.on('change', function () {
             expect(_.omit(solo.toJSON(), 'historicalData')).to.deep.equal({
