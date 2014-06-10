@@ -81,23 +81,6 @@ describe('modules/market/bitcoincharts', function () {
         }, 10);
     });
 
-    it('it should handle non 200 status codes', function (done) {
-        var Bitcoincharts = SandboxedModule.require('../../../../../lib/modules/markets/bitcoincharts', {
-                requires: {
-                    'request': function (options, callback) {
-                        setTimeout(function () {
-                            callback(null, { statusCode: 500 });
-                        }, 20);
-                    }
-                }
-            }),
-            bitcoincharts = new Bitcoincharts(app, {});
-
-        setTimeout(function () {
-            expect(bitcoincharts.toJSON()).to.be.empty;
-            done();
-        }, 50);
-    });
 
     it('should set the title correctly', function () {
         var config = {

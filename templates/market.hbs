@@ -8,8 +8,15 @@
     </div>
     <div class="col-xs-12 col-md-3">
         <table class="table table-bordered">
-            <tr><td>Best Bid</td><td>{{number bid}} {{currency}}</td></tr>
-            <tr><td>Best Ask</td><td>{{number ask}} {{currency}}</td></tr>
+            {{#if bid}}
+                <tr><td>Best Bid</td><td>{{number bid}} {{currency}}</td></tr>
+            {{/if}}
+            {{#if ask}}
+                <tr><td>Best Ask</td><td>{{number ask}} {{currency}}</td></tr>
+            {{/if}}
+            {{#if bestMarket}}
+                <tr><td>Best Market</td><td>{{bestMarket}}</td></tr>
+            {{/if}}
         </table>
     </div>
 </div>
