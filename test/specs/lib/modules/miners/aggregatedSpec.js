@@ -83,7 +83,6 @@ describe('modules/miners/aggregated', function () {
                     miner2: 'Miner 2'
                 }
             });
-            console.log(solo.get('historicalData')[0].source);
             expect(solo.get('historicalData')).to.have.length(1);
             expect(solo.get('historicalData')[0]['currentHashrate.miner1']).to.equal(123);
             expect(solo.get('historicalData')[0]['currentHashrate.miner2']).to.equal(456);
