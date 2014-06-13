@@ -14,6 +14,11 @@ describe('modules/miners/aggregated', function () {
 
     beforeEach(function () {
         app = new EventEmitter();
+        app.modules = [
+            { get: sinon.stub().returns(123), id: 'miner1', title: 'Miner 1' },
+            { get: sinon.stub().returns(456), id: 'miner2', title: 'Miner 2' },
+        ];
+
     });
 
     it('should have the default title set to "Total Hashrate"', function () {
@@ -31,13 +36,14 @@ describe('modules/miners/aggregated', function () {
     it('should aggregate the hashrate whenever a miner hashrate changes', function (done) {
         var aggregated = new Aggregated(app, defaultConfig);
 
-        app.modules = [
-            { get: sinon.stub().returns(123), id: 'miner1' },
-            { get: sinon.stub().returns(456), id: 'miner2' },
-        ];
-
         aggregated.on('change', function () {
             expect(aggregated.get('currentHashrate')).to.equal(579);
+            expect(aggregated.get('minerTitles')).to.deep.equal({
+                miner1: 'Miner 1',
+                miner2: 'Miner 2'
+            });
+            expect(aggregated.get('currentHashrate.miner1')).to.equal(123);
+            expect(aggregated.get('currentHashrate.miner2')).to.equal(456);
             done();
         });
         app.emit('update:data:miner2');
@@ -47,28 +53,40 @@ describe('modules/miners/aggregated', function () {
         it('should aggregate the hashrates of the provided modules', function () {
             var aggregated = new Aggregated(app, defaultConfig);
 
-            app.modules = [
-                { get: sinon.stub().returns(123), id: 'miner1' },
-                { get: sinon.stub().returns(456), id: 'miner2' },
-            ];
             aggregated.set = sinon.stub();
             aggregated.aggregateHashrates();
 
             expect(aggregated.set).to.have.been.calledOnce;
             expect(aggregated.set).to.have.been.calledWith({
-                currentHashrate: 579
+                currentHashrate: 579,
+                minerTitles: {
+                    miner1: 'Miner 1',
+                    miner2: 'Miner 2'
+                },
+                'currentHashrate.miner1': 123,
+                'currentHashrate.miner2': 456
             });
         });
     });
 
     describe('set', function () {
         it('should add the values to historicalData', function () {
-            var solo = new Aggregated(this.app, {}),
+            var solo = new Aggregated(app, defaultConfig),
                 now = new Date().getTime();
 
-            solo.set({ currentHashrate: 123 });
+            solo.set({
+                currentHashrate: 579,
+                'currentHashrate.miner1': 123,
+                'currentHashrate.miner2': 456,
+                minerTitles: {
+                    miner1: 'Miner 1',
+                    miner2: 'Miner 2'
+                }
+            });
+            console.log(solo.get('historicalData')[0].source);
             expect(solo.get('historicalData')).to.have.length(1);
-            expect(solo.get('historicalData')[0].currentHashrate).to.equal(123);
+            expect(solo.get('historicalData')[0]['currentHashrate.miner1']).to.equal(123);
+            expect(solo.get('historicalData')[0]['currentHashrate.miner2']).to.equal(456);
             expect(solo.get('historicalData')[0].timestamp).to.be.within(now-1, now+1);
         });
     });
