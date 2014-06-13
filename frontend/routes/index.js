@@ -1,6 +1,7 @@
 'use strict';
 
-var _ = require('lodash');
+var _ = require('lodash'),
+    pkg = require('../../package.json');
 
 module.exports = function (webinterface) {
     webinterface.get('/', function(req, res) {
@@ -23,7 +24,11 @@ module.exports = function (webinterface) {
             title: app.title,
             modules: JSON.stringify(config),
             dataMap: JSON.stringify(dataMap),
-            allViews: _.map(app.views, function (view) { return view.getFullHtml(); }).join('')
+            allViews: _.map(app.views, function (view) { return view.getFullHtml(); }).join(''),
+            dashboard: {
+                homepage: pkg.homepage,
+                version: pkg.version
+            }
         });
     });
 };

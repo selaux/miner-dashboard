@@ -12,6 +12,7 @@
         "monitoring"
     ],
     "private": true,
+    "homepage": "https://github.com/selaux/miner-dashboard",
     "repository": {
         "type": "git",
         "url": "git://github.com/selaux/miner-dashboard.git"
