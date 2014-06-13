@@ -285,4 +285,26 @@ describe('modules/revenue/solo', function () {
         expect(solo.get('historicalData')[0].timestamp).to.be.within(now-1, now+1);
     });
 
+    it('should add the values to historicalData for the old config format', function () {
+        var solo = new Solo(app, {
+                miner: 'miner1',
+                market: 'market1',
+                technical: 'technical1'
+            }),
+            now = new Date().getTime();
+
+        solo.set({
+            value: 25920,
+            currency: 'NMC',
+            interval: 'Day',
+            minerTitles: {
+                miner1: 'Miner 1'
+            },
+            'revenue.miner1': 8640
+        });
+        expect(solo.get('historicalData')).to.have.length(1);
+        expect(solo.get('historicalData')[0]['revenue.miner1']).to.equal(8640);
+        expect(solo.get('historicalData')[0].timestamp).to.be.within(now-1, now+1);
+    });
+
 });
