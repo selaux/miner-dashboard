@@ -60,7 +60,8 @@ Note: Each module can have an unique id assigned in the configuration object, so
 
 #### Markets
 
-- [bitcoincharts.com](https://github.com/selaux/miner-dashboard/wiki/bitcoincharts.com)
+- [Bitcoincharts.com](https://github.com/selaux/miner-dashboard/wiki/bitcoincharts.com)
+- [Cryptocoincharts.info](https://github.com/selaux/miner-dashboard/wiki/cryptocoincharts.info)
 
 #### Notifications
 
@@ -68,13 +69,24 @@ Note: Each module can have an unique id assigned in the configuration object, so
 
 #### Revenue
 
-- [For Solo Mining](https://github.com/selaux/miner-dashboard/wiki/solo) (Also usable as an estimate when mining in a pool)
+- [Solo Mining](https://github.com/selaux/miner-dashboard/wiki/solo) (Allows aggregation, also usable as an estimate when mining in a pool)
 
 #### Technical Info
 
-- [blockchain.info](https://github.com/selaux/miner-dashboard/wiki/bitcoincharts.com)
+- [Blockchain.info](https://github.com/selaux/miner-dashboard/wiki/bitcoincharts.com)
+- [Coinchoose.com](https://github.com/selaux/miner-dashboard/wiki/Coinchoose.com)
 
 ## Changelog
+
+#### 0.4.0
+- __Breaking change__: Remove undocumented triplemining revenue module
+- __Deprecation__: Use new configuration format for revenue modules, the old one is deprecated now
+- Adds cryptocoinchartsInfo as a new market module
+- Adds coinchooseCom as a new technical module
+- Adds aggregation possibilities for hashrates and revenue
+- Adds new logging facility via winston
+- Fix updates for multiple bitcoincharts modules
+- Fix python dependency for the dashboard on Windows
 
 #### 0.3.0
 - Adds charts to a lot of modules
