@@ -3,6 +3,9 @@
     <head>
         <meta charset="utf-8">
         <meta name="viewport" content="width=device-width, initial-scale=1">
+        {% if site.github.url %}
+            <base href="{{ site.github.url }}">
+        {% endif %}
         <title>
             {% if page.tags contains 'home' %}
                 {{ page.title }}
