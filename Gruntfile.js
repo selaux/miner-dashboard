@@ -1,6 +1,10 @@
 'use strict';
 
+var scope = process.env.NODE_ENV === 'production' ? [ 'dependencies' ] : ['devDependencies', 'dependencies'];
+
 module.exports = function (grunt) {
+    require('load-grunt-tasks')(grunt, { scope: scope });
+
     grunt.initConfig({
         jshint: {
             backend: {
@@ -100,12 +104,6 @@ module.exports = function (grunt) {
         }
 
     });
-
-    grunt.loadNpmTasks('grunt-browserify');
-    grunt.loadNpmTasks('grunt-contrib-copy');
-    grunt.loadNpmTasks('grunt-contrib-jshint');
-    grunt.loadNpmTasks('grunt-contrib-handlebars');
-    grunt.loadNpmTasks('grunt-mocha-test');
 
     grunt.registerTask('compile', ['handlebars', 'copy', 'browserify']);
     grunt.registerTask('test', ['jshint', 'mochaTest']);
