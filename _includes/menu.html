@@ -28,8 +28,12 @@
     {% endif %}
 
     {% assign url = node.url | remove:'index.html' %}
+    {% assign length = url | size %}
+    {% if length == 1 %}
+        {% assign url = site.github.url %}
+    {% endif %}
 
     {% if render != false %}
-        <li class="{{class}}"><a href="{{url | remove_first:'/'}}">{{name}}</a></li>
+        <li class="{{class}}"><a href="{{ url }}">{{name}}</a></li>
     {% endif %}
 {% endfor %}
