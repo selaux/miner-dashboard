@@ -30,6 +30,6 @@
     {% assign url = node.url | remove:'index.html' %}
 
     {% if render != false %}
-        <li class="{{class}}"><a href="{{url}}">{{name}}</a></li>
+        <li class="{{class}}"><a href="{{url | remove_first:'/'}}">{{name}}</a></li>
     {% endif %}
 {% endfor %}
