@@ -4,3 +4,4 @@ node_modules
 config
 .idea
 *.iml
+Gemfile.lock
