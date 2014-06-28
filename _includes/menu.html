@@ -1,0 +1,35 @@
+{% assign sorted_pages = site.pages | sort:"name" %}
+{% for node in sorted_pages %}
+    {% assign render = false %}
+    {% for tag in node.tags %}
+        {% if tag == menu_tag %}
+            {% assign render = true %}
+        {% endif %}
+    {% endfor %}
+
+    {% if node.url == '/index.html' %}
+        {% assign name = 'Home' %}
+        {% if page.url == node.url %}
+            {% assign class = 'active' %}
+        {% else %}
+            {% assign class = '' %}
+        {% endif %}
+    {% else %}
+        {% assign name = node.title %}
+
+        {% assign pageUrl = page.url | remove: 'index.html' | split: '/' %}
+        {% assign nodeUrl = node.url | remove: 'index.html' | split: '/' %}
+        {% assign class = 'active' %}
+        {% for segment in nodeUrl %}
+            {% if segment != pageUrl[forloop.index0] %}
+                {% assign class = '' %}
+            {% endif %}
+        {% endfor %}
+    {% endif %}
+
+    {% assign url = node.url | remove:'index.html' %}
+
+    {% if render != false %}
+        <li class="{{class}}"><a href="{{url}}">{{name}}</a></li>
+    {% endif %}
+{% endfor %}

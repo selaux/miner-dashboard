@@ -1,7 +1,2 @@
 title: Miner-Dashboard
-menus:
-    main:
-    - Home: /
-    - Get Started: /get-started.html
-    - Documentation: /docs/
-    - Help Out: /help-out.html
+exclude: [config, assets, node_modules]
