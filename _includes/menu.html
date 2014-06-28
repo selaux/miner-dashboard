@@ -31,6 +31,8 @@
     {% assign length = url | size %}
     {% if length == 1 %}
         {% assign url = site.github.url %}
+    {% else %}
+        {% assign url = url | remove_first:'/' %}
     {% endif %}
 
     {% if render != false %}
