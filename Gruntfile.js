@@ -12,6 +12,7 @@ module.exports = function (grunt) {
                     src: [
                         '**/*.js',
                         '!build/**/*.js',
+                        '!_site/**/*.js',
                         '!node_modules/**/*.js',
                         '!frontend/javascripts/**/*.js'
                     ]

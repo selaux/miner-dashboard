@@ -4,3 +4,5 @@ miner-webinterface.iml
 node_modules/*
 config/config.js
 frontend/public/stylesheets/style.css
+_site
+Gemfile.lock
