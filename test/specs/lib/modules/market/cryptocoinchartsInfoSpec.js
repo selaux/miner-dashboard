@@ -22,7 +22,7 @@ describe('modules/market/cryptocoinchartsInfo', function () {
 
     beforeEach(function () {
         requestStub = sinon.stub();
-        requestStub.withArgs('http://www.cryptocoincharts.info/v2/api/tradingPair/btc_usd').returns(Bluebird.resolve(cryptocoinchartsAnswer));
+        requestStub.withArgs('http://api.cryptocoincharts.info/tradingPair/btc_usd').returns(Bluebird.resolve(cryptocoinchartsAnswer));
         Cryptocoincharts = SandboxedModule.require('../../../../../lib/modules/markets/cryptocoinchartsInfo', {
             requires: {
                 '../../utils/request': requestStub
@@ -37,7 +37,7 @@ describe('modules/market/cryptocoinchartsInfo', function () {
             },
             cryptocoincharts;
 
-        requestStub.withArgs('http://www.cryptocoincharts.info/v2/api/tradingPair/btc_eur').returns(Bluebird.resolve(cryptocoinchartsAnswer));
+        requestStub.withArgs('http://api.cryptocoincharts.info/tradingPair/btc_eur').returns(Bluebird.resolve(cryptocoinchartsAnswer));
 
         cryptocoincharts = new Cryptocoincharts(app, config);
         cryptocoincharts.on('change', function () {
@@ -63,7 +63,7 @@ describe('modules/market/cryptocoinchartsInfo', function () {
         var err = new Error('Test Error'),
             cryptocoincharts;
 
-        requestStub.withArgs('http://www.cryptocoincharts.info/v2/api/tradingPair/btc_usd').returns(Bluebird.reject(err));
+        requestStub.withArgs('http://api.cryptocoincharts.info/tradingPair/btc_usd').returns(Bluebird.reject(err));
 
         cryptocoincharts = new Cryptocoincharts(app, {});
         setTimeout(function () {
@@ -85,7 +85,7 @@ describe('modules/market/cryptocoinchartsInfo', function () {
             },
             cryptocoincharts;
 
-        requestStub.withArgs('http://www.cryptocoincharts.info/v2/api/tradingPair/ltc_btc').returns(Bluebird.resolve(cryptocoinchartsAnswer));
+        requestStub.withArgs('http://api.cryptocoincharts.info/tradingPair/ltc_btc').returns(Bluebird.resolve(cryptocoinchartsAnswer));
 
         cryptocoincharts = new Cryptocoincharts(app, config);
         expect(cryptocoincharts.title).to.equal('ltc_btc Market @ Cryptocoincharts.info');
