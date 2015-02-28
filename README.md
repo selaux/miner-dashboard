@@ -86,6 +86,14 @@ Note: Each module can have an unique id assigned in the configuration object, so
 
 ## Changelog
 
+#### 0.4.1
+- Adds possibility for running miner-dashboard in a Docker container
+- Adds support for node 0.12
+- Fix cryptocoincharts API url
+- Fix overlapping labels
+- Fix eventemitter warnings
+- Fix warnings for missing grunt modules
+
 #### 0.4.0
 - __Breaking change__: Remove undocumented triplemining revenue module
 - __Deprecation__: Use new configuration format for revenue modules, the old one is deprecated now
