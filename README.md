@@ -48,6 +48,14 @@ Step 5: Visit url and check if everything works.
 http://localhost:3000
 ```
 
+## Run with Docker
+
+```docker run -t -i --rm -p 3000:3000 -v /path/to/your/config.js:/app/config/config.js:ro  selaux/miner-dashboard:latest```
+
+Make sure you make the dashboard listen to port 3000 in your configuration or adapt the docker port forwarding to your liking.
+
+In most docker installations you can reference the host by using the ip ```172.17.42.1```in your configuration.
+
 ## Modules
 
 Note: Each module can have an unique id assigned in the configuration object, so it can be referenced by another module.
