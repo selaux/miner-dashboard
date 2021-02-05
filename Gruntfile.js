@@ -52,7 +52,7 @@ module.exports = function (grunt) {
             compile: {
                 options: {
                     commonjs: true,
-                    namespace: false,
+                    namespace: 'Templates',
                     processName: function (path) {
                         var filename = path.split('/')[1];
                         return filename.substr(0, filename.length-4);
