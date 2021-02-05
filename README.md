@@ -1,6 +1,6 @@
 # miner-dashboard
 
-__This project is no longer maintained, if you want to see development continued please create an issue and send some BTC to tip4commit__
+__This project is no longer maintained, if you want to see development continued please create an issue__
 
 [![Build Status](https://travis-ci.org/selaux/miner-dashboard.png)](https://travis-ci.org/selaux/miner-dashboard)
 [![Build Status](https://david-dm.org/selaux/miner-dashboard.png)](https://david-dm.org/selaux/miner-dashboard)
