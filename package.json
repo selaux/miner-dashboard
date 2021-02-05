@@ -40,7 +40,7 @@
         "grunt-contrib-handlebars": "2.0.0",
         "handlebars": "4.7.6",
         "jquery": "3.5.0",
-        "load-grunt-tasks": "0.6.0",
+        "load-grunt-tasks": "5.1.0",
         "lodash": "4.17.19",
         "moment": "^2.29.1",
         "nodemailer": "0.7.0",
