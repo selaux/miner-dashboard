@@ -84,7 +84,7 @@ module.exports = function (grunt) {
                 options: {
                     alias: [
                         'node_modules/jquery/dist/jquery.js:jquery',
-                        'node_modules/lodash/dist/lodash.js:lodash',
+                        'node_modules/lodash/lodash.js:lodash',
                         'node_modules/backbone/backbone.js:backbone',
                         'node_modules/socket.io-client/lib/index.js:socket.io-client',
                         'frontend/javascripts/vendor/d3.js:d3',
