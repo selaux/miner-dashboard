@@ -4,7 +4,6 @@ __This project is no longer maintained, if you want to see development continued
 
 [![Build Status](https://travis-ci.org/selaux/miner-dashboard.png)](https://travis-ci.org/selaux/miner-dashboard)
 [![Build Status](https://david-dm.org/selaux/miner-dashboard.png)](https://david-dm.org/selaux/miner-dashboard)
-[![tip for next commit](http://tip4commit.com/projects/563.svg)](http://tip4commit.com/projects/563)
 
 Node.js based app to show the current status of your miner in a browser.
 
