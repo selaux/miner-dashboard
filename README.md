@@ -1,6 +1,6 @@
 # miner-dashboard
 
-__This project is no longer maintained, if you want to see development continued please create an issue and send someBTC to tip4commit__
+__This project is no longer maintained, if you want to see development continued please create an issue and send some BTC to tip4commit__
 
 [![Build Status](https://travis-ci.org/selaux/miner-dashboard.png)](https://travis-ci.org/selaux/miner-dashboard)
 [![Build Status](https://david-dm.org/selaux/miner-dashboard.png)](https://david-dm.org/selaux/miner-dashboard)
@@ -21,7 +21,7 @@ Node.js based app to show the current status of your miner in a browser.
 
 ## Installation
 
-Requirements: nodejs >= 0.10
+Requirements: nodejs >= 12
 
 Step 1: Clone the repository or [download the current version](https://github.com/selaux/miner-dashboard/releases) and extract it.
 
