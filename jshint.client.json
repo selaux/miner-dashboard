@@ -8,7 +8,7 @@
     "globalstrict": false,
     "immed": true,
     "indent": 4,
-    "latedef": true,
+    "latedef": false,
     "newcap": true,
     "noarg": true,
     "noempty": true,
