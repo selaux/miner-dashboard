@@ -18,7 +18,7 @@ module.exports = function (webinterface) {
             data = viewableModules.map(function (module) {
                     return module.attributes;
                 }),
-            dataMap = _.object(ids, data);
+            dataMap = _.zipObject(ids, data);
 
         res.render('index', {
             title: app.title,
