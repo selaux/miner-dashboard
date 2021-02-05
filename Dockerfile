@@ -1,4 +1,4 @@
-FROM node:12
+FROM node:14
 MAINTAINER github@stefanlau.com
 
 RUN mkdir /app
