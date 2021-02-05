@@ -88,6 +88,10 @@ Note: Each module can have an unique id assigned in the configuration object, so
 
 ## Changelog
 
+#### In master
+
+- Some dependency upgrades to work with node 12 / 14 and fix some security vulns
+
 #### 0.4.1
 - Adds possibility for running miner-dashboard in a Docker container
 - Adds support for node 0.12
