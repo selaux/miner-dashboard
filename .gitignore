@@ -1,4 +1,4 @@
-.idea/*
+.vscode/*
 build/*
 miner-webinterface.iml
 node_modules/*
