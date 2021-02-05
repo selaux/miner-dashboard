@@ -19,7 +19,7 @@
     "strict": true,
     "trailing": false,
     "undef": true,
-    "unused": true,
+    "unused": false,
     "globals": {
         "module": true,
         "is": true,
