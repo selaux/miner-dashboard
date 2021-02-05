@@ -1,5 +1,7 @@
 # miner-dashboard
 
+__This project is no longer maintained__
+
 [![Build Status](https://travis-ci.org/selaux/miner-dashboard.png)](https://travis-ci.org/selaux/miner-dashboard)
 [![Build Status](https://david-dm.org/selaux/miner-dashboard.png)](https://david-dm.org/selaux/miner-dashboard)
 [![tip for next commit](http://tip4commit.com/projects/563.svg)](http://tip4commit.com/projects/563)
