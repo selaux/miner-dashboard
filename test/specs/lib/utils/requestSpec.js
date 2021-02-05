@@ -8,6 +8,20 @@ describe('request', function () {
         request,
         req;
 
+    function getMockResponse(statusCode, body) {
+        var response = new EventEmitter();
+
+        response.statusCode = statusCode;
+        setImmediate(function () {
+            response.emit('data', body);
+        });
+        setImmediate(function () {
+            response.emit('end');
+        });
+
+        return response;
+    }
+
     beforeEach(function () {
         requiredModules = {
             http: {},
@@ -82,18 +96,4 @@ describe('request', function () {
             });
         });
     });
-
-    function getMockResponse(statusCode, body) {
-        var response = new EventEmitter();
-
-        response.statusCode = statusCode;
-        setImmediate(function () {
-            response.emit('data', body);
-        });
-        setImmediate(function () {
-            response.emit('end');
-        });
-
-        return response;
-    }
 });
