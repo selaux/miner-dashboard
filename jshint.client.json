@@ -17,7 +17,7 @@
     "quotmark": "single",
     "regexp": true,
     "strict": true,
-    "trailing": true,
+    "trailing": false,
     "undef": true,
     "unused": true,
     "globals": {
