@@ -10,7 +10,7 @@
     "indent": 4,
     "latedef": false,
     "newcap": true,
-    "noarg": true,
+    "noarg": false,
     "noempty": true,
     "nonew": true,
     "plusplus": true,
