@@ -55,8 +55,8 @@
         "grunt-contrib-jshint": "3.0.0",
         "grunt-mocha-test": "0.13.3",
         "mocha": "8.2.1",
-        "chai": "1.9.1",
-        "chai-as-promised": "4.1.1",
+        "chai": "4.3.0",
+        "chai-as-promised": "7.1.1",
         "sinon": "1.10.2",
         "sinon-chai": "2.5.0",
         "sandboxed-module": "0.3.0"
