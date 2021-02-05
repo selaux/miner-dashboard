@@ -31,7 +31,7 @@
         "compression": "1.0.7",
         "errorhandler": "1.1.0",
         "eventemitter2": "0.4.13",
-        "express": "4.4.3",
+        "express": "4.5.0",
         "express-handlebars": "5.2.0",
         "grunt": "1.3.0",
         "grunt-browserify": "2.1.0",
