@@ -6,7 +6,7 @@
     "eqeqeq": true,
     "forin": true,
     "globalstrict": false,
-    "immed": true,
+    "immed": false,
     "indent": 4,
     "latedef": false,
     "newcap": true,
