@@ -41,7 +41,7 @@
         "handlebars": "4.7.6",
         "jquery": "3.5.0",
         "load-grunt-tasks": "5.1.0",
-        "lodash": "4.17.20",
+        "lodash": "4.17.21",
         "moment": "^2.29.1",
         "nodemailer": "6.4.17",
         "nomnom": "1.8.1",
