@@ -42,7 +42,7 @@
         "jquery": "3.5.0",
         "load-grunt-tasks": "5.1.0",
         "lodash": "4.17.20",
-        "moment": "^2.29.1",
+        "moment": "^2.29.4",
         "nodemailer": "6.4.17",
         "nomnom": "1.8.1",
         "numeral": "2.0.6",
