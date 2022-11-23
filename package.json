@@ -47,7 +47,7 @@
         "nomnom": "1.8.1",
         "numeral": "2.0.6",
         "serve-favicon": "^2.5.0",
-        "socket.io": "2.4.0",
+        "socket.io": "2.5.0",
         "stylus": "^0.54.8",
         "winston": "0.7.3"
     },
